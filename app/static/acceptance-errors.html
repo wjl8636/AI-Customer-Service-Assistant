@@ -1,0 +1,210 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 分类器错例复核</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    .ecard {
+      border: 3px solid var(--ink); background: var(--paper); padding: 10px 13px; margin-top: 10px;
+    }
+    .ecard .q { font-size: 13.5px; font-weight: 700; line-height: 1.7; }
+    .ecard .cmp { margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 12.5px; }
+    .ecard .cmp .side { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .ecard .cmp .k { color: var(--muted); }
+    .lb {
+      border: 2px solid var(--ink); padding: 1px 7px; font-size: 12px; background: var(--cream);
+      white-space: nowrap;
+    }
+    .lb.ok { background: var(--online); }
+    .lb.missed { background: #ffd4dc; border-color: var(--error); color: #8e1f31; }
+    .lb.extra { background: var(--fur); }
+    .ecard .why { margin-top: 8px; font-size: 12px; color: #6d6478; line-height: 1.75; }
+    .kinds { display: flex; gap: 12px; flex-wrap: wrap; }
+    .kindbox { border: 3px solid var(--ink); background: var(--paper); padding: 9px 13px; min-width: 200px; flex: 1; }
+    .kindbox .n { font-size: 20px; font-weight: 700; }
+    .kindbox .rp { font-size: 11.5px; color: #6d6478; line-height: 1.7; margin-top: 4px; }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #6d6478; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>分类器错例复核</h1>
+      <span class="sub">错在哪一类 · 是冤枉还是放跑 · 标注本身有没有毛病</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div class="gatebar" id="gatebar"></div>
+    <div id="body"><div class="panel"><div class="miss">加载中…</div></div></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    let jobSpecs = {};
+    const KIND_PILL = { 漏打: "info", 错位: "fail", 多打: "running" };
+
+    async function load() {
+      try {
+        const [d, j] = await Promise.all([
+          api("/api/acceptance/errors"), api("/api/jobs"),
+        ]);
+        jobSpecs = Object.fromEntries(j.jobs.map((x) => [x.name, x]));
+        render(d);
+      } catch (e) {
+        $("body").textContent = "";
+        $("body").appendChild(missingBox("加载失败：" + e.message));
+      }
+    }
+
+    function panel(title, lede, pill) {
+      const p = el("div", "panel");
+      const h = el("h2", "", title);
+      if (pill) { const [c, t] = pill; h.appendChild(el("span", "pill " + c, t)); }
+      p.appendChild(h);
+      if (lede) p.appendChild(el("p", "lede", lede));
+      return p;
+    }
+
+    function labelRow(kind, labels, marks) {
+      const side = el("div", "side");
+      side.appendChild(el("span", "k", kind));
+      if (!labels.length) side.appendChild(el("span", "lb", "（无）"));
+      for (const l of labels) side.appendChild(el("span", "lb " + (marks[l] || "ok"), l));
+      return side;
+    }
+
+    function render(d) {
+      renderGatebar(d);
+      const body = $("body");
+      body.textContent = "";
+
+      if (!d.eval.present) {
+        const p = panel("错例复核");
+        p.appendChild(missingBox(d.eval.hint || "评测产物还没生成，先跑 make ch10-eval"));
+        if (jobSpecs["ch10-eval"]) p.appendChild(jobRow([jobSpecs["ch10-eval"]], load));
+        body.appendChild(p);
+        return;
+      }
+
+      /* ① 记账口径:错例条数 ≠ 矩阵笔数 */
+      const pAcc = panel("这笔账怎么算：错例条数 ≠ 矩阵笔数",
+        "错有三种：漏打——该打的没打，只记 1 次放跑；多打——不该打的多打一个，只记 1 笔冤枉；"
+        + "错位——该打的没打、反而打了别的类，一次记 2 笔（被抢的类放跑 +1、抢标签的类冤枉 +1）。"
+        + "所以清单条数比矩阵笔数少，差额全在错位上。");
+      const acc = el("div", "kinds");
+      for (const [kind, n] of Object.entries(d.kinds)) {
+        const box = el("div", "kindbox");
+        const head = el("div");
+        head.appendChild(el("span", "pill " + (KIND_PILL[kind] || "info"), kind));
+        head.appendChild(el("span", "n", " " + n + " 条"));
+        box.appendChild(head);
+        box.appendChild(el("div", "rp", "修法：" + (d.recipes[kind] || "—")));
+        acc.appendChild(box);
+      }
+      pAcc.appendChild(acc);
+      pAcc.appendChild(el("div", "tip",
+        d.errors.length + " 条错例 → 矩阵记 " + d.matrix_entries + " 笔："
+        + "冤枉 " + d.total_fp + " 次、放跑 " + d.total_fn + " 次。"
+        + "由于目前才寥寥几条，不值得为此重新训练——攒到一定数量再重训，训练是有成本的。"));
+      body.appendChild(pAcc);
+
+      /* ② 边界摩擦配对 */
+      const pPair = panel("边界摩擦：哪两类在抢标签",
+        "把「该打没打的类 ← 反而打了的类」按对计数。同一对反复出现，说明有个词横跨两类、"
+        + "句子正好踩在分界线上，模型两边都觉得是。这种要成对补对照句，两边同时喂才学得会看语境。");
+      if (!d.pairs.length) {
+        pPair.appendChild(el("div", "miss", "本轮没有错位型错误，没有类目在互抢标签"));
+      } else {
+        const box = el("div", "scroll-x");
+        const t = el("table", "tbl");
+        const hr = el("tr");
+        for (const h of ["被抢的类（该打没打）", "档位", "抢标签的类（冤枉打上）", "次数"]) hr.appendChild(el("th", "", h));
+        const thead = el("thead"); thead.appendChild(hr); t.appendChild(thead);
+        const tb = el("tbody");
+        for (const p of d.pairs) {
+          const tr = el("tr", p.count > 1 ? "bad" : "");
+          const a = el("td"); a.appendChild(el("span", "lb missed", p.missed)); tr.appendChild(a);
+          const sv = el("td");
+          if (p.severity) sv.appendChild(el("span", "pill sev-" + p.severity, p.severity));
+          tr.appendChild(sv);
+          const b = el("td"); b.appendChild(el("span", "lb extra", p.grabbed)); tr.appendChild(b);
+          tr.appendChild(el("td", "num", "×" + p.count));
+          tb.appendChild(tr);
+        }
+        t.appendChild(tb); box.appendChild(t);
+        pPair.appendChild(box);
+        pPair.appendChild(el("div", "tip",
+          "出现 2 次以上的配对已标红——那是稳定复现的系统性偏差，优先补它的对照句。"));
+      }
+      body.appendChild(pPair);
+
+      /* ③ 逐条错例 */
+      const pList = panel("逐条对照：标准答案 vs 模型预测",
+        "标准答案里被放跑的类标红、模型多打上的类标橙、两边都对上的标绿。"
+        + "语料里故意掺了错别字和方言模拟真实用户的键盘，噪声下的错例照样算错例，不给豁免。");
+      for (const e of d.errors) {
+        const card = el("div", "ecard");
+        const head = el("div", "cmp");
+        head.appendChild(el("span", "pill " + (KIND_PILL[e.kind] || "info"), e.kind));
+        head.appendChild(el("span", "k", "记 " + e.matrix_entries + " 笔矩阵账"));
+        card.appendChild(head);
+        card.appendChild(el("div", "q", "「" + e.text + "」"));
+        const marksGold = {}, marksPred = {};
+        for (const l of e.missed) marksGold[l] = "missed";
+        for (const l of e.extra) marksPred[l] = "extra";
+        const cmp = el("div", "cmp");
+        cmp.appendChild(labelRow("标准", e.gold, marksGold));
+        cmp.appendChild(labelRow("预测", e.pred, marksPred));
+        card.appendChild(cmp);
+        const bits = [];
+        if (e.missed.length) bits.push("放跑：" + e.missed.join("、"));
+        if (e.extra.length) bits.push("冤枉：" + e.extra.join("、"));
+        bits.push("修法：" + (d.recipes[e.kind] || "—"));
+        card.appendChild(el("div", "why", bits.join("　|　")));
+        pList.appendChild(card);
+      }
+      pList.appendChild(el("div", "legend"));
+      if (jobSpecs["ch10-eval"]) pList.appendChild(jobRow([jobSpecs["ch10-eval"]], load,
+        "重跑评测会刷新这份错例清单"));
+      body.appendChild(pList);
+    }
+
+    function renderGatebar(d) {
+      const bar = $("gatebar");
+      bar.textContent = "";
+      const add = (label, value, cls) => {
+        const s = el("div", "stat " + (cls || ""));
+        s.appendChild(el("span", "", label));
+        const b = el("b", "", value);
+        if (String(value).length > 6) { b.style.fontSize = "14px"; b.style.lineHeight = "2"; }
+        s.appendChild(b);
+        bar.appendChild(s);
+      };
+      if (!d.eval.present) { add("评测产物", "未生成", "fail"); return; }
+      add("错例", d.errors.length + " 条");
+      add("矩阵笔数", d.matrix_entries + " 笔");
+      add("冤枉 FP", d.total_fp + " 次");
+      add("放跑 FN", d.total_fn + " 次");
+      add("测试集", d.eval.test_size + " 条");
+      add("评测于", fmtTime(d.eval.ran_at).slice(5, 16));
+    }
+
+    mountAdminNav("/acceptance/errors");
+    $("refreshBtn").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>

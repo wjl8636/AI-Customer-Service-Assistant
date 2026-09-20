@@ -1,0 +1,635 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 知识库录入</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    .form { display: grid; gap: 10px; }
+    .form .line { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .form label { font-size: 12.5px; font-weight: 700; }
+    select, input[type="text"], input[type="number"], textarea {
+      font: inherit; font-size: 13px; color: var(--ink); background: var(--paper);
+      border: 3px solid var(--ink); padding: 6px 9px;
+    }
+    textarea { width: 100%; min-height: 190px; line-height: 1.75; resize: vertical; }
+    input[type="text"] { flex: 1; min-width: 220px; }
+    .ctdesc { color: #6d6478; font-size: 11.5px; }
+    .feats { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
+    .ans {
+      white-space: pre-wrap; word-break: break-word; max-height: 128px; overflow: auto;
+      font-size: 12px; line-height: 1.7;
+    }
+    td.mark { white-space: nowrap; }
+    .kv { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .kv .box {
+      border: 2px solid var(--ink); background: var(--paper); padding: 4px 9px; font-size: 11.5px;
+      min-width: 84px;
+    }
+    .kv .box b { display: block; font-size: 17px; line-height: 1.4; }
+    .hits { margin-top: 12px; display: grid; gap: 10px; }
+    .hit {
+      border: 3px solid var(--ink); background: var(--paper); padding: 9px 12px; font-size: 12.5px;
+    }
+    .hit .top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .hit .q { font-weight: 700; }
+    .hit .a { margin-top: 6px; line-height: 1.75; white-space: pre-wrap; }
+    .hit .meta { margin-top: 6px; color: #6d6478; font-size: 11.5px; }
+    .hit.top1 { box-shadow: var(--shadow-sm); background: var(--cream); }
+    .presets { display: flex; gap: 6px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>知识库录入</h1>
+      <span class="sub">贴一段文档就能进库：切块 → 双写 MySQL 与 Milvus → 现场检索自测</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div class="gatebar" id="gatebar"></div>
+
+    <div class="tip">
+      两条路：<b>手工录入</b>正文贴在这一页上，预览什么样就入库什么样；<b>离线建库</b>把
+      data/kb/ 那几份材料交给 make 目标跑，页面按的和终端敲的是同一条命令。
+      两条路共用一套切块逻辑与双写顺序——先写 MySQL 记「待向量化」，再进 Milvus 回标「已向量化」，
+      中途挂了重跑捡 pending 就能补齐。
+    </div>
+
+    <!-- ① 手工录入 -->
+    <div class="panel">
+      <h2>① 手工录入 <span class="pill info">正文贴这里</span></h2>
+      <p class="lede">
+        按标题层级切、超长递归切、块间重叠裁到最近句号、大表格按行拆并复制表头——
+        这四条在下面的预览里逐块标出来。查重按「问法 + 正文」的指纹，同一份正文重复录入会全跳过。
+      </p>
+      <div class="form">
+        <div class="line">
+          <label for="ctype">内容类型</label>
+          <select id="ctype"></select>
+          <span class="ctdesc" id="ctdesc"></span>
+          <span class="spacer"></span>
+          <button class="btn sm" id="sampleBtn">填一段示例</button>
+          <button class="btn sm" id="clearBtn">清空</button>
+        </div>
+        <textarea id="text" placeholder="贴 Markdown。带 # / ## 标题层级效果最好——政策手册这类没有天然问法的，questions 就落章节标题、category 落上级路径。"></textarea>
+        <div class="line">
+          <button class="btn go" id="previewBtn">切块预览（不写库）</button>
+          <button class="btn" id="ingestBtn">录入入库</button>
+          <label style="font-weight:400"><input type="checkbox" id="vecAfter" checked /> 入库后顺手向量化</label>
+          <span class="spacer"></span>
+          <span class="ctdesc" id="ingestHint"></span>
+        </div>
+      </div>
+      <div id="previewBox"></div>
+    </div>
+
+    <!-- ② 建库材料 -->
+    <div class="panel">
+      <h2>② 建库材料 <span class="pill info" id="srcPill">—</span></h2>
+      <p class="lede">
+        data/kb/ 下的文档是离线建库的输入。这里的块数是就地切出来的（dry-run，不写库、不碰
+        Milvus、不调上游），点「看切块」把结果送到上面的预览区逐块看。
+      </p>
+      <div class="scroll-x"><table class="tbl" id="srcTbl"></table></div>
+      <div id="srcJobs"></div>
+    </div>
+
+    <!-- ③ 对话挖知识 -->
+    <div class="panel">
+      <h2>③ 对话挖知识 <span class="pill info" id="stgPill">—</span></h2>
+      <p class="lede">
+        历史客服对话分批喂给 LLM 抽问答对，先落暂存表，再整体去重入库。
+        三个状态的落差就是去重那一刀：抽出多少、留下多少、丢了多少。
+      </p>
+      <div class="kv" id="stgKv"></div>
+      <div id="stgJobs"></div>
+      <div style="margin-top:12px">
+        <button class="btn sm" id="stgBtn">看暂存表逐条</button>
+      </div>
+      <div id="stgBox"></div>
+    </div>
+
+    <!-- ④ 向量化与双写 -->
+    <div class="panel">
+      <h2>④ 向量化与双写 <span class="pill" id="dwPill">—</span></h2>
+      <p class="lede">
+        MySQL 是原文权威源，Milvus 只存向量。<b>幂等靠 vectorize_status</b>：写 MySQL 记 pending，
+        嵌入后按主键 upsert 进 Milvus、回标 done。故意中断建库再按「向量化待补块」，
+        漏掉的块会被捡起来补齐——这一条不用回终端演。
+      </p>
+      <div class="kv" id="dwKv"></div>
+      <div class="jobrow">
+        <button class="btn go" id="vecBtn">向量化待补块</button>
+        <span class="needs" id="vecHint"></span>
+      </div>
+      <div id="dwJobs"></div>
+    </div>
+
+    <!-- ⑤ 检索自测 -->
+    <div class="panel">
+      <h2>⑤ 检索自测 <span class="pill info">换个说法问一句</span></h2>
+      <p class="lede">
+        问题向量化后到 Milvus 按相似度取 Top-K。「邮费是多少」库里一个字都没写过，
+        靠的是与「运费」那块语义相近——词面查表做不到这件事。
+      </p>
+      <div class="form">
+        <div class="line">
+          <input type="text" id="q" placeholder="邮费是多少" />
+          <label for="strategy">路线</label>
+          <select id="strategy">
+            <option value="vector">dense 向量单路（本章）</option>
+            <option value="bm25">BM25 关键词</option>
+            <option value="hybrid">混合召回</option>
+            <option value="hybrid_rerank">混合 + 重排</option>
+          </select>
+          <label for="topk">Top-K</label>
+          <input type="number" id="topk" value="5" min="1" max="20" style="width:70px" />
+          <button class="btn go" id="searchBtn">检索</button>
+        </div>
+        <div class="presets" id="presets"></div>
+      </div>
+      <div id="hitBox"></div>
+    </div>
+
+    <!-- ⑥ 最近入库 -->
+    <div class="panel">
+      <h2>⑥ 最近入库</h2>
+      <p class="lede">按 id 倒序取最近 12 块，看录进去的东西长什么样、状态到哪一步了。</p>
+      <div class="scroll-x"><table class="tbl" id="recentTbl"></table></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    const SAMPLE = `# 会员权益\n\n## 运费与包邮\n\n满 99 元包邮，未满收 10 元运费。偏远地区（新疆、西藏、内蒙）运费 20 元，不参与包邮。\n\n## 会员等级\n\n| 等级 | 年消费 | 折扣 | 生日礼 |\n|---|---|---|---|\n| 喵铜 | 0 元起 | 无 | 无 |\n| 喵银 | 1000 元起 | 95 折 | 优惠券 |\n| 喵金 | 5000 元起 | 9 折 | 猫罐头礼盒 |\n`;
+
+    let state = null;
+    let jobSpecs = {};
+    let lastPreview = null;
+
+    const th = (row, labels) => {
+      const tr = el("tr");
+      for (const t of labels) tr.appendChild(el("th", null, t));
+      row.appendChild(tr);
+    };
+
+    function pill(cls, text) { return el("span", "pill " + cls, text); }
+
+    /* ---------- 顶部闸条 ---------- */
+    function renderGatebar(d) {
+      const bar = $("gatebar");
+      bar.textContent = "";
+      const c = d.chunks;
+      const add = (label, value, cls) => {
+        const s = el("div", "stat" + (cls ? " " + cls : ""));
+        s.appendChild(el("b", null, value === null || value === undefined ? "—" : value));
+        s.appendChild(document.createTextNode(label));
+        bar.appendChild(s);
+      };
+      add("知识块（MySQL）", c.total);
+      add("待向量化", c.pending, c.pending ? "fail" : "pass");
+      add("Milvus 条数", d.milvus.online ? d.milvus.count : "离线", d.milvus.online ? "" : "fail");
+      add("关键条款", c.key_clause);
+      const verdict = d.consistent === null ? "读不到" : (d.consistent ? "一致" : "对不上");
+      add("双写", verdict, d.consistent === null ? "" : (d.consistent ? "pass" : "fail"));
+      if (d.db_error) {
+        const s = el("div", "stat fail");
+        s.appendChild(el("b", null, "MySQL"));
+        s.appendChild(document.createTextNode(d.db_error));
+        bar.appendChild(s);
+      }
+    }
+
+    /* ---------- 切块预览 ---------- */
+    function renderPreview(p) {
+      lastPreview = p;
+      const box = $("previewBox");
+      box.textContent = "";
+      const feats = el("div", "feats");
+      feats.appendChild(pill("info", "来源 " + p.source));
+      feats.appendChild(pill("info", "共 " + p.total + " 块 / " + p.features.sections + " 节"));
+      feats.appendChild(pill(p.features.table_split ? "pass" : "missing",
+        p.features.table_split ? "表格按行拆已触发" : "表格按行拆未触发"));
+      feats.appendChild(pill(p.features.overlap ? "pass" : "missing",
+        p.features.overlap ? "句末重叠已触发" : "句末重叠未触发（单节未超 400 字）"));
+      feats.appendChild(pill(p.key_clause ? "pass" : "missing", "关键条款 " + p.key_clause + " 块"));
+      if (p.dedup_known) {
+        feats.appendChild(pill(p.duplicates ? "fail" : "pass",
+          p.duplicates ? "库里已有 " + p.duplicates + " 块，入库会跳过" : "无重复，可入库"));
+      } else {
+        feats.appendChild(pill("missing", "查重未知（MySQL 读不到）"));
+      }
+      box.appendChild(feats);
+
+      const tbl = el("table", "tbl");
+      th(tbl, ["#", "节（section_path）", "问法 questions", "正文 answer", "字数", "标记"]);
+      for (const c of p.chunks) {
+        const tr = el("tr", c.duplicate ? "bad" : "");
+        tr.appendChild(el("td", "num", c.seq));
+        tr.appendChild(el("td", null, c.section_path));
+        tr.appendChild(el("td", null, c.questions));
+        const td = el("td");
+        td.appendChild(el("div", "ans", c.answer));
+        tr.appendChild(td);
+        tr.appendChild(el("td", "num", c.chars));
+        const mk = el("td", "mark");
+        if (c.is_key_clause) mk.appendChild(pill("fail", "关键条款"));
+        if (c.is_table) mk.appendChild(pill("info", "表格块"));
+        if (c.duplicate) mk.appendChild(pill("missing", "重复"));
+        tr.appendChild(mk);
+        tbl.appendChild(tr);
+      }
+      const sc = el("div", "scroll-x");
+      sc.style.marginTop = "12px";
+      sc.appendChild(tbl);
+      box.appendChild(sc);
+    }
+
+    async function doPreview(payload) {
+      $("previewBox").textContent = "";
+      $("previewBox").appendChild(missingBox("切块中…"));
+      try {
+        renderPreview(await api("/api/kb/preview", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }));
+      } catch (e) {
+        $("previewBox").textContent = "";
+        $("previewBox").appendChild(missingBox("预览失败：" + e.message));
+        toast("预览失败：" + e.message, true);
+      }
+    }
+
+    /* ---------- 建库材料 ---------- */
+    function renderSources(d) {
+      const tbl = $("srcTbl");
+      tbl.textContent = "";
+      th(tbl, ["文件", "类型", "字符", "行", "切出块数", "关键条款", "特性", ""]);
+      let total = 0;
+      for (const s of d.sources) {
+        const tr = el("tr", s.present ? "" : "bad");
+        tr.appendChild(el("td", null, s.path));
+        tr.appendChild(el("td", null, s.content_type));
+        if (!s.present) {
+          const td = el("td", null, "文件不在");
+          td.colSpan = 6;
+          tr.appendChild(td);
+          tbl.appendChild(tr);
+          continue;
+        }
+        total += s.chunks;
+        tr.appendChild(el("td", "num", s.chars));
+        tr.appendChild(el("td", "num", s.lines));
+        tr.appendChild(el("td", "num", s.chunks));
+        tr.appendChild(el("td", "num", s.key_clause));
+        const ft = el("td", "mark");
+        if (s.features.table_split) ft.appendChild(pill("info", "拆表"));
+        if (s.features.overlap) ft.appendChild(pill("info", "重叠"));
+        ft.appendChild(pill("missing", s.features.sections + " 节"));
+        tr.appendChild(ft);
+        const act = el("td");
+        const btn = el("button", "btn sm", "看切块");
+        btn.addEventListener("click", () => {
+          doPreview({ file: s.file });
+          $("previewBox").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+        act.appendChild(btn);
+        tr.appendChild(act);
+        tbl.appendChild(tr);
+      }
+      $("srcPill").textContent = d.sources.length + " 份材料 / 共切 " + total + " 块";
+    }
+
+    /* ---------- 暂存表 ---------- */
+    function renderStaging(d) {
+      const kv = $("stgKv");
+      kv.textContent = "";
+      const s = d.staging;
+      const add = (label, value) => {
+        const b = el("div", "box");
+        b.appendChild(el("b", null, value === null || value === undefined ? "—" : value));
+        b.appendChild(document.createTextNode(label));
+        kv.appendChild(b);
+      };
+      if (!s) {
+        kv.appendChild(missingBox("MySQL 读不到，暂存表数看不了"));
+        $("stgPill").textContent = "读不到";
+        return;
+      }
+      add("已抽出待去重", s.counts.extracted);
+      add("去重保留（已入库）", s.counts.kept);
+      add("去重丢弃", s.counts.discarded);
+      add("批次数", s.batches);
+      $("stgPill").textContent = s.total ? ("累计 " + s.total + " 条，最近批次 " + (s.latest_batch || "—"))
+        : "还没挖过";
+    }
+
+    async function loadStaging() {
+      const box = $("stgBox");
+      box.textContent = "";
+      box.appendChild(missingBox("取数中…"));
+      try {
+        const d = await api("/api/kb/staging");
+        box.textContent = "";
+        const LB = { kept: "待审（人工采纳才入库）", extracted: "已抽出待去重",
+                     discarded: "去重丢弃", approved: "已采纳入库", rejected: "已弃用" };
+        for (const st of ["kept", "extracted", "discarded", "approved", "rejected"]) {
+          const rows = d.rows[st];
+          if (!rows.length) continue;
+          const h = el("h2", null, LB[st] + "（" + rows.length + " 条）");
+          h.style.fontSize = "13px";
+          h.style.margin = "14px 0 6px";
+          box.appendChild(h);
+          if (st === "kept") {
+            const tip = el("div", "lede",
+              "这些是模型从历史对话里归纳出来的，质量参差。逐条看清楚再采纳，"
+              + "只对单笔订单成立的、夹带订单号的、答非所问的，都别放进知识库。");
+            tip.style.margin = "0 0 8px";
+            box.appendChild(tip);
+          }
+          const tbl = el("table", "tbl");
+          th(tbl, st === "kept" ? ["批次", "来源", "问法", "答案", "处理"]
+                                : ["批次", "来源", "问法", "答案"]);
+          for (const r of rows) {
+            const tr = el("tr");
+            tr.appendChild(el("td", null, r.batch_no));
+            tr.appendChild(el("td", null, r.source_ref || "—"));
+            tr.appendChild(el("td", null, r.question));
+            const td = el("td");
+            td.appendChild(el("div", "ans", r.answer));
+            tr.appendChild(td);
+            if (st === "kept") {
+              const act = el("td");
+              act.appendChild(mkReviewBtn("采纳", "approve", r.id));
+              act.appendChild(mkReviewBtn("弃用", "reject", r.id));
+              tr.appendChild(act);
+            }
+            tbl.appendChild(tr);
+          }
+          const sc = el("div", "scroll-x");
+          sc.appendChild(tbl);
+          box.appendChild(sc);
+        }
+        if (!box.childNodes.length) box.appendChild(missingBox("暂存表是空的，先跑一次对话挖知识"));
+      } catch (e) {
+        box.textContent = "";
+        box.appendChild(missingBox("取数失败：" + e.message));
+      }
+    }
+
+    /* 采纳 / 弃用：挖知识唯一的入库口，点了才写 knowledge_chunks */
+    async function mkReviewAction(kind, id, btn) {
+      const label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "处理中…";
+      try {
+        const r = await api("/api/kb/staging/" + kind, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids: [id] }),
+        });
+        toast(kind === "approve" ? ("已采纳入库 " + r.approved + " 条") : ("已弃用 " + r.rejected + " 条"));
+        await loadStaging();          // 重拉：这一行会从待审挪到已采纳/已弃用
+        return r;
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = label;
+        toast((kind === "approve" ? "采纳" : "弃用") + "失败：" + e.message, true);
+      }
+    }
+
+    function mkReviewBtn(label, kind, id) {
+      const b = el("button", "btn sm", label);
+      b.style.marginRight = "6px";
+      b.onclick = () => mkReviewAction(kind, id, b);
+      return b;
+    }
+
+    /* ---------- 双写 ---------- */
+    function renderDualwrite(d) {
+      const kv = $("dwKv");
+      kv.textContent = "";
+      const add = (label, value) => {
+        const b = el("div", "box");
+        b.appendChild(el("b", null, value === null || value === undefined ? "—" : value));
+        b.appendChild(document.createTextNode(label));
+        kv.appendChild(b);
+      };
+      add("pending 待补", d.chunks.pending);
+      add("done 已向量化", d.chunks.done);
+      add("Milvus 条数", d.milvus.online ? d.milvus.count : "离线");
+      add("集合", d.milvus.collection || "knowledge");
+      const p = $("dwPill");
+      if (d.consistent === null) { p.className = "pill missing"; p.textContent = "读不到，不下结论"; }
+      else if (d.consistent) { p.className = "pill pass"; p.textContent = "两边对得上"; }
+      else { p.className = "pill fail"; p.textContent = "对不上，按下面补齐"; }
+      $("vecHint").textContent = d.milvus.online
+        ? "in-process 直接跑，与 make kb-vectorize 同一个函数"
+        : ("Milvus 离线：" + (d.milvus.detail || ""));
+    }
+
+    /* ---------- 检索 ---------- */
+    function renderHits(d) {
+      const box = $("hitBox");
+      box.textContent = "";
+      const head = el("div", "feats");
+      head.appendChild(pill("info", "路线 " + d.strategy));
+      head.appendChild(pill(d.hits.length ? "pass" : "fail", "召回 " + d.hits.length + " 块"));
+      box.appendChild(head);
+      if (!d.hits.length) {
+        box.appendChild(missingBox("一条都没召回：库里可能还没有货，或者 pending 还没向量化"));
+        return;
+      }
+      const list = el("div", "hits");
+      d.hits.forEach((h, i) => {
+        const card = el("div", "hit" + (i === 0 ? " top1" : ""));
+        const top = el("div", "top");
+        top.appendChild(el("span", "pill " + (i === 0 ? "pass" : "info"), "#" + (i + 1)));
+        top.appendChild(el("span", "q", h.question));
+        top.appendChild(el("span", "spacer"));
+        if (h.score !== null && h.score !== undefined) {
+          top.appendChild(pill("info", "score " + Number(h.score).toFixed(4)));
+        }
+        if (h.rerank_score !== null && h.rerank_score !== undefined) {
+          top.appendChild(pill("info", "rerank " + Number(h.rerank_score).toFixed(4)));
+        }
+        card.appendChild(top);
+        card.appendChild(el("div", "a", h.answer));
+        card.appendChild(el("div", "meta",
+          [h.section_path || "—", h.content_type || "—", "id " + (h.id ?? "—")].join("　·　")));
+        list.appendChild(card);
+      });
+      box.appendChild(list);
+    }
+
+    async function doSearch() {
+      const q = $("q").value.trim() || $("q").placeholder;
+      $("hitBox").textContent = "";
+      $("hitBox").appendChild(missingBox("检索中…"));
+      try {
+        renderHits(await api("/api/kb/search", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ q, strategy: $("strategy").value, top_k: Number($("topk").value) }),
+        }));
+      } catch (e) {
+        $("hitBox").textContent = "";
+        $("hitBox").appendChild(missingBox("检索失败：" + e.message));
+        toast("检索失败：" + e.message, true);
+      }
+    }
+
+    /* ---------- 最近入库 ---------- */
+    function renderRecent(d) {
+      const tbl = $("recentTbl");
+      tbl.textContent = "";
+      th(tbl, ["id", "类型", "节", "问法", "正文（截断）", "状态"]);
+      if (!d.recent.length) {
+        const tr = el("tr");
+        const td = el("td", null, "库里还没有块。上面贴一段录进来，或者跑一次离线建库。");
+        td.colSpan = 6;
+        tr.appendChild(td);
+        tbl.appendChild(tr);
+        return;
+      }
+      for (const r of d.recent) {
+        const tr = el("tr", r.status === "pending" ? "bad" : "");
+        tr.appendChild(el("td", "num", r.id));
+        tr.appendChild(el("td", null, r.content_type || "—"));
+        tr.appendChild(el("td", null, r.section_path || "—"));
+        tr.appendChild(el("td", null, r.questions));
+        const td = el("td");
+        td.appendChild(el("div", "ans", r.answer));
+        tr.appendChild(td);
+        const st = el("td", "mark");
+        st.appendChild(pill(r.status === "done" ? "pass" : "fail",
+          r.status === "done" ? "已向量化" : "待向量化"));
+        if (r.is_key_clause) st.appendChild(pill("fail", "关键条款"));
+        tr.appendChild(st);
+        tbl.appendChild(tr);
+      }
+    }
+
+    /* ---------- 取数 ---------- */
+    function renderJobs(d) {
+      jobSpecs = Object.fromEntries(d.jobs.map((j) => [j.name, j]));
+      const pick = (names) => names.map((n) => jobSpecs[n]).filter(Boolean);
+      const put = (id, names, note) => {
+        const host = $(id);
+        host.textContent = "";
+        host.appendChild(jobRow(pick(names), load, note));
+      };
+      // 改了 data/kb/*.md 之后按「补丁式重嵌」：只把正文变了的块原地改掉（id 不变），
+      // 再按「向量化待补块」按同 id 覆盖向量。别拿清库顶替，那会连飞轮写回的块一起清掉
+      put("srcJobs", ["kb-preview", "kb-build", "kb-repatch"],
+        "kb-build 有幂等守卫：已存在同类型块就跳过；改过 md 用 kb-repatch 原地改，改完记得向量化");
+      put("stgJobs", ["seed-conv", "kb-mine"], "挖知识要调 LLM，分钟级");
+      put("dwJobs", ["kb-vectorize", "kb-reset"], "清库会清空两表并 drop 集合，之后要重新建库");
+    }
+
+    async function load() {
+      try {
+        const d = await api("/api/kb/overview");
+        state = d;
+        renderGatebar(d);
+        renderSources(d);
+        renderStaging(d);
+        renderDualwrite(d);
+        renderRecent(d);
+        renderJobs(d);
+        if (!$("ctype").options.length) {
+          for (const c of d.content_types) {
+            const o = document.createElement("option");
+            o.value = c.key;
+            o.textContent = c.key;
+            o.dataset.desc = c.desc;
+            $("ctype").appendChild(o);
+          }
+          syncCtDesc();
+        }
+      } catch (e) {
+        toast("取数失败：" + e.message, true);
+      }
+    }
+
+    function syncCtDesc() {
+      const o = $("ctype").selectedOptions[0];
+      $("ctdesc").textContent = o ? o.dataset.desc : "";
+    }
+
+    /* ---------- 绑定 ---------- */
+    mountAdminNav("/kb");
+    $("refreshBtn").addEventListener("click", load);
+    $("ctype").addEventListener("change", syncCtDesc);
+    $("sampleBtn").addEventListener("click", () => { $("text").value = SAMPLE; });
+    $("clearBtn").addEventListener("click", () => { $("text").value = ""; $("previewBox").textContent = ""; });
+    $("previewBtn").addEventListener("click", () =>
+      doPreview({ text: $("text").value, content_type: $("ctype").value }));
+    $("stgBtn").addEventListener("click", loadStaging);
+    $("searchBtn").addEventListener("click", doSearch);
+    $("q").addEventListener("keydown", (e) => { if (e.key === "Enter") doSearch(); });
+    for (const q of ["邮费是多少", "运费怎么算", "多久发货", "猫粮过期了能退吗"]) {
+      const b = el("button", "btn sm", q);
+      b.addEventListener("click", () => { $("q").value = q; doSearch(); });
+      $("presets").appendChild(b);
+    }
+
+    $("ingestBtn").addEventListener("click", async () => {
+      const text = $("text").value.trim();
+      if (!text) { toast("先贴一段正文", true); return; }
+      const n = lastPreview && lastPreview.source === "手工录入" ? lastPreview.total : null;
+      if (!confirm("确认把这段正文录入知识库？"
+        + (n ? "\n预览切出 " + n + " 块" + (lastPreview.duplicates ? "，其中 " + lastPreview.duplicates + " 块库里已有会跳过" : "") : "")
+        + ($("vecAfter").checked ? "\n入库后立刻向量化（要调嵌入上游）" : "\n只入库记 pending，稍后补向量"))) return;
+      const btn = $("ingestBtn");
+      btn.disabled = true;
+      $("ingestHint").textContent = "录入中…";
+      try {
+        const d = await api("/api/kb/ingest", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, content_type: $("ctype").value, vectorize: $("vecAfter").checked }),
+        });
+        $("ingestHint").textContent = "";
+        toast("入库 " + d.inserted + " 块"
+          + (d.skipped ? "，跳过重复 " + d.skipped + " 块" : "")
+          + (d.vectorized !== null ? "，向量化 " + d.vectorized + " 块" : "（未向量化）"));
+        await load();
+        if (d.inserted) doPreview({ text, content_type: $("ctype").value });
+      } catch (e) {
+        $("ingestHint").textContent = "";
+        toast("录入失败：" + e.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    $("vecBtn").addEventListener("click", async () => {
+      const btn = $("vecBtn");
+      btn.disabled = true;
+      $("vecHint").textContent = "向量化中…";
+      try {
+        const d = await api("/api/kb/vectorize", { method: "POST" });
+        toast("本次向量化 " + d.vectorized + " 块，剩余 pending " + d.chunk_stats.pending);
+        await load();
+      } catch (e) {
+        toast("向量化失败：" + e.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    load();
+  </script>
+</body>
+</html>

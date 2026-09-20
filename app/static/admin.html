@@ -1,0 +1,110 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 后台管理</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    .mods { margin-top: 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+    .mod {
+      background: var(--cream); border: 4px solid var(--ink); box-shadow: var(--shadow);
+      padding: 12px 14px 14px; display: flex; flex-direction: column;
+    }
+    .mod .head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .mod h3 { font-size: 15px; margin: 0; }
+    .mod .lede { color: #6d6478; font-size: 12px; line-height: 1.7; margin: 7px 0 0; }
+    .mod .headline {
+      margin: 10px 0 0; font-size: 13px; line-height: 1.7; background: var(--paper);
+      border: 2px solid var(--ink); padding: 7px 10px;
+    }
+    .mod .kpis { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .mod .kpi {
+      border: 2px solid var(--ink); background: var(--paper); padding: 4px 9px; font-size: 11.5px;
+      min-width: 76px;
+    }
+    .mod .kpi b { display: block; font-size: 17px; line-height: 1.4; }
+    .mod .note { margin-top: 8px; font-size: 11.5px; color: #6d6478; line-height: 1.7; }
+    .mod .foot { margin-top: auto; padding-top: 12px; }
+    .pill.ok { background: var(--online); }
+    .pill.attention { background: var(--fur); }
+    .pill.error { background: var(--error); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>后台管理</h1>
+      <span class="sub">知识库、检索评估、飞轮、分类器，几块后台都在这里，不用回终端</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div class="tip">
+      口径：<b>正常</b>这块是活的且没有待办；<b>要干活</b>有待办或两边数对不上；
+      <b>没数据</b>还没跑过，进去按一下就有；<b>读数失败</b>这块的依赖没起（mysql / Milvus /
+      嵌入上游 / 分类器 :8110），只影响它自己那张卡。
+    </div>
+
+    <div class="mods" id="mods"><div class="miss">加载中…</div></div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    const LABEL = { ok: "正常", attention: "要干活", missing: "没数据", error: "读数失败" };
+
+    function card(m) {
+      const box = el("div", "mod " + m.status);
+      const head = el("div", "head");
+      head.appendChild(el("h3", null, m.title));
+      head.appendChild(el("span", "spacer"));
+      head.appendChild(el("span", "pill " + m.status, LABEL[m.status] || m.status));
+      box.appendChild(head);
+      box.appendChild(el("p", "lede", m.lede));
+      box.appendChild(el("div", "headline", m.headline));
+      if (m.metrics.length) {
+        const kpis = el("div", "kpis");
+        for (const k of m.metrics) {
+          const kpi = el("div", "kpi");
+          kpi.appendChild(el("b", null, k.value === null || k.value === undefined ? "—" : k.value));
+          kpi.appendChild(document.createTextNode(k.label));
+          kpis.appendChild(kpi);
+        }
+        box.appendChild(kpis);
+      }
+      if (m.note) box.appendChild(el("div", "note", m.note));
+      const foot = el("div", "foot");
+      const a = el("a", "btn go", "进入 " + m.title + " →");
+      a.href = m.page;
+      foot.appendChild(a);
+      box.appendChild(foot);
+      return box;
+    }
+
+    async function load() {
+      const box = $("mods");
+      try {
+        const d = await api("/api/admin/overview");
+        box.textContent = "";
+        for (const m of d.modules) box.appendChild(card(m));
+      } catch (e) {
+        box.textContent = "";
+        box.appendChild(missingBox("取数失败：" + e.message));
+      }
+    }
+
+    mountAdminNav("/admin");
+    $("refreshBtn").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>

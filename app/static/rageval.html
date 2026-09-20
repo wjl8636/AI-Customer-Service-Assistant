@@ -1,0 +1,950 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · RAG 评估</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    /* 四策略配色:图例、柱子、表格行首的小方块共用这四个变量 */
+    :root { --s1: #7fc4e8; --s2: #5fcf6a; --s3: #ff8095; --s4: #ff9f57; }
+
+    .kpis { margin-top: 16px; display: grid; gap: 14px; grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+    .kpi {
+      background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
+      padding: 10px 13px 12px;
+    }
+    .kpi .k-label { font-size: 11.5px; color: var(--muted); }
+    .kpi .k-val { font-size: 26px; font-weight: 700; line-height: 1.4; font-variant-numeric: tabular-nums; }
+    .kpi .k-val small { font-size: 14px; margin-left: 2px; }
+    .kpi .k-sub { font-size: 11.5px; color: #6d6478; line-height: 1.7; }
+    .kpi .k-sub b { font-weight: 700; color: var(--ink); }
+
+    /* 指标切换:MRR / Recall@5 / 证据覆盖度 三张图共用一个画布 */
+    .seg { display: inline-flex; border: 3px solid var(--ink); background: var(--paper); }
+    .seg button {
+      font: inherit; font-size: 12px; cursor: pointer; border: 0; background: transparent;
+      color: var(--ink); padding: 4px 11px; border-right: 3px solid var(--ink);
+    }
+    .seg button:last-child { border-right: 0; }
+    .seg button[aria-pressed="true"] { background: var(--fur); font-weight: 700; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 10px 0 2px; }
+    .lg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+    .lg i { width: 12px; height: 12px; border: 2px solid var(--ink); flex: none; }
+    .lg.win { font-weight: 700; }
+
+    .chart-scroll { overflow-x: auto; }
+    svg.chart { display: block; width: 100%; height: auto; min-width: 560px; font-family: inherit; }
+    svg .axis { fill: var(--muted); font-size: 11px; }
+    svg .glabel { fill: var(--ink); font-size: 12.5px; font-weight: 700; }
+    svg .gsub { fill: var(--muted); font-size: 10px; }
+    svg .vlabel { fill: var(--ink); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+    svg .grid line { stroke: rgba(43,38,50,0.16); stroke-width: 1; }
+    svg .base { stroke: var(--ink); stroke-width: 2.5; }
+    svg .divider { stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 4 4; }
+    svg .bar { stroke: var(--ink); stroke-width: 2; }
+
+    /* 「读图」小注:每张图底下一句话说清该看什么 */
+    .read {
+      margin-top: 12px; border: 3px dashed var(--ink); background: var(--paper);
+      padding: 9px 13px; font-size: 12.5px; line-height: 1.8;
+    }
+    .read b { background: var(--fur); padding: 0 4px; border: 2px solid var(--ink); }
+    .read .k { font-weight: 700; }
+    .read::before {
+      content: "读图"; float: left; font-size: 11px; background: var(--ink); color: var(--cream);
+      padding: 1px 7px; margin: 2px 9px 2px 0;
+    }
+
+    /* 生成段:各可作答桶一条忠实度 + 拒答率圆环 */
+    .gen-sub { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; margin-top: 14px; }
+    @media (max-width: 820px) { .gen-sub { grid-template-columns: 1fr; } }
+    .faith-rows { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .fr-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; }
+    .fr-label .nm b { font-weight: 700; }
+    .fr-label .nm span { color: var(--muted); font-size: 11px; margin-left: 6px; }
+    .fr-label .pv { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .bar-track { height: 14px; border: 2px solid var(--ink); background: var(--cream); margin-top: 4px; }
+    .bar-fill { height: 100%; background: var(--online); display: block; }
+    .bar-fill.mid { background: var(--fur); }
+    .bar-fill.low { background: var(--error); }
+    .gauge {
+      border: 3px solid var(--ink); background: var(--paper); box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 14px 12px;
+    }
+    .gauge .ring { position: relative; width: 118px; height: 118px; }
+    .gauge .ring svg { transform: rotate(-90deg); }
+    .gauge .cval { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .gauge .cval .n { font-size: 25px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .gauge .cval .u { font-size: 10.5px; color: var(--muted); }
+    .gauge .glab { margin-top: 10px; font-size: 12px; color: #6d6478; line-height: 1.7; }
+    .gauge .glab b { color: var(--ink); font-weight: 700; }
+
+    .subhead { font-size: 13px; font-weight: 700; margin: 0 0 2px; }
+    .subhead .unit { color: var(--muted); font-weight: 400; font-size: 11.5px; margin-left: 7px; }
+
+    table.tbl tbody th { text-align: left; background: var(--paper); font-weight: 700; }
+    table.tbl tbody th i { width: 10px; height: 10px; border: 2px solid var(--ink); display: inline-block; margin-right: 6px; }
+    table.tbl tr.win td, table.tbl tr.win th { background: #fff0d6; }
+    table.tbl td.sep { border-left-width: 3px; }
+    td.dim { color: var(--muted); }
+
+    /* 编造个案:默认收起,展开逐条看问题 / 答案 / 裁判理由 */
+    details.faith { margin-top: 12px; border: 3px solid var(--ink); background: var(--paper); }
+    details.faith > summary {
+      cursor: pointer; list-style: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700;
+      background: var(--cream); display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+    }
+    details.faith > summary::-webkit-details-marker { display: none; }
+    details.faith > summary::before { content: "▸"; }
+    details.faith[open] > summary::before { content: "▾"; }
+    details.faith .hint { color: var(--muted); font-weight: 400; font-size: 11.5px; }
+    .fcbody { padding: 4px 12px 12px; }
+    .fcbody .lead { font-size: 12px; color: #6d6478; line-height: 1.8; margin: 10px 0 2px; }
+    .fcase { border: 2px solid var(--ink); background: var(--cream); padding: 9px 11px; margin-top: 10px; }
+    .fcase .fh { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .fcase .fid { font-size: 11px; border: 2px solid var(--ink); background: var(--fur); padding: 0 5px; }
+    .fcase .fq { font-weight: 700; font-size: 13px; }
+    .fcase .fb { font-size: 11px; color: var(--muted); }
+    .fcase .frow { font-size: 12.5px; line-height: 1.75; margin-top: 7px; }
+    .fcase .frow .k { display: block; font-size: 10.5px; color: var(--muted); }
+    .fcase .ans { white-space: pre-wrap; border: 2px solid var(--ink); background: var(--paper); padding: 8px 10px; margin-top: 3px; }
+    .faith-none { margin-top: 12px; border: 3px solid var(--ink); background: #e8fae9; padding: 10px 13px; font-size: 12.5px; }
+
+    /* 编造个案台账:卡片沿用上面 .fcase 那一套(同一种东西就该长一个样),
+       只补台账特有的:状态徽标、处置按钮、角标原文、页签与分页 */
+    .fcase .fh .grow { flex: 1; }
+    .fcase .fmeta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .st { font-size: 11px; border: 2px solid var(--ink); padding: 0 6px; background: var(--paper); white-space: nowrap; }
+    .st.open { background: #ffe0e0; }
+    .st.done { background: #e8fae9; }
+    .st.skip { background: #eee; color: var(--muted); }
+    .st.again { background: var(--fur); font-weight: 700; }
+    .acts { display: flex; gap: 7px; margin-top: 9px; }
+    .acts button {
+      cursor: pointer; border: 2px solid var(--ink); background: var(--paper);
+      padding: 3px 11px; font: inherit; font-size: 11.5px; box-shadow: 2px 2px 0 var(--ink);
+    }
+    .acts button:hover:not([disabled]) { background: var(--fur); }
+    .acts button:active:not([disabled]) { box-shadow: none; transform: translate(2px, 2px); }
+    .acts button[disabled] { opacity: .4; cursor: default; box-shadow: none; }
+
+    /* 幻觉率:两个口径并排。裁判判出率是线索量,确认幻觉率才是真账 */
+    .halluc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    @media (max-width: 720px) { .halluc { grid-template-columns: 1fr; } }
+    .halluc .hcard { border: 3px solid var(--ink); background: var(--paper); padding: 9px 12px 11px; }
+    .halluc .hcard.main { background: var(--cream); box-shadow: var(--shadow-sm); }
+    .halluc .hl { font-size: 11.5px; color: var(--muted); }
+    .halluc .hv { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.45; }
+    .halluc .hv small { font-size: 13px; margin-left: 3px; color: var(--muted); font-weight: 400; }
+    .halluc .hs { font-size: 11.5px; color: #6d6478; line-height: 1.7; }
+    .halluc .hs b { color: var(--ink); }
+
+    .noteform { display: flex; gap: 7px; margin-top: 9px; flex-wrap: wrap; align-items: center; }
+    .noteform input {
+      flex: 1; min-width: 260px; font: inherit; font-size: 12.5px; padding: 4px 8px;
+      border: 2px solid var(--ink); background: var(--paper); color: var(--ink);
+    }
+    .noteform button {
+      cursor: pointer; border: 2px solid var(--ink); background: var(--fur);
+      padding: 3px 11px; font: inherit; font-size: 11.5px; box-shadow: 2px 2px 0 var(--ink);
+    }
+    .noteform button.ghost { background: var(--paper); box-shadow: none; }
+    .noteform button:active { box-shadow: none; transform: translate(2px, 2px); }
+
+    .ledger-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 2px; }
+    .ledger-bar .tab {
+      cursor: pointer; border: 2px solid var(--ink); background: var(--paper);
+      padding: 4px 11px; font: inherit; font-size: 11.5px;
+    }
+    .ledger-bar .tab.on { background: var(--fur); font-weight: 700; }
+
+    /* 角标原文:和「生成答案(原文)」一样,框起来、留白、逐条分行 */
+    details.cit { border: 2px solid var(--ink); background: var(--paper); margin-top: 8px; }
+    details.cit > summary {
+      cursor: pointer; list-style: none; padding: 6px 10px; font-size: 11.5px;
+      background: var(--cream); color: #6d6478;
+    }
+    details.cit > summary::-webkit-details-marker { display: none; }
+    details.cit > summary::before { content: "▸ "; }
+    details.cit[open] > summary::before { content: "▾ "; }
+    details.cit .c1 { border-top: 2px solid var(--ink); padding: 8px 11px; font-size: 12.5px; line-height: 1.75; }
+    details.cit .c1.used { background: #fffaf0; }
+    details.cit .c1 .cn { font-weight: 700; border: 2px solid var(--ink); padding: 0 4px; background: var(--paper); color: var(--muted); }
+    details.cit .c1 .cn.on { background: var(--fur); color: var(--ink); }
+    details.cit .c1 .utag { font-size: 10.5px; border: 2px solid var(--ink); background: var(--fur); padding: 0 5px; margin-left: 7px; }
+    details.cit .c1 .ctext { margin-top: 4px; white-space: pre-wrap; }
+    details.cit .c1 .cp { font-size: 10.5px; color: var(--muted); margin-top: 3px; }
+
+    .pager { display: flex; align-items: center; gap: 10px; margin-top: 13px; font-size: 11.5px; color: #6d6478; }
+    .pager button {
+      cursor: pointer; border: 2px solid var(--ink); background: var(--paper);
+      padding: 3px 11px; font: inherit; box-shadow: 2px 2px 0 var(--ink);
+    }
+    .pager button:hover:not([disabled]) { background: var(--fur); }
+    .pager button[disabled] { opacity: .4; cursor: default; box-shadow: none; }
+
+    .notes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (max-width: 820px) { .notes { grid-template-columns: 1fr; } }
+    .note { border: 3px solid var(--ink); background: var(--paper); padding: 10px 13px; }
+    .note h3 { margin: 0 0 5px; font-size: 12.5px; }
+    .note p { margin: 0; font-size: 12px; color: #6d6478; line-height: 1.8; }
+    .note code { background: var(--cream); border: 2px solid var(--ink); padding: 0 4px; font-size: 11.5px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>RAG 评估</h1>
+      <span class="sub">四策略对照 · 检索排序 / 证据覆盖 / 端到端答案,一次跑齐</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div id="body"><div class="miss">加载中…</div></div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    /* 页面只画 /api/rag-eval/overview 端出来的那份产物:一个数都不在前端重算。
+       重跑按钮走共用的 /api/jobs 运行器(作业名 eval-rag),跑完回调重新取数。 */
+    const STRAT = [
+      { key: "vector", label: "纯向量", v: "var(--s1)" },
+      { key: "bm25", label: "纯 BM25", v: "var(--s2)" },
+      { key: "hybrid", label: "混合", v: "var(--s3)" },
+      { key: "hybrid_rerank", label: "混合 + 重排", v: "var(--s4)" },
+    ];
+    const BUCKETS = [
+      { key: "A_policy", label: "政策类", sub: "A_policy" },
+      { key: "B_model", label: "型号类", sub: "B_model" },
+      { key: "C_colloquial", label: "口语类", sub: "C_colloquial" },
+      { key: "E_multi", label: "跨文档类", sub: "E_multi" },
+      { key: "overall", label: "总体", sub: "overall", agg: true },
+    ];
+    const METRICS = ["MRR", "Recall@5", "证据覆盖度"];
+    const NS = "http://www.w3.org/2000/svg";
+    const fmt = (v) => (v === null || v === undefined ? "—" : v.toFixed(2));
+
+    function svgEl(tag, attrs, txt) {
+      const e = document.createElementNS(NS, tag);
+      for (const k in attrs) e.setAttribute(k, attrs[k]);
+      if (txt !== undefined && txt !== null) e.textContent = txt;
+      return e;
+    }
+
+    function valFn(d, metric) {
+      if (metric === "MRR") return (s, b) => ((d.retrieval[s] || {})[b] || {}).mrr ?? 0;
+      if (metric === "Recall@5") return (s, b) => ((d.retrieval[s] || {})[b] || {}).recall ?? 0;
+      if (metric === "证据覆盖度") return (s, b) => (d.evidence_coverage[s] || {})[b] ?? 0;
+      if (metric === "答案覆盖度") {
+        // null = 这一桶一条都没评上(上游抖动),按 0 画会被读成真的零分
+        return (s, b) => (((d.generation || {}).answer_coverage || {})[s] || {})[b];
+      }
+      return () => 0;
+    }
+
+    /** 分组柱状图:四桶 × 四策略。总体那一组前面画条虚线,和分桶隔开。 */
+    function drawChart(svg, getVal, metric) {
+      const W = 720, H = 348, M = { l: 40, r: 14, t: 20, b: 58 };
+      const plotW = W - M.l - M.r, plotH = H - M.t - M.b, y0 = M.t + plotH;
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      const grid = svgEl("g", { class: "grid" });
+      for (const t of [0, 0.25, 0.5, 0.75, 1.0]) {
+        const ty = y0 - t * plotH;
+        grid.appendChild(svgEl("line", { x1: M.l, y1: ty, x2: M.l + plotW, y2: ty }));
+        svg.appendChild(svgEl("text", { x: M.l - 8, y: ty + 3.5, "text-anchor": "end", class: "axis" }, t.toFixed(2)));
+      }
+      svg.insertBefore(grid, svg.firstChild);
+      svg.appendChild(svgEl("line", { x1: M.l, y1: y0, x2: M.l + plotW, y2: y0, class: "base" }));
+      const gap = 26, groupW = (plotW - gap * (BUCKETS.length - 1)) / BUCKETS.length;
+      const pad = 9, barGap = 4;
+      const barW = (groupW - pad * 2 - barGap * (STRAT.length - 1)) / STRAT.length;
+      BUCKETS.forEach((b, i) => {
+        const gx = M.l + i * (groupW + gap);
+        if (b.agg) svg.appendChild(svgEl("line", { x1: gx - gap / 2, y1: M.t - 2, x2: gx - gap / 2, y2: y0, class: "divider" }));
+        STRAT.forEach((s, j) => {
+          const raw = getVal(s.key, b.key);
+          const val = (raw === null || raw === undefined) ? 0 : raw;
+          const bx = gx + pad + j * (barW + barGap);
+          const bh = Math.max(val * plotH, 2), by = y0 - bh;
+          svg.appendChild(svgEl("rect", {
+            x: bx.toFixed(1), y: by.toFixed(1), width: barW.toFixed(1), height: bh.toFixed(1),
+            fill: s.v, class: "bar", "shape-rendering": "crispEdges",
+            opacity: (raw === null || raw === undefined) ? 0.25 : 1,
+          }));
+          svg.appendChild(svgEl("text", {
+            x: (bx + barW / 2).toFixed(1), y: (by - 5).toFixed(1), "text-anchor": "middle", class: "vlabel",
+          }, (raw === null || raw === undefined) ? "—" : fmt(raw)));
+        });
+        const cx = gx + groupW / 2;
+        svg.appendChild(svgEl("text", { x: cx.toFixed(1), y: y0 + 22, "text-anchor": "middle", class: "glabel" }, b.label));
+        svg.appendChild(svgEl("text", { x: cx.toFixed(1), y: y0 + 37, "text-anchor": "middle", class: "gsub" }, b.sub));
+      });
+    }
+
+    function legend(bestKey) {
+      const box = el("div", "legend");
+      for (const s of STRAT) {
+        const sp = el("span", "lg" + (s.key === bestKey ? " win" : ""));
+        const i = el("i");
+        i.style.background = s.v;
+        sp.appendChild(i);
+        sp.appendChild(document.createTextNode(s.label + (s.key === bestKey ? "(最佳)" : "")));
+        box.appendChild(sp);
+      }
+      return box;
+    }
+
+    function kpiBox(d) {
+      const mrr = valFn(d, "MRR"), G = d.generation;
+      const cB = mrr("bm25", "C_colloquial"), cR = mrr("hybrid_rerank", "C_colloquial");
+      const best = d.best, bestLabel = (STRAT.find((s) => s.key === best.strategy) || {}).label || "—";
+      const items = [
+        { label: "最佳整体 MRR", val: fmt(best.mrr), sub: bestLabel + " · 四策略最高" },
+        { label: "口语桶 MRR 提升", val: (cR - cB >= 0 ? "+" : "") + (cR - cB).toFixed(2),
+          sub: "纯 BM25 " + fmt(cB) + " → 混合 + 重排 " + fmt(cR) },
+        G ? { label: "答案覆盖度(重排)", val: fmt(valFn(d, "答案覆盖度")("hybrid_rerank", "overall")),
+              sub: "纯 BM25 只有 " + fmt(valFn(d, "答案覆盖度")("bm25", "overall")) }
+          : { label: "端到端答案覆盖度", val: "—", sub: "本次生成段未完成" },
+        G && G.refusal.rate !== null && G.refusal.rate !== undefined
+          ? { label: "库外问题拒答", val: String(Math.round(G.refusal.rate * 100)), unit: "%",
+              sub: G.refusal.correct + " / " + G.refusal.total + " 正确拒答并落池" }
+        : G ? { label: "库外问题拒答", val: "—", sub: "本轮一条都没评上(上游不稳)" }
+          : { label: "库外问题拒答", val: "—", sub: "本次生成段未完成" },
+      ];
+      const box = el("div", "kpis");
+      for (const k of items) {
+        const c = el("div", "kpi");
+        c.appendChild(el("div", "k-label", k.label));
+        const v = el("div", "k-val", k.val);
+        if (k.unit) v.appendChild(el("small", null, k.unit));
+        c.appendChild(v);
+        c.appendChild(el("div", "k-sub", k.sub));
+        box.appendChild(c);
+      }
+      return box;
+    }
+
+    function metaBar(d) {
+      const m = d.meta, bar = el("div", "gatebar");
+      const stats = [
+        ["评估集", (m.n_samples ?? "—") + " 题"],
+        ["知识库", (m.kb_chunks ?? "—") + " 块"],
+        ["嵌入 / 重排", "bge-m3 · reranker-v2-m3"],
+        ["裁判模型", m.chat_model || "—"],
+        ["上次跑于", m.generated_at || "—"],
+      ];
+      for (const [k, v] of stats) {
+        const s = el("div", "stat");
+        s.appendChild(el("span", null, k));
+        s.appendChild(el("b", null, v));
+        bar.appendChild(s);
+      }
+      return bar;
+    }
+
+    /** 01 检索质量:三个确定性指标切着看,同一张图。 */
+    function retrievalPanel(d) {
+      const p = el("div", "panel");
+      const h = el("h2", null, "检索质量(确定性)");
+      h.appendChild(el("span", "pill info", "不依赖大模型 · 可复现"));
+      p.appendChild(h);
+      p.appendChild(el("p", "lede",
+        "MRR 看排得够不够靠前,Recall@5 看这题要的证据在前五条里凑齐了几成。证据覆盖度是另一件事,"
+        + "召回的那十条证据里,标准答案的要点有几个在。三项都是机械算出来的,重跑分数不飘。"
+        + "图上是 A/B/C/E 四个可作答桶,库外该拒答的 D_absent 桶没有标准答案,它的成绩在生成段。"));
+
+      const top = el("div");
+      top.style.cssText = "display:flex;align-items:center;gap:12px;flex-wrap:wrap";
+      const title = el("div", "subhead", "MRR");
+      title.appendChild(el("span", "unit", "越高越好 · 0–1"));
+      top.appendChild(title);
+      top.appendChild(el("span", "spacer"));
+      const seg = el("div", "seg");
+      top.appendChild(seg);
+      p.appendChild(top);
+      p.appendChild(legend(d.best.strategy));
+
+      const scroll = el("div", "chart-scroll");
+      const svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("class", "chart");
+      svg.setAttribute("viewBox", "0 0 720 348");
+      scroll.appendChild(svg);
+      p.appendChild(scroll);
+      const read = el("div", "read");
+      p.appendChild(read);
+
+      const mrr = valFn(d, "MRR");
+      const bestLabel = (STRAT.find((s) => s.key === d.best.strategy) || {}).label || "—";
+      const READ = {
+        "MRR": () => "型号桶里纯向量只有 <b>" + fmt(mrr("vector", "B_model"))
+          + "</b>,易混型号族认错了型号。口语桶里纯 BM25 只有 <b>" + fmt(mrr("bm25", "C_colloquial"))
+          + "</b>,关键词对不齐。两块短板都补上之后,总体 " + bestLabel + " <b>" + fmt(d.best.mrr) + "</b> 居首。",
+        "Recall@5": () => "召回率看的是「这题要的证据在前五条里凑齐了几成」。跨文档桶一问要两三块"
+          + "不同小节的知识,纯 BM25 只有 <b>" + fmt(valFn(d, "Recall@5")("bm25", "E_multi"))
+          + "</b>,混合 + 重排到 <b>" + fmt(valFn(d, "Recall@5")("hybrid_rerank", "E_multi")) + "</b>。",
+        "证据覆盖度": () => "召回的十条证据里,标准要点有几个在。纯 BM25 在口语桶仅 <b>"
+          + fmt(valFn(d, "证据覆盖度")("bm25", "C_colloquial")) + "</b>,答题要用的事实漏了一部分。"
+          + "混合 + 重排四个桶全是满覆盖。",
+      };
+      // 三张图各对一种小注:产物里有模型写的就用,没有才用上面 READ 里那句
+      const NOTE_KIND = { "MRR": "rag_mrr", "Recall@5": "rag_recall", "证据覆盖度": "rag_coverage" };
+      const buttons = [];
+      function setMetric(m) {
+        drawChart(svg, valFn(d, m), m);
+        read.innerHTML = readNoteHtml((d.read_notes || {})[NOTE_KIND[m]], READ[m]());
+        title.textContent = m;
+        title.appendChild(el("span", "unit", "越高越好 · 0–1"));
+        buttons.forEach((b) => b.setAttribute("aria-pressed", b.dataset.m === m));
+      }
+      for (const m of METRICS) {
+        const b = el("button", null, m);
+        b.type = "button";
+        b.dataset.m = m;
+        b.addEventListener("click", () => setMetric(m));
+        buttons.push(b);
+        seg.appendChild(b);
+      }
+      setMetric("MRR");
+      return p;
+    }
+
+    /** 02 生成质量:答案覆盖度 + 忠实度 + 库外拒答。生成段缺就只说缺,不猜。 */
+    function generationPanel(d) {
+      const p = el("div", "panel");
+      const h = el("h2", null, "生成质量(端到端)");
+      h.appendChild(el("span", "pill " + (d.generation_done ? "info" : "missing"),
+        d.generation_done ? "LLM 裁判判分" : "本次未完成"));
+      p.appendChild(h);
+      p.appendChild(el("p", "lede",
+        "四策略各自把召回的证据交给同一个模型,答案生成出来,再由裁判数一数覆盖了几个标准要点。"
+        + "检索越好、答案越全,这一段就是它的端到端证据。下面还有上线管线的忠实度,"
+        + "以及库外问题该拒有没有拒。"));
+      if (!d.generation_done) {
+        p.appendChild(missingBox("生成段没跑完,裁判模型上游不可用,这一段的数缺着。"
+          + "上游恢复后按一次「重跑 RAG 评估」就补齐,检索段的分不受影响。"));
+        return p;
+      }
+      const G = d.generation;
+      const t = el("div", "subhead", "四策略答案覆盖度");
+      t.appendChild(el("span", "unit", "生成答案盖住标准要点的比例 · LLM 判分"));
+      p.appendChild(t);
+      const scroll = el("div", "chart-scroll");
+      const svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("class", "chart");
+      svg.setAttribute("viewBox", "0 0 720 348");
+      scroll.appendChild(svg);
+      p.appendChild(scroll);
+      drawChart(svg, valFn(d, "答案覆盖度"), "答案覆盖度");
+      const acR = valFn(d, "答案覆盖度")("hybrid_rerank", "overall");
+      const acB = valFn(d, "答案覆盖度")("bm25", "overall");
+      const read = el("div", "read");
+      read.innerHTML = readNoteHtml((d.read_notes || {})["rag_answer_coverage"],
+        "同一套生成提示词,只换检索策略:混合 + 重排的答案覆盖度总体 <b>" + fmt(acR)
+        + "</b>,纯 BM25 只有 <b>" + fmt(acB) + "</b>。检索差,证据就缺,答案跟着漏要点。");
+      p.appendChild(read);
+
+      const sub = el("div", "gen-sub");
+      const left = el("div");
+      const lt = el("div", "subhead", "忠实度 Faithfulness");
+      lt.appendChild(el("span", "unit", "混合 + 重排 · 答案有没有编造"));
+      left.appendChild(lt);
+      const rows = el("div", "faith-rows");
+      // 桶跟着上面的 BUCKETS 走,别在这儿再抄一份:抄一份就会出现「评估集加了跨文档桶,
+      // 报告里也有 E_multi 的分数,这一栏却只画三条」——漏的那桶恰恰是最难的那桶
+      for (const b of BUCKETS.filter((x) => !x.agg)) {
+        const f = (G.faithfulness || {})[b.key] || {};
+        const has = f.v !== null && f.v !== undefined;      // 没评上 ≠ 0 分
+        const v = has ? f.v : 0;
+        const row = el("div");
+        const lab = el("div", "fr-label");
+        const nm = el("span", "nm");
+        nm.appendChild(el("b", null, b.label));
+        nm.appendChild(el("span", null, b.key + " · 评 " + (f.answered || 0) + " 题"));
+        lab.appendChild(nm);
+        lab.appendChild(el("span", "pv", has ? v.toFixed(2) : "—"));
+        row.appendChild(lab);
+        const track = el("div", "bar-track");
+        const fill = el("span", "bar-fill" + (v >= 0.9 ? "" : (v >= 0.7 ? " mid" : " low")));
+        fill.style.width = Math.max(2, Math.round(v * 100)) + "%";
+        if (!has) fill.style.opacity = "0.25";
+        track.appendChild(fill);
+        row.appendChild(track);
+        rows.appendChild(row);
+      }
+      left.appendChild(rows);
+      sub.appendChild(left);
+
+      const R = 52, C = 2 * Math.PI * R;
+      const gauge = el("div", "gauge");
+      gauge.innerHTML = '<div class="ring"><svg width="118" height="118" viewBox="0 0 118 118">'
+        + '<circle cx="59" cy="59" r="' + R + '" fill="none" stroke="#fff6e6" stroke-width="13"></circle>'
+        + '<circle cx="59" cy="59" r="' + R + '" fill="none" stroke="var(--online)" stroke-width="13"'
+        + ' stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="'
+        + (C * (1 - G.refusal.rate)).toFixed(1) + '"></circle></svg>'
+        + '<div class="cval"><span class="n">' + Math.round(G.refusal.rate * 100)
+        + '<small>%</small></span><span class="u">拒答率</span></div></div>'
+        + '<div class="glab"><b>D_absent 桶</b> · 库外问题<br>' + G.refusal.correct + " / "
+        + G.refusal.total + " 正确拒答并落池</div>";
+      sub.appendChild(gauge);
+      p.appendChild(sub);
+      p.appendChild(refusalCases(G.refusal));
+      if (G.skipped) {
+        const ids = (G.refusal.skipped_ids || []);
+        p.appendChild(el("div", "note",
+          "注:本轮有 " + G.skipped + " 次裁判调用超时或失败被跳过(上游不稳),已按可用样本计。"
+          + (ids.length ? "库外桶里没评上的是 " + ids.join("、") + "。" : "")));
+      }
+      return p;
+    }
+
+    /** 该拒没拒的个案:只报 56/57 看不出漏在哪一条,把问题和骗过闸的证据摆出来。 */
+    function refusalCases(R) {
+      const cases = (R && R.cases) || [];
+      if (!cases.length) {
+        const ok = el("div", "faith-none");
+        ok.innerHTML = "✓ 库外桶评上的 <b>" + (R ? R.total : 0)
+          + " 道题全部正确拒答</b>,没有「该拒没拒」的个案。";
+        return ok;
+      }
+      const box = el("details", "faith");
+      const sum = el("summary");
+      sum.appendChild(document.createTextNode("该拒没拒的个案"));
+      sum.appendChild(el("span", "pill sev-中", cases.length + " 例"));
+      sum.appendChild(el("span", "hint", "点开看是哪一条 / 被什么证据骗过了闸"));
+      box.appendChild(sum);
+      const body = el("div", "fcbody");
+      body.appendChild(el("div", "lead",
+        "这些是库外该拒答、但两道证据闸都放行了的问题。要看的是它把哪一节当成了答案,"
+        + "据此收紧阈值或者补一条明确的「不支持」知识。"));
+      for (const c of cases) {
+        const card = el("div", "fcase");
+        const fh = el("div", "fh");
+        fh.appendChild(el("span", "fid", c.id));
+        fh.appendChild(el("span", "fq", c.query));
+        fh.appendChild(el("span", "fb", "库外桶"));
+        card.appendChild(fh);
+        const r1 = el("div", "frow");
+        r1.appendChild(el("span", "k", "被当成答案的小节"));
+        r1.appendChild(document.createTextNode(c.section_path || "—"));
+        card.appendChild(r1);
+        const r2 = el("div", "frow");
+        r2.appendChild(el("span", "k", "那条证据(原文)"));
+        r2.appendChild(el("div", "ans", c.evidence || ""));
+        card.appendChild(r2);
+        body.appendChild(card);
+      }
+      box.appendChild(body);
+      return box;
+    }
+
+    /** 03 完整数据:分桶 MRR + 两项覆盖度汇总一张表,外加编造个案。 */
+    function tablePanel(d) {
+      const p = el("div", "panel");
+      p.appendChild(el("h2", null, "完整数据"));
+      p.appendChild(el("p", "lede",
+        "左半是分桶 MRR,右半是总体的证据覆盖度与答案覆盖度。带底色那一行就是总体 MRR 最佳的策略。"));
+      const box = el("div", "scroll-x");
+      const t = el("table", "tbl");
+      const thead = el("thead");
+      const hr = el("tr");
+      for (const h of ["策略", "政策 MRR", "型号 MRR", "口语 MRR", "跨文档 MRR", "总体 MRR", "证据覆盖", "答案覆盖"]) {
+        hr.appendChild(el("th", null, h));
+      }
+      thead.appendChild(hr);
+      t.appendChild(thead);
+      const tb = el("tbody");
+      const mrr = valFn(d, "MRR");
+      for (const s of STRAT) {
+        const tr = el("tr", s.key === d.best.strategy ? "win" : null);
+        const th = el("th");
+        const i = el("i");
+        i.style.background = s.v;
+        th.appendChild(i);
+        th.appendChild(document.createTextNode(s.label));
+        tr.appendChild(th);
+        for (const b of ["A_policy", "B_model", "C_colloquial", "E_multi", "overall"]) {
+          tr.appendChild(el("td", "num", mrr(s.key, b).toFixed(2)));
+        }
+        tr.appendChild(el("td", "num sep", valFn(d, "证据覆盖度")(s.key, "overall").toFixed(2)));
+        tr.appendChild(el("td", "num" + (d.generation_done ? "" : " dim"),
+          d.generation_done ? valFn(d, "答案覆盖度")(s.key, "overall").toFixed(2) : "—"));
+        tb.appendChild(tr);
+      }
+      t.appendChild(tb);
+      box.appendChild(t);
+      p.appendChild(box);
+
+      const G = d.generation;
+      const tip = el("div", "tip");
+      tip.innerHTML = G
+        ? "<b>D_absent</b> 库外问题(该拒答)没有标准答案,不参与上表。它走上线管线,只评「该拒有没有拒」:"
+          + G.refusal.correct + " / " + G.refusal.total + " = "
+          + Math.round(G.refusal.rate * 100) + "% 正确拒答。"
+        : "<b>D_absent</b> 库外问题(该拒答)的拒答率要等生成段跑完才有。";
+      p.appendChild(tip);
+
+      if (G) p.appendChild(faithCases(G.faithfulness_cases || []));
+      return p;
+    }
+
+    function faithCases(cases) {
+      if (!cases.length) {
+        const ok = el("div", "faith-none");
+        ok.innerHTML = "✓ 本轮上线管线的生成答案<b>没有被判「编造」的个案</b>,"
+          + "每句事实性说法都能在检索证据里找到依据。";
+        return ok;
+      }
+      // 桶名跟着上面 BUCKETS 走,别再手抄一份:漏了 E_multi 的时候个案上会露出
+      // 「E_multi桶」这种字段名,而同一页别处写的是「跨文档类」
+      const BMAP = Object.fromEntries(
+        BUCKETS.map((b) => [b.key, b.label.replace("类", "")]));
+      const box = el("details", "faith");
+      const sum = el("summary");
+      sum.appendChild(document.createTextNode("编造个案"));
+      sum.appendChild(el("span", "pill sev-中", cases.length + " 例"));
+      sum.appendChild(el("span", "hint", "点开看问题 / 生成答案 / 裁判理由"));
+      box.appendChild(sum);
+      const body = el("div", "fcbody");
+      body.appendChild(el("div", "lead",
+        "下面这些是上线管线的生成答案里,被忠实度裁判判为「有检索证据没支撑的内容」的个案。"
+        + "要看的是编在哪一句,据此回补知识库或者改判据。"));
+      for (const c of cases) {
+        const card = el("div", "fcase");
+        const fh = el("div", "fh");
+        fh.appendChild(el("span", "fid", c.id));
+        fh.appendChild(el("span", "fq", c.query));
+        fh.appendChild(el("span", "fb", (BMAP[c.bucket] || c.bucket) + "桶"));
+        card.appendChild(fh);
+        const r1 = el("div", "frow");
+        r1.appendChild(el("span", "k", "裁判理由"));
+        r1.appendChild(document.createTextNode(c.reason || "—"));
+        card.appendChild(r1);
+        const r2 = el("div", "frow");
+        r2.appendChild(el("span", "k", "生成答案(原文)"));
+        r2.appendChild(el("div", "ans", c.answer || ""));
+        card.appendChild(r2);
+        body.appendChild(card);
+      }
+      box.appendChild(body);
+      return box;
+    }
+
+    /** 04 怎么读这份报告:四条口径,免得把分数读反。 */
+    function notesPanel() {
+      const p = el("div", "panel");
+      p.appendChild(el("h2", null, "怎么读这份报告"));
+      const box = el("div", "notes");
+      const NOTES = [
+        ["三类查询,三种偏科", "型号桶特意放了易混型号族(几款饮水机、猫砂盆),纯向量会认错型号;口语桶换了说法,纯 BM25 关键词对不齐。混合 + 重排同时补上这两块短板。"],
+        ["融合 ≠ 重排", "纯 RRF 融合在口语桶反被弱侧的 BM25 拖累。重排把正确答案顶回前面,总体 MRR 才登顶,这就是「要重排」的直接证据。"],
+        ["确定性 vs LLM 裁判", "检索段与证据覆盖度不依赖大模型,重跑可复现。答案覆盖度与忠实度由裁判判定,有轻微浮动。生成段带超时与失败跳过,单点故障不拖垮整轮。"],
+        ["两道生成前证据闸", "机械低分闸与语义自评闸都在生成之前把关。证据不足就拒答,问题落进 low_confidence_questions,库外的题应当全部拒答。"],
+      ];
+      for (const [t, body] of NOTES) {
+        const n = el("div", "note");
+        n.appendChild(el("h3", null, t));
+        n.appendChild(el("p", null, body));
+        box.appendChild(n);
+      }
+      p.appendChild(box);
+      return p;
+    }
+
+    function jobPanel(d) {
+      const p = el("div", "panel tight");
+      const h = el("h2", null, "就地重跑");
+      h.appendChild(el("span", "pill missing", "分钟级"));
+      p.appendChild(h);
+      p.appendChild(el("p", "lede",
+        "这个按钮按下去,跑的就是终端那条 make eval-rag,四策略各一轮检索,证据再交给裁判判分。"
+        + "跑完这一页的数就换成新报告,页面读的是产物,自己不算。"));
+      p.appendChild(jobRow(d.job.specs, load,
+        "产物 " + d.job.artifacts.json.path
+        + (d.job.artifacts.json.mtime ? "(写于 " + fmtTime(d.job.artifacts.json.mtime) + ")" : "(还没有)")));
+      return p;
+    }
+
+    /** 03.5 编造个案台账:跨轮累计,分页 + 处置状态 + 角标原文。数据来自 faith_cases 表,
+        不是这一轮报告——报告重跑就被覆盖,台账要跨轮追溯同一道题有没有真改对。 */
+    const LEDGER = {status: "未解决", page: 1, size: 5};
+    const ST_CLS = {"未解决": "open", "已解决": "done", "无需解决": "skip"};
+
+    function ledgerPanel() {
+      const p = el("div", "panel");
+      p.id = "ledgerPanel";
+      const h = el("h2", null, "编造个案台账");
+      h.appendChild(el("span", "pill info", "跨轮累计 · 可处置"));
+      p.appendChild(h);
+      p.appendChild(el("p", "lede",
+        "上面那一栏只有这一轮的个案,报告重跑一次就被覆盖。台账把历轮判出的个案按题号存下来:"
+        + "同一道题再被判编造只更新这一条并累加次数,已处置过又冒出来会退回「未解决」并标「复发」——"
+        + "那说明上次没改对。每条都带当时答案里角标 [n] 对应的证据原文,追溯时点开就能看到喂进去的是什么。"));
+      const body = el("div");
+      body.id = "ledgerBody";
+      p.appendChild(body);
+      return p;      // 列表在挂进 DOM 之后再填(renderLedger 按 id 找容器)
+    }
+
+    async function renderLedger() {
+      const body = $("ledgerBody");
+      if (!body) return;
+      let d;
+      try {
+        const qs = new URLSearchParams({page: LEDGER.page, size: LEDGER.size});
+        if (LEDGER.status) qs.set("status", LEDGER.status);
+        d = await api("/api/rag-eval/faith-cases?" + qs.toString());
+      } catch (e) {
+        body.textContent = "";
+        body.appendChild(el("div", "faith-none", "台账取数失败:" + e.message
+          + "(这张表要先应用 sql/ch04-faith-ddl.sql)"));
+        return;
+      }
+      body.textContent = "";
+
+      body.appendChild(hallucBox(d.hallucination));
+
+      const bar = el("div", "ledger-bar");
+      const mk = (label, st, n) => {
+        const b = el("button", "tab" + (LEDGER.status === st ? " on" : ""),
+                     label + "（" + n + "）");
+        b.addEventListener("click", () => { LEDGER.status = st; LEDGER.page = 1; renderLedger(); });
+        return b;
+      };
+      const all = d.counts["未解决"] + d.counts["已解决"] + d.counts["无需解决"];
+      bar.appendChild(mk("未解决", "未解决", d.counts["未解决"]));
+      bar.appendChild(mk("已解决", "已解决", d.counts["已解决"]));
+      bar.appendChild(mk("无需解决", "无需解决", d.counts["无需解决"]));
+      bar.appendChild(mk("全部", "", all));
+      body.appendChild(bar);
+      const list = el("div", "fcbody");
+      list.style.padding = "0";
+
+      if (!d.items.length) {
+        body.appendChild(el("div", "faith-none",
+          all ? "这个状态下暂时没有个案。" :
+          "台账还是空的——跑一轮 make eval-rag,判出的编造个案会自动写进来。"));
+        return;
+      }
+      for (const c of d.items) list.appendChild(ledgerCase(c));
+      body.appendChild(list);
+
+      const pg = el("div", "pager");
+      const prev = el("button", null, "← 上一页");
+      const next = el("button", null, "下一页 →");
+      prev.disabled = d.page <= 1;
+      next.disabled = d.page >= d.pages;
+      prev.addEventListener("click", () => { LEDGER.page--; renderLedger(); });
+      next.addEventListener("click", () => { LEDGER.page++; renderLedger(); });
+      pg.appendChild(prev);
+      pg.appendChild(el("span", null, "第 " + d.page + " / " + d.pages + " 页 · 共 " + d.total + " 条"));
+      pg.appendChild(next);
+      body.appendChild(pg);
+    }
+
+    /** 幻觉率两个口径:裁判判出率(线索量,含判严的)与确认幻觉率(人工过目并改掉的才算)。 */
+    function hallucBox(h) {
+      const wrap = el("div", "halluc");
+      const pct = (v) => (v === null || v === undefined ? "—" : (v * 100).toFixed(1));
+      const mk = (cls, label, val, unit, sub) => {
+        const c = el("div", "hcard" + (cls ? " " + cls : ""));
+        c.appendChild(el("div", "hl", label));
+        const v = el("div", "hv", val);
+        if (unit) v.appendChild(el("small", null, unit));
+        c.appendChild(v);
+        const s2 = el("div", "hs");
+        s2.innerHTML = sub;
+        c.appendChild(s2);
+        return c;
+      };
+      // 两类幻觉都算:可作答题「答了但编了」+ 库外题「该拒没拒」(无据而答)
+      const split = (cases) =>
+        "编造 <b>" + cases + "</b> 条 + 该拒没拒 <b>" + h.refusal_missed + "</b> 条";
+      // 两个口径都只算「本轮」:分子取这一轮报告判出的那几题,分母取这一轮评上的题数。
+      // 台账是跨轮累计的,单独一行报——拿台账总条数除以一轮题量,改掉几条之后就会虚高
+      const lg = h.ledger || {};
+      wrap.appendChild(mk("main", "本轮确认幻觉率(人工过目后算的真账)", pct(h.confirmed_rate), "%",
+        "<b>" + h.confirmed + "</b> / " + (h.evaluated ?? "—") + " 道评上的题("
+        + split(h.cases_confirmed) + ")。编造那部分只算点成「已解决」的——确认真编了并且改掉了;"
+        // 全部过目完就不是下界了,别再挂着「会往上走」误导人
+        + (h.pending
+            ? "本轮还有 <b>" + h.pending + "</b> 条没过目,所以这是下界、会往上走。"
+            : "本轮判出的都过目了,这一轮的账已经结清。")
+        + "该拒没拒不用人工确认,库外题答了就是无据而答。"));
+      wrap.appendChild(mk("", "本轮裁判判出率(线索量,别当结论)", pct(h.judged_rate), "%",
+        "<b>" + h.judged + "</b> / " + (h.evaluated ?? "—") + " 道(" + split(h.cases_judged) + ")。"
+        + "编造那部分里有 <b>" + h.dismissed + "</b> 条人工看过是判严了(标成「无需解决」)。"
+        + "分母 = 可作答 " + (h.graded ?? "—") + " 道 + 库外 " + (h.absent ?? "—") + " 道。"
+        + "台账累计 <b>" + (lg.total ?? "—") + "</b> 条(未解决 " + (lg["未解决"] ?? "—")
+        + " · 已解决 " + (lg["已解决"] ?? "—") + " · 无需解决 " + (lg["无需解决"] ?? "—")
+        + "),那是跨轮的管理视图,不要拿它除以一轮的题量。"));
+      return wrap;
+    }
+
+    function ledgerCase(c) {
+      // 结构与上面「编造个案」那一栏完全一致(.fcase / .frow / .ans),
+      // 一样的东西长一个样;台账多出来的只有状态徽标、角标原文和两个处置按钮
+      const box = el("div", "fcase");
+      const hd = el("div", "fh");
+      hd.appendChild(el("span", "fid", c.eval_id));
+      const grow = el("span", "grow");
+      grow.appendChild(el("span", "fq", c.query));
+      hd.appendChild(grow);
+      if (c.reopened) hd.appendChild(el("span", "st again", "复发"));
+      hd.appendChild(el("span", "st " + (ST_CLS[c.status] || "open"), c.status));
+      box.appendChild(hd);
+
+      box.appendChild(el("div", "fmeta",
+        (BUCKETS.find((x) => x.key === c.bucket)?.label || c.bucket)
+        + " · " + (STRAT.find((x) => x.key === c.strategy)?.label || c.strategy)
+        + " · 被判 " + c.seen_count + " 次 · 最近 " + fmtTime(c.last_seen_at)
+        + (c.judge_model ? " · 裁判 " + c.judge_model : "")));
+
+      const r1 = el("div", "frow");
+      r1.appendChild(el("span", "k", "裁判理由"));
+      r1.appendChild(document.createTextNode(c.reason || "—"));
+      box.appendChild(r1);
+      // 处置说明:标了已解决/无需解决就得有交代,显示在裁判理由下面(最该被回头看的两行放一起)
+      if (c.resolution) {
+        const rr = el("div", "frow");
+        rr.appendChild(el("span", "k", c.status === "已解决" ? "怎么解决的" : "为什么不用改"));
+        rr.appendChild(document.createTextNode(c.resolution));
+        box.appendChild(rr);
+      }
+      const r2 = el("div", "frow");
+      r2.appendChild(el("span", "k", "生成答案(原文)"));
+      r2.appendChild(el("div", "ans", c.answer || ""));
+      box.appendChild(r2);
+
+      // 这份列表是**喂给模型的 Top-K 证据全集**,不是「答案引用过的」——答案通常只引其中两三条。
+      // 两者要分开说:看编造,既要看它引了什么,也要看它手里其实有什么却没用
+      const n = (c.citations || []).length;
+      const used = [...new Set((c.answer || "").match(/\[(\d+)\]/g) || [])]
+        .map((x) => parseInt(x.slice(1, -1), 10))
+        .filter((x) => x >= 1 && x <= n)
+        .sort((a, b) => a - b);
+      const cit = el("details", "cit");
+      cit.appendChild(el("summary", null, n
+        ? "证据原文 " + n + " 条（这一轮喂给模型的全部证据）"
+          + (used.length ? " · 答案引用了其中 " + used.length + " 条:"
+             + used.map((x) => "[" + x + "]").join("") : " · 答案一条都没引")
+        : "证据原文 —— 这条个案入台账时还没记快照"));
+      for (const x of (c.citations || [])) {
+        const isUsed = used.includes(x.n);
+        const line = el("div", "c1" + (isUsed ? " used" : ""));
+        const t = el("div");
+        t.appendChild(el("span", "cn" + (isUsed ? " on" : ""), "[" + x.n + "]"));
+        t.appendChild(document.createTextNode(" " + (x.question || "")));
+        if (isUsed) t.appendChild(el("span", "utag", "答案引用"));
+        line.appendChild(t);
+        line.appendChild(el("div", "ctext", x.answer || ""));
+        line.appendChild(el("div", "cp",
+          (x.section_path || "") + (x.chunk_id ? "　·　chunk id " + x.chunk_id : "")));
+        cit.appendChild(line);
+      }
+      box.appendChild(cit);
+
+      const acts = el("div", "acts");
+      const noteBox = el("div", "noteform");     // 处置说明输入行,点了「已解决/无需解决」才出现
+      noteBox.style.display = "none";
+
+      const post = async (st, note) => {
+        try {
+          await api("/api/rag-eval/faith-cases/" + c.id + "/status",
+                    {method: "POST", headers: {"Content-Type": "application/json"},
+                     body: JSON.stringify({status: st, resolution: note || null})});
+          toast(c.eval_id + " → " + st);
+          renderLedger();
+        } catch (e) { toast("改状态失败:" + e.message, true); renderLedger(); }
+      };
+
+      // 处置要留交代:已解决写怎么解决的,无需解决写为什么不用改。所以不直接提交,
+      // 先在卡片里展开一行输入,空的不让提交(后端也会挡,这里只是别让人白跑一趟)
+      const openNote = (st) => {
+        noteBox.textContent = "";
+        noteBox.style.display = "flex";
+        const inp = el("input");
+        inp.type = "text";
+        inp.maxLength = 300;
+        inp.placeholder = st === "已解决"
+          ? "怎么解决的?比如:库里补了「Lite 废砂盒容量约 5 天」"
+          : "为什么不用改?比如:处理时限就是我们的到账时限,裁判判严了";
+        const ok = el("button", null, "确定标为「" + st + "」");
+        const cancel = el("button", "ghost", "取消");
+        const submit = () => {
+          const note = inp.value.trim();
+          if (!note) { toast("请先写一句处置说明", true); inp.focus(); return; }
+          ok.disabled = true;
+          post(st, note);
+        };
+        ok.addEventListener("click", submit);
+        inp.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+        cancel.addEventListener("click", () => { noteBox.style.display = "none"; });
+        noteBox.appendChild(inp);
+        noteBox.appendChild(ok);
+        noteBox.appendChild(cancel);
+        inp.focus();
+      };
+
+      const mkBtn = (label, st) => {
+        const b = el("button", null, label);
+        b.disabled = c.status === st;
+        b.addEventListener("click", () => {
+          if (st === "未解决") { post(st, null); return; }   // 退回不需要说明(会连说明一起清空)
+          openNote(st);
+        });
+        return b;
+      };
+      acts.appendChild(mkBtn("已解决", "已解决"));
+      acts.appendChild(mkBtn("无需解决", "无需解决"));
+      if (c.status !== "未解决") acts.appendChild(mkBtn("退回未解决", "未解决"));
+      box.appendChild(acts);
+      box.appendChild(noteBox);
+      return box;
+    }
+
+    async function load() {
+      const box = $("body");
+      let d;
+      try {
+        d = await api("/api/rag-eval/overview");
+      } catch (e) {
+        box.textContent = "";
+        box.appendChild(missingBox("取数失败：" + e.message));
+        return;
+      }
+      box.textContent = "";
+      if (!d.present) {
+        box.appendChild(missingBox(d.hint));
+        box.appendChild(jobPanel(d));
+        return;
+      }
+      box.appendChild(metaBar(d));
+      box.appendChild(kpiBox(d));
+      box.appendChild(retrievalPanel(d));
+      box.appendChild(generationPanel(d));
+      box.appendChild(tablePanel(d));
+      box.appendChild(ledgerPanel());
+      box.appendChild(jobPanel(d));
+      box.appendChild(notesPanel());
+      renderLedger();          // 面板已在文档里,这时才填得进去
+    }
+
+    mountAdminNav("/rag-eval");
+    $("refreshBtn").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>

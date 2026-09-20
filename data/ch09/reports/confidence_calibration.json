@@ -1,0 +1,584 @@
+{
+ "meta": {
+  "generated_at": "2026-09-14 15:21",
+  "strategy": "hybrid_rerank",
+  "dataset": "tests/data/eval_ch04.jsonl",
+  "n_answerable": 240,
+  "n_absent": 60
+ },
+ "distribution": {
+  "answerable": {
+   "n": 240,
+   "min": 0.012,
+   "p25": 0.455,
+   "p50": 0.704,
+   "p75": 0.765,
+   "max": 0.92
+  },
+  "absent": {
+   "n": 60,
+   "min": 0.001,
+   "p25": 0.101,
+   "p50": 0.102,
+   "p75": 0.111,
+   "max": 0.29
+  }
+ },
+ "scan": [
+  {
+   "t": 0.05,
+   "pass_rate": 0.992,
+   "leak_rate": 0.967,
+   "youden_j": 0.025
+  },
+  {
+   "t": 0.06,
+   "pass_rate": 0.983,
+   "leak_rate": 0.967,
+   "youden_j": 0.017
+  },
+  {
+   "t": 0.07,
+   "pass_rate": 0.979,
+   "leak_rate": 0.967,
+   "youden_j": 0.012
+  },
+  {
+   "t": 0.08,
+   "pass_rate": 0.979,
+   "leak_rate": 0.967,
+   "youden_j": 0.012
+  },
+  {
+   "t": 0.09,
+   "pass_rate": 0.975,
+   "leak_rate": 0.967,
+   "youden_j": 0.008
+  },
+  {
+   "t": 0.1,
+   "pass_rate": 0.975,
+   "leak_rate": 0.967,
+   "youden_j": 0.008
+  },
+  {
+   "t": 0.11,
+   "pass_rate": 0.967,
+   "leak_rate": 0.25,
+   "youden_j": 0.717
+  },
+  {
+   "t": 0.12,
+   "pass_rate": 0.963,
+   "leak_rate": 0.183,
+   "youden_j": 0.779
+  },
+  {
+   "t": 0.13,
+   "pass_rate": 0.963,
+   "leak_rate": 0.15,
+   "youden_j": 0.812
+  },
+  {
+   "t": 0.14,
+   "pass_rate": 0.958,
+   "leak_rate": 0.133,
+   "youden_j": 0.825
+  },
+  {
+   "t": 0.15,
+   "pass_rate": 0.954,
+   "leak_rate": 0.117,
+   "youden_j": 0.838
+  },
+  {
+   "t": 0.16,
+   "pass_rate": 0.946,
+   "leak_rate": 0.117,
+   "youden_j": 0.829
+  },
+  {
+   "t": 0.17,
+   "pass_rate": 0.942,
+   "leak_rate": 0.05,
+   "youden_j": 0.892
+  },
+  {
+   "t": 0.18,
+   "pass_rate": 0.921,
+   "leak_rate": 0.05,
+   "youden_j": 0.871
+  },
+  {
+   "t": 0.19,
+   "pass_rate": 0.921,
+   "leak_rate": 0.05,
+   "youden_j": 0.871
+  },
+  {
+   "t": 0.2,
+   "pass_rate": 0.908,
+   "leak_rate": 0.05,
+   "youden_j": 0.858
+  },
+  {
+   "t": 0.21,
+   "pass_rate": 0.9,
+   "leak_rate": 0.05,
+   "youden_j": 0.85
+  },
+  {
+   "t": 0.22,
+   "pass_rate": 0.887,
+   "leak_rate": 0.05,
+   "youden_j": 0.837
+  },
+  {
+   "t": 0.23,
+   "pass_rate": 0.879,
+   "leak_rate": 0.05,
+   "youden_j": 0.829
+  },
+  {
+   "t": 0.24,
+   "pass_rate": 0.867,
+   "leak_rate": 0.017,
+   "youden_j": 0.85
+  },
+  {
+   "t": 0.25,
+   "pass_rate": 0.867,
+   "leak_rate": 0.017,
+   "youden_j": 0.85
+  },
+  {
+   "t": 0.26,
+   "pass_rate": 0.863,
+   "leak_rate": 0.017,
+   "youden_j": 0.846
+  },
+  {
+   "t": 0.27,
+   "pass_rate": 0.854,
+   "leak_rate": 0.017,
+   "youden_j": 0.837
+  },
+  {
+   "t": 0.28,
+   "pass_rate": 0.842,
+   "leak_rate": 0.017,
+   "youden_j": 0.825
+  },
+  {
+   "t": 0.29,
+   "pass_rate": 0.842,
+   "leak_rate": 0.0,
+   "youden_j": 0.842
+  },
+  {
+   "t": 0.3,
+   "pass_rate": 0.829,
+   "leak_rate": 0.0,
+   "youden_j": 0.829
+  },
+  {
+   "t": 0.31,
+   "pass_rate": 0.829,
+   "leak_rate": 0.0,
+   "youden_j": 0.829
+  },
+  {
+   "t": 0.32,
+   "pass_rate": 0.825,
+   "leak_rate": 0.0,
+   "youden_j": 0.825
+  },
+  {
+   "t": 0.33,
+   "pass_rate": 0.825,
+   "leak_rate": 0.0,
+   "youden_j": 0.825
+  },
+  {
+   "t": 0.34,
+   "pass_rate": 0.821,
+   "leak_rate": 0.0,
+   "youden_j": 0.821
+  },
+  {
+   "t": 0.35,
+   "pass_rate": 0.821,
+   "leak_rate": 0.0,
+   "youden_j": 0.821
+  },
+  {
+   "t": 0.36,
+   "pass_rate": 0.817,
+   "leak_rate": 0.0,
+   "youden_j": 0.817
+  },
+  {
+   "t": 0.37,
+   "pass_rate": 0.804,
+   "leak_rate": 0.0,
+   "youden_j": 0.804
+  },
+  {
+   "t": 0.38,
+   "pass_rate": 0.804,
+   "leak_rate": 0.0,
+   "youden_j": 0.804
+  },
+  {
+   "t": 0.39,
+   "pass_rate": 0.8,
+   "leak_rate": 0.0,
+   "youden_j": 0.8
+  },
+  {
+   "t": 0.4,
+   "pass_rate": 0.8,
+   "leak_rate": 0.0,
+   "youden_j": 0.8
+  },
+  {
+   "t": 0.41,
+   "pass_rate": 0.796,
+   "leak_rate": 0.0,
+   "youden_j": 0.796
+  },
+  {
+   "t": 0.42,
+   "pass_rate": 0.779,
+   "leak_rate": 0.0,
+   "youden_j": 0.779
+  },
+  {
+   "t": 0.43,
+   "pass_rate": 0.771,
+   "leak_rate": 0.0,
+   "youden_j": 0.771
+  },
+  {
+   "t": 0.44,
+   "pass_rate": 0.762,
+   "leak_rate": 0.0,
+   "youden_j": 0.762
+  },
+  {
+   "t": 0.45,
+   "pass_rate": 0.758,
+   "leak_rate": 0.0,
+   "youden_j": 0.758
+  },
+  {
+   "t": 0.46,
+   "pass_rate": 0.742,
+   "leak_rate": 0.0,
+   "youden_j": 0.742
+  },
+  {
+   "t": 0.47,
+   "pass_rate": 0.738,
+   "leak_rate": 0.0,
+   "youden_j": 0.738
+  },
+  {
+   "t": 0.48,
+   "pass_rate": 0.733,
+   "leak_rate": 0.0,
+   "youden_j": 0.733
+  },
+  {
+   "t": 0.49,
+   "pass_rate": 0.733,
+   "leak_rate": 0.0,
+   "youden_j": 0.733
+  },
+  {
+   "t": 0.5,
+   "pass_rate": 0.733,
+   "leak_rate": 0.0,
+   "youden_j": 0.733
+  },
+  {
+   "t": 0.51,
+   "pass_rate": 0.729,
+   "leak_rate": 0.0,
+   "youden_j": 0.729
+  },
+  {
+   "t": 0.52,
+   "pass_rate": 0.721,
+   "leak_rate": 0.0,
+   "youden_j": 0.721
+  },
+  {
+   "t": 0.53,
+   "pass_rate": 0.721,
+   "leak_rate": 0.0,
+   "youden_j": 0.721
+  },
+  {
+   "t": 0.54,
+   "pass_rate": 0.717,
+   "leak_rate": 0.0,
+   "youden_j": 0.717
+  },
+  {
+   "t": 0.55,
+   "pass_rate": 0.708,
+   "leak_rate": 0.0,
+   "youden_j": 0.708
+  },
+  {
+   "t": 0.56,
+   "pass_rate": 0.708,
+   "leak_rate": 0.0,
+   "youden_j": 0.708
+  },
+  {
+   "t": 0.57,
+   "pass_rate": 0.704,
+   "leak_rate": 0.0,
+   "youden_j": 0.704
+  },
+  {
+   "t": 0.58,
+   "pass_rate": 0.7,
+   "leak_rate": 0.0,
+   "youden_j": 0.7
+  },
+  {
+   "t": 0.59,
+   "pass_rate": 0.7,
+   "leak_rate": 0.0,
+   "youden_j": 0.7
+  },
+  {
+   "t": 0.6,
+   "pass_rate": 0.692,
+   "leak_rate": 0.0,
+   "youden_j": 0.692
+  },
+  {
+   "t": 0.61,
+   "pass_rate": 0.688,
+   "leak_rate": 0.0,
+   "youden_j": 0.688
+  },
+  {
+   "t": 0.62,
+   "pass_rate": 0.662,
+   "leak_rate": 0.0,
+   "youden_j": 0.662
+  },
+  {
+   "t": 0.63,
+   "pass_rate": 0.654,
+   "leak_rate": 0.0,
+   "youden_j": 0.654
+  },
+  {
+   "t": 0.64,
+   "pass_rate": 0.637,
+   "leak_rate": 0.0,
+   "youden_j": 0.637
+  },
+  {
+   "t": 0.65,
+   "pass_rate": 0.621,
+   "leak_rate": 0.0,
+   "youden_j": 0.621
+  },
+  {
+   "t": 0.66,
+   "pass_rate": 0.596,
+   "leak_rate": 0.0,
+   "youden_j": 0.596
+  },
+  {
+   "t": 0.67,
+   "pass_rate": 0.579,
+   "leak_rate": 0.0,
+   "youden_j": 0.579
+  },
+  {
+   "t": 0.68,
+   "pass_rate": 0.571,
+   "leak_rate": 0.0,
+   "youden_j": 0.571
+  },
+  {
+   "t": 0.69,
+   "pass_rate": 0.55,
+   "leak_rate": 0.0,
+   "youden_j": 0.55
+  },
+  {
+   "t": 0.7,
+   "pass_rate": 0.517,
+   "leak_rate": 0.0,
+   "youden_j": 0.517
+  },
+  {
+   "t": 0.71,
+   "pass_rate": 0.483,
+   "leak_rate": 0.0,
+   "youden_j": 0.483
+  },
+  {
+   "t": 0.72,
+   "pass_rate": 0.433,
+   "leak_rate": 0.0,
+   "youden_j": 0.433
+  },
+  {
+   "t": 0.73,
+   "pass_rate": 0.392,
+   "leak_rate": 0.0,
+   "youden_j": 0.392
+  },
+  {
+   "t": 0.74,
+   "pass_rate": 0.325,
+   "leak_rate": 0.0,
+   "youden_j": 0.325
+  },
+  {
+   "t": 0.75,
+   "pass_rate": 0.296,
+   "leak_rate": 0.0,
+   "youden_j": 0.296
+  },
+  {
+   "t": 0.76,
+   "pass_rate": 0.263,
+   "leak_rate": 0.0,
+   "youden_j": 0.263
+  },
+  {
+   "t": 0.77,
+   "pass_rate": 0.237,
+   "leak_rate": 0.0,
+   "youden_j": 0.237
+  },
+  {
+   "t": 0.78,
+   "pass_rate": 0.229,
+   "leak_rate": 0.0,
+   "youden_j": 0.229
+  },
+  {
+   "t": 0.79,
+   "pass_rate": 0.212,
+   "leak_rate": 0.0,
+   "youden_j": 0.212
+  },
+  {
+   "t": 0.8,
+   "pass_rate": 0.167,
+   "leak_rate": 0.0,
+   "youden_j": 0.167
+  },
+  {
+   "t": 0.81,
+   "pass_rate": 0.146,
+   "leak_rate": 0.0,
+   "youden_j": 0.146
+  },
+  {
+   "t": 0.82,
+   "pass_rate": 0.129,
+   "leak_rate": 0.0,
+   "youden_j": 0.129
+  },
+  {
+   "t": 0.83,
+   "pass_rate": 0.1,
+   "leak_rate": 0.0,
+   "youden_j": 0.1
+  },
+  {
+   "t": 0.84,
+   "pass_rate": 0.1,
+   "leak_rate": 0.0,
+   "youden_j": 0.1
+  },
+  {
+   "t": 0.85,
+   "pass_rate": 0.071,
+   "leak_rate": 0.0,
+   "youden_j": 0.071
+  },
+  {
+   "t": 0.86,
+   "pass_rate": 0.046,
+   "leak_rate": 0.0,
+   "youden_j": 0.046
+  },
+  {
+   "t": 0.87,
+   "pass_rate": 0.025,
+   "leak_rate": 0.0,
+   "youden_j": 0.025
+  },
+  {
+   "t": 0.88,
+   "pass_rate": 0.021,
+   "leak_rate": 0.0,
+   "youden_j": 0.021
+  },
+  {
+   "t": 0.89,
+   "pass_rate": 0.021,
+   "leak_rate": 0.0,
+   "youden_j": 0.021
+  },
+  {
+   "t": 0.9,
+   "pass_rate": 0.008,
+   "leak_rate": 0.0,
+   "youden_j": 0.008
+  },
+  {
+   "t": 0.91,
+   "pass_rate": 0.008,
+   "leak_rate": 0.0,
+   "youden_j": 0.008
+  },
+  {
+   "t": 0.92,
+   "pass_rate": 0.004,
+   "leak_rate": 0.0,
+   "youden_j": 0.004
+  },
+  {
+   "t": 0.93,
+   "pass_rate": 0.0,
+   "leak_rate": 0.0,
+   "youden_j": 0.0
+  },
+  {
+   "t": 0.94,
+   "pass_rate": 0.0,
+   "leak_rate": 0.0,
+   "youden_j": 0.0
+  },
+  {
+   "t": 0.95,
+   "pass_rate": 0.0,
+   "leak_rate": 0.0,
+   "youden_j": 0.0
+  }
+ ],
+ "recommended": {
+  "threshold": 0.17,
+  "youden_j": 0.892,
+  "pass_rate": 0.942,
+  "leak_rate": 0.05
+ },
+ "read_notes": {
+  "confidence_calibration": "阈值卡在 0.17,应拒放行率压到 5%,可答通过率还有 94.2%,往左挪到 0.1 应拒放行率直接飙到 96.7% 库外几乎全漏进来,往右挪到 0.3 可答掉到 82.9% 飞轮燃料变多,这条线就是两边代价的拐点。"
+ }
+}

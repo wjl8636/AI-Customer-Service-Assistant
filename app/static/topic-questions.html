@@ -1,0 +1,193 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 类目问题列表</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    /* 一行一条问题:问法在前,来源与频次在后,多标签的把同伴类目也摆出来 */
+    .qrow {
+      border: 3px solid var(--ink); background: var(--paper); box-shadow: var(--shadow-sm);
+      padding: 10px 13px; margin-top: 10px;
+    }
+    .qrow .q { font-size: 13.5px; font-weight: 700; line-height: 1.6; }
+    .qrow .q .id { font-size: 11px; font-weight: 400; color: var(--muted); margin-right: 7px; }
+    .qrow .meta {
+      margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px 14px;
+      font-size: 11.5px; color: #6d6478; align-items: center;
+    }
+    .qrow .meta b { color: var(--ink); }
+    .tag {
+      font-size: 11px; border: 2px solid var(--ink); background: var(--cream); padding: 0 5px;
+    }
+    .tag.self { background: var(--fur); font-weight: 700; }
+    .raw { margin-top: 7px; font-size: 12px; color: #6d6478; line-height: 1.7; }
+    .raw .k { font-size: 10.5px; color: var(--muted); display: block; }
+
+    .pager { margin-top: 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .pager .info { font-size: 12.5px; }
+    .pager .info b { font-variant-numeric: tabular-nums; }
+    .picker { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .picker a {
+      font-size: 12px; text-decoration: none; color: var(--ink); border: 3px solid var(--ink);
+      background: var(--paper); padding: 3px 9px; box-shadow: 2px 2px 0 var(--ink);
+    }
+    .picker a.on { background: var(--fur); font-weight: 700; }
+    .picker a .n { color: var(--muted); margin-left: 5px; }
+    .picker a.on .n { color: var(--ink); }
+    .picker a.zero { opacity: .45; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1 id="title">类目问题列表</h1>
+      <span class="sub" id="sub">分类器归到这一类的问题,分页看全</span>
+      <span class="spacer"></span>
+      <a class="btn" href="/topics">← 回主题分布</a>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div id="picker"></div>
+    <div id="body"><div class="miss">加载中…</div></div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    /* 类目与页码都在地址栏里(?label=…&page=…):这一页是可以贴给别人的链接,
+       翻页也走地址栏,刷新回到同一页。数据全来自 /api/topics/questions,不在前端筛。 */
+    const SIZE = 10;
+    const SOURCE_LABEL = {
+      retrieval_low_conf: "检索置信度低", self_check: "生成自评不够答", user_feedback: "用户反馈没解决",
+    };
+
+    const params = () => new URLSearchParams(location.search);
+    const curLabel = () => params().get("label") || "";
+    const curPage = () => Math.max(1, parseInt(params().get("page") || "1", 10));
+
+    function go(label, page) {
+      const q = new URLSearchParams({ label, page: String(page) });
+      location.search = "?" + q.toString();
+    }
+
+    function qrow(it, label) {
+      const box = el("div", "qrow");
+      const q = el("div", "q");
+      q.appendChild(el("span", "id", "#" + it.question_id));
+      q.appendChild(document.createTextNode(it.text));
+      box.appendChild(q);
+
+      const meta = el("div", "meta");
+      for (const lb of it.labels || []) {
+        meta.appendChild(el("span", "tag" + (lb === label ? " self" : ""), lb));
+      }
+      const bits = [
+        ["来源", SOURCE_LABEL[it.source] || it.source],
+        ["同义合并", it.occurrence_count ? it.occurrence_count + " 条原话" : "未归并"],
+        ["审核", it.review_status || "未入队列"],
+        ["归类于", fmtTime(it.classified_at).slice(5, 16)],
+      ];
+      for (const [k, v] of bits) {
+        const s = el("span");
+        s.appendChild(document.createTextNode(k + " "));
+        s.appendChild(el("b", null, v));
+        meta.appendChild(s);
+      }
+      box.appendChild(meta);
+
+      // 归并过的问题,页面上显示的是标准化问法;把用户原话也带一句,免得看不出这条从哪来
+      if (it.normalized && it.raw_question && it.raw_question !== it.text) {
+        const raw = el("div", "raw");
+        raw.appendChild(el("span", "k", "用户原话"));
+        raw.appendChild(document.createTextNode(it.raw_question));
+        box.appendChild(raw);
+      }
+      return box;
+    }
+
+    function pager(d) {
+      const box = el("div", "pager");
+      const prev = el("button", "btn sm", "← 上一页");
+      prev.disabled = d.page <= 1;
+      prev.onclick = () => go(d.label, d.page - 1);
+      const next = el("button", "btn sm", "下一页 →");
+      next.disabled = d.page >= d.pages;
+      next.onclick = () => go(d.label, d.page + 1);
+      const info = el("div", "info");
+      info.innerHTML = "第 <b>" + d.page + "</b> / " + d.pages + " 页 · 本类共 <b>"
+        + d.total + "</b> 条 · 每页 " + d.size + " 条";
+      box.appendChild(prev);
+      box.appendChild(next);
+      box.appendChild(info);
+      return box;
+    }
+
+    /** 类目选择条:直接从分布接口拿各类问题量,顺手也是「这一类在全局的位置」。 */
+    async function renderPicker(label) {
+      try {
+        const dist = await api("/api/topics/distribution");
+        const box = el("div", "picker");
+        [...dist.classes].sort((a, b) => b.count - a.count).forEach((c) => {
+          const a = el("a", (c.label === label ? "on " : "") + (c.count ? "" : "zero"), c.label);
+          a.href = "/topics/questions?label=" + encodeURIComponent(c.label) + "&page=1";
+          a.appendChild(el("span", "n", String(c.count)));
+          box.appendChild(a);
+        });
+        $("picker").innerHTML = "";
+        $("picker").appendChild(box);
+      } catch (e) {
+        $("picker").innerHTML = "";
+      }
+    }
+
+    async function load() {
+      const label = curLabel(), body = $("body");
+      if (!label) {
+        body.innerHTML = "";
+        body.appendChild(missingBox("没指定类目。回主题分布页,点某一类的名字进来。"));
+        return;
+      }
+      $("title").textContent = label;
+      try {
+        const d = await api("/api/topics/questions?label=" + encodeURIComponent(label)
+          + "&page=" + curPage() + "&size=" + SIZE);
+        $("sub").textContent = "分类器归到「" + label + "」的问题,共 " + d.total + " 条";
+        body.innerHTML = "";
+        if (!d.total) {
+          body.appendChild(missingBox("这一类还没有归类到的问题。换个类目,或先跑一次旁路批量归类。"));
+          return;
+        }
+        const p = el("div", "panel");
+        const h = el("h2", null, label);
+        h.appendChild(el("span", "pill info", d.total + " 条 · 第 " + d.page + "/" + d.pages + " 页"));
+        p.appendChild(h);
+        p.appendChild(el("p", "lede",
+          "列的是分类器归到这一类的问题,多标签的问题会同时出现在它命中的每个类目下。"
+          + "问法取归并阶段产出的标准化问句,原话在下面一行。"));
+        for (const it of d.items) p.appendChild(qrow(it, label));
+        p.appendChild(pager(d));
+        body.appendChild(p);
+      } catch (e) {
+        body.innerHTML = "";
+        body.appendChild(missingBox("取数失败：" + e.message));
+        toast("取数失败：" + e.message, true);
+      }
+    }
+
+    $("refreshBtn").onclick = load;
+    mountAdminNav("/topics");
+    renderPicker(curLabel());
+    load();
+  </script>
+</body>
+</html>

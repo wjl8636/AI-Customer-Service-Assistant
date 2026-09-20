@@ -1,0 +1,451 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 观测与成本</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    .kpis { display: grid; gap: 12px; grid-template-columns: repeat(4, 1fr); margin-top: 4px; }
+    @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+    .kpi {
+      background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
+      padding: 10px 13px 12px;
+    }
+    .kpi .k-label { font-size: 11.5px; color: var(--muted); }
+    .kpi .k-val { font-size: 25px; font-weight: 700; line-height: 1.4; font-variant-numeric: tabular-nums; }
+    .kpi .k-val small { font-size: 13px; margin-left: 2px; }
+    .kpi .k-sub { font-size: 11.5px; color: #6d6478; line-height: 1.7; }
+
+    /* 占比条:一条一意图,长度即占比 */
+    .shares { margin-top: 14px; display: flex; flex-direction: column; gap: 11px; }
+    .sh-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; }
+    .sh-label .nm b { font-weight: 700; }
+    .sh-label .nm span { color: var(--muted); font-size: 11px; margin-left: 7px; }
+    .sh-label .pv { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .bar-track { height: 15px; border: 2px solid var(--ink); background: var(--cream); margin-top: 4px; }
+    .bar-fill { height: 100%; display: block; background: var(--sky); }
+    .bar-fill.top { background: var(--coral); }
+
+    /* 读图小注 */
+    .read {
+      margin-top: 13px; border: 3px dashed var(--ink); background: var(--paper);
+      padding: 9px 13px; font-size: 12.5px; line-height: 1.8;
+    }
+    .read b { background: var(--fur); padding: 0 4px; border: 2px solid var(--ink); }
+    .read::before {
+      content: "读图"; float: left; font-size: 11px; background: var(--ink); color: var(--cream);
+      padding: 1px 7px; margin: 2px 9px 2px 0;
+    }
+
+    .subhead { font-size: 13px; font-weight: 700; margin: 16px 0 2px; }
+    .subhead .unit { color: var(--muted); font-weight: 400; font-size: 11.5px; margin-left: 7px; }
+
+    table.tbl td.up { color: #2f8f3c; }
+    table.tbl td.down { background: #ffe9ec; color: var(--error); font-weight: 700; }
+    table.tbl td.flat { color: var(--muted); }
+    table.tbl td .arrow { margin-left: 5px; }
+
+    .chart-scroll { overflow-x: auto; }
+    svg.chart { display: block; width: 100%; height: auto; min-width: 560px; font-family: inherit; }
+    svg .axis { fill: var(--muted); font-size: 11px; }
+    svg .glabel { fill: var(--ink); font-size: 12px; font-weight: 700; }
+    svg .grid line { stroke: rgba(43,38,50,0.16); stroke-width: 1; }
+    svg .base { stroke: var(--ink); stroke-width: 2.5; }
+    svg .ln { fill: none; stroke-width: 2.5; }
+    svg .pick { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 4; }
+    svg .inuse { stroke: var(--violet); stroke-width: 2; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 10px 0 2px; }
+    .lg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+    .lg i { width: 12px; height: 12px; border: 2px solid var(--ink); flex: none; }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
+    .note { border: 3px solid var(--ink); background: var(--paper); padding: 10px 13px; }
+    .note h3 { margin: 0 0 5px; font-size: 12.5px; }
+    .note p { margin: 0; font-size: 12px; color: #6d6478; line-height: 1.8; }
+    .note code { background: var(--cream); border: 2px solid var(--ink); padding: 0 4px; font-size: 11.5px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>观测与成本</h1>
+      <span class="sub">钱花在哪类问题上 · 指标有没有劣化 · 兜底阈值怎么定的</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div id="body"><div class="miss">加载中…</div></div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    /* 三块报表各自只画 /api/observability/overview 端出来的那一份:
+       成本与校准来自 make 落的产物,趋势来自 eval_runs 表,页面一个数都不重算。
+       涨跌箭头是拿同一批行两两相减画出来的,不是另一份数据。 */
+    const NS = "http://www.w3.org/2000/svg";
+    const METRIC_LABEL = {
+      recall_at_5: "Recall@5", recall_at_10: "Recall@10", mrr: "MRR",
+      faithfulness: "Faithfulness", refusal_rate: "拒答率",
+    };
+    const DELTA_EPS = 0.005;      // 和终端趋势表同一条判定线:动静小于它算持平
+    const fmt3 = (v) => (v === null || v === undefined ? "—" : Number(v).toFixed(3));
+    const pct = (v) => (v === null || v === undefined ? "—" : Math.round(v * 100) + "%");
+    const thousands = (n) => (n === null || n === undefined ? "—" : Number(n).toLocaleString("en-US"));
+
+    function svgEl(tag, attrs, txt) {
+      const e = document.createElementNS(NS, tag);
+      for (const k in attrs) e.setAttribute(k, attrs[k]);
+      if (txt !== undefined && txt !== null) e.textContent = txt;
+      return e;
+    }
+
+    function kpis(items) {
+      const box = el("div", "kpis");
+      for (const k of items) {
+        const c = el("div", "kpi");
+        c.appendChild(el("div", "k-label", k.label));
+        const v = el("div", "k-val", k.val);
+        if (k.unit) v.appendChild(el("small", null, k.unit));
+        c.appendChild(v);
+        c.appendChild(el("div", "k-sub", k.sub));
+        box.appendChild(c);
+      }
+      return box;
+    }
+
+    function table(headers, rows) {
+      const t = el("table", "tbl");
+      const thead = el("thead"), tr = el("tr");
+      for (const h of headers) tr.appendChild(el("th", null, h));
+      thead.appendChild(tr);
+      t.appendChild(thead);
+      const tb = el("tbody");
+      for (const r of rows) tb.appendChild(r);
+      t.appendChild(tb);
+      const scroll = el("div", "scroll-x");
+      scroll.appendChild(t);
+      return scroll;
+    }
+
+    function panelHead(p, title, pill, lede) {
+      const h = el("h2", null, title);
+      if (pill) h.appendChild(el("span", "pill " + pill[1], pill[0]));
+      p.appendChild(h);
+      p.appendChild(el("p", "lede", lede));
+    }
+
+    /** 三块共用的收尾:重跑按钮 + 日志窗口,按的就是终端那条 make。 */
+    function jobFoot(p, block) {
+      p.appendChild(el("div", "subhead", "在页面上重跑"));
+      p.appendChild(jobRow([block.job], load, block.make));
+    }
+
+    /* ---- 01 意图成本账 ---- */
+    function costPanel(d) {
+      const p = el("div", "panel");
+      panelHead(p, "意图成本账", ["数据源 Langfuse", "info"],
+        "意图分类节点跑完会给 trace 打一个 intent 标签,按这个标签把 token 分堆一算,"
+        + "哪类问题最烧钱就现形了。优化成本先动最贵那条路,不必全局换模型。");
+      if (!d.present || !d.rows.length) {
+        p.appendChild(missingBox(d.hint));
+        jobFoot(p, d);
+        return p;
+      }
+      const m = d.meta, top = d.top;
+      p.appendChild(kpis([
+        { label: "最烧钱意图", val: top.intent, sub: "占 " + pct(top.share) + " · 单均 " + thousands(top.avg_tokens) + " token" },
+        { label: "总 token", val: thousands(d.total_tokens), sub: d.total_requests + " 次提问 · 近 " + m.days + " 天" },
+        { label: "意图路数", val: String(d.rows.length), sub: "窗口内有 trace 的意图" },
+        { label: "上次跑于", val: (m.generated_at || "—").slice(5), sub: "页面只读产物,不查 Langfuse" },
+      ]));
+
+      const shares = el("div", "shares");
+      for (const r of d.rows) {
+        const w = el("div");
+        const lab = el("div", "sh-label");
+        const nm = el("div", "nm");
+        nm.appendChild(el("b", null, r.intent));
+        nm.appendChild(el("span", null, r.count + " 次 · 单均 " + thousands(r.avg_tokens) + " token"));
+        lab.appendChild(nm);
+        lab.appendChild(el("div", "pv", pct(r.share) + " · " + thousands(r.tokens)));
+        w.appendChild(lab);
+        const track = el("div", "bar-track");
+        const fill = el("span", "bar-fill" + (r === top ? " top" : ""));
+        fill.style.width = Math.max(1.5, r.share * 100) + "%";
+        track.appendChild(fill);
+        w.appendChild(track);
+        shares.appendChild(w);
+      }
+      p.appendChild(shares);
+
+      const rows = d.rows.map((r) => {
+        const tr = el("tr");
+        tr.appendChild(el("td", null, r.intent));
+        tr.appendChild(el("td", "num", String(r.count)));
+        tr.appendChild(el("td", "num", thousands(r.tokens)));
+        tr.appendChild(el("td", "num", thousands(r.avg_tokens)));
+        tr.appendChild(el("td", "num", pct(r.share)));
+        return tr;
+      });
+      p.appendChild(el("div", "subhead", "明细"));
+      p.appendChild(table(["意图", "请求数", "总 token", "单均 token", "占比"], rows));
+
+      const most = d.rows.reduce((a, b) => (b.avg_tokens > a.avg_tokens ? b : a), d.rows[0]);
+      const read = el("div", "read");
+      read.innerHTML = readNoteHtml(d.read_note,
+        "总账里 <b>" + top.intent + "</b> 占 <b>" + pct(top.share)
+        + "</b>,要瘦成本先瘦它的 prompt 或给它换小模型。单均最高的是 <b>" + most.intent
+        + " " + thousands(most.avg_tokens) + "</b> token,单均高说明一次提问背后是多次模型调用"
+        + "(ReAct 那类多步工具链就是这样),看的是链路长短,不是问题多。");
+      p.appendChild(read);
+      jobFoot(p, d);
+      return p;
+    }
+
+    /* ---- 02 评估趋势 ---- */
+    function trendPanel(d) {
+      const p = el("div", "panel");
+      panelHead(p, "评估趋势", ["数据源 eval_runs 表", "info"],
+        "飞轮持续往知识库写东西,评估流水线就是拿来防劣化的。每轮复用 ch04 那套评估集,"
+        + "分数落一行,连起来就是趋势。哪天审核放进脏知识把忠实度拉下来,这张表第一时间标出来。");
+      if (d.status === "error") {
+        p.appendChild(missingBox("趋势读不到:" + (d.note || "")));
+        jobFoot(p, d);
+        return p;
+      }
+      if (!d.present) {
+        p.appendChild(missingBox(d.hint));
+        jobFoot(p, d);
+        return p;
+      }
+      const runs = d.runs, latest = runs[0], prev = runs[1];
+      const drops = prev
+        ? d.metric_names.filter((n) => (latest.metrics[n] ?? 0) < (prev.metrics[n] ?? 0) - DELTA_EPS)
+        : [];
+      p.appendChild(kpis([
+        { label: "已跑轮次", val: String(runs.length), sub: "最多留最近十轮" },
+        { label: "最近一轮", val: fmt3(latest.metrics.faithfulness), sub: "Faithfulness · 生成段有没有编" },
+        { label: "检索 MRR", val: fmt3(latest.metrics.mrr), sub: (latest.metrics.recall_at_5 !== undefined
+              ? "Recall@5 " + fmt3(latest.metrics.recall_at_5)
+              : "Recall@10 " + fmt3(latest.metrics.recall_at_10)) },
+        { label: "对比上轮", val: drops.length ? String(drops.length) : "0", unit: " 项下滑",
+          sub: drops.length ? drops.map((n) => METRIC_LABEL[n]).join("、") + " 掉了" : "持平或上涨" },
+      ]));
+
+      const rows = runs.map((r, i) => {
+        const older = runs[i + 1];
+        const tr = el("tr");
+        tr.appendChild(el("td", null, "#" + r.id));
+        tr.appendChild(el("td", null, fmtTime(r.created_at).slice(5, 16)));
+        tr.appendChild(el("td", null, r.triggered_by));
+        tr.appendChild(el("td", "num", String(r.dataset_size)));
+        for (const n of d.metric_names) {
+          const v = r.metrics[n], o = older ? older.metrics[n] : undefined;
+          let cls = "num", arrow = "";
+          if (v !== undefined && v !== null && o !== undefined && o !== null) {
+            const delta = v - o;
+            cls += delta > DELTA_EPS ? " up" : (delta < -DELTA_EPS ? " down" : " flat");
+            arrow = delta > DELTA_EPS ? "↑" : (delta < -DELTA_EPS ? "⚠↓" : "→");
+          }
+          const td = el("td", cls, fmt3(v));
+          if (arrow) td.appendChild(el("span", "arrow", arrow));
+          tr.appendChild(td);
+        }
+        return tr;
+      });
+      p.appendChild(el("div", "subhead", "最近十轮(新在上)"));
+      p.appendChild(table(["轮次", "时间", "触发", "评估集"]
+        .concat(d.metric_names.map((n) => METRIC_LABEL[n])), rows));
+
+      const read = el("div", "read");
+      read.innerHTML = readNoteHtml(d.read_note, drops.length
+        ? "对比上一轮,<b>" + drops.map((n) => METRIC_LABEL[n]).join("、")
+          + "</b> 在下滑。先去待审队列翻最近通过的那几条,脏知识进库最常见的表现就是忠实度掉。"
+        : "四个指标对上一轮都没退步。趋势的价值不在单轮的绝对分,而在<b>下一轮别掉</b>——"
+          + "定时跑起来(cron 每天一轮),劣化才有人看见。");
+      p.appendChild(read);
+      jobFoot(p, d);
+      return p;
+    }
+
+    /* ---- 03 置信度阈值校准 ---- */
+    function scanChart(svg, scan, pick, inUse) {
+      const W = 720, H = 300, M = { l: 42, r: 14, t: 16, b: 46 };
+      const plotW = W - M.l - M.r, plotH = H - M.t - M.b, y0 = M.t + plotH;
+      const xs = (t) => M.l + ((t - 0.05) / 0.9) * plotW;
+      const ys = (v) => y0 - v * plotH;
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      const grid = svgEl("g", { class: "grid" });
+      for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+        grid.appendChild(svgEl("line", { x1: M.l, y1: ys(t), x2: M.l + plotW, y2: ys(t) }));
+        svg.appendChild(svgEl("text", { x: M.l - 8, y: ys(t) + 3.5, "text-anchor": "end", class: "axis" }, t.toFixed(2)));
+      }
+      svg.insertBefore(grid, svg.firstChild);
+      svg.appendChild(svgEl("line", { x1: M.l, y1: y0, x2: M.l + plotW, y2: y0, class: "base" }));
+      for (const t of [0.05, 0.2, 0.4, 0.6, 0.8, 0.95]) {
+        svg.appendChild(svgEl("text", { x: xs(t), y: y0 + 20, "text-anchor": "middle", class: "axis" }, t.toFixed(2)));
+      }
+      svg.appendChild(svgEl("text", { x: M.l + plotW / 2, y: y0 + 38, "text-anchor": "middle", class: "glabel" }, "阈值 t"));
+      const line = (key, color) => {
+        const pts = scan.map((r) => xs(r.t).toFixed(1) + "," + ys(r[key]).toFixed(1)).join(" ");
+        svg.appendChild(svgEl("polyline", { points: pts, class: "ln", stroke: color }));
+      };
+      line("pass_rate", "var(--online)");
+      line("leak_rate", "var(--error)");
+      if (inUse !== null && inUse !== undefined && inUse !== pick) {
+        svg.appendChild(svgEl("line", { x1: xs(inUse), y1: M.t, x2: xs(inUse), y2: y0, class: "inuse" }));
+      }
+      if (pick !== null && pick !== undefined) {
+        svg.appendChild(svgEl("line", { x1: xs(pick), y1: M.t, x2: xs(pick), y2: y0, class: "pick" }));
+        svg.appendChild(svgEl("text", { x: xs(pick) + 6, y: M.t + 12, class: "glabel" }, "选定 " + pick.toFixed(2)));
+      }
+    }
+
+    function calibrationPanel(d) {
+      const p = el("div", "panel");
+      panelHead(p, "置信度阈值校准", ["ch04 评估集实跑", "info"],
+        "兜底那道闸卡在什么分上,不是拍脑袋定的。拿评估集里可答的和该拒的两拨题各算一遍"
+        + "证据置信度,再扫一遍阈值,看哪条线把两拨分得最开。");
+      const w = d.weights;
+      const wnote = el("div", "note");
+      wnote.appendChild(el("h3", null, "置信度怎么算出来的"));
+      wnote.appendChild(el("p", null,
+        "四信号加权:Top1 精排分 " + w.top1 + " / 有效证据数 " + w.valid_count
+        + " / Top1-Top2 分差 " + w.margin + " / 关键条款命中 " + w.key_clause
+        + "。权重是代码里的常量,校准校的是这条线该划在哪。"));
+      if (!d.present) {
+        p.appendChild(missingBox(d.hint));
+        p.appendChild(wnote);
+        jobFoot(p, d);
+        return p;
+      }
+      const rec = d.recommended, dist = d.distribution;
+      const ius = d.in_use_stats;  // 在用阈值对应的通过率/放行率
+      const syncSub = d.in_sync === "match" ? "与推荐一致"
+        : d.in_sync === "conservative" ? "高于推荐值(更保守:误放率更低)"
+        : "低于推荐值,应拒可能漏进来,该回填 app/config.py";
+      // 可答通过率和应拒放行率:有在用阈值数据就展示在用的,否则退回推荐的
+      const showPass = ius ? ius.pass_rate : rec.pass_rate;
+      const showLeak = ius ? ius.leak_rate : rec.leak_rate;
+      const atLabel = ius ? "(在用阈值 " + Number(d.in_use).toFixed(2) + " 下)" : "";
+      p.appendChild(kpis([
+        { label: "推荐阈值", val: rec.threshold.toFixed(2), sub: "Youden J " + fmt3(rec.youden_j) + " · 两拨分得最开的那条线" },
+        { label: "在用阈值", val: Number(d.in_use).toFixed(2), sub: syncSub },
+        { label: "可答通过率", val: pct(showPass), sub: "库里有答案且这次召回够硬的占比" + atLabel },
+        { label: "应拒放行率", val: pct(showLeak), sub: "库外问题被放进来答的占比" + atLabel },
+      ]));
+
+      const drows = [["可答(A/B/C/E 桶)", dist.answerable],
+                     ["应拒(D 桶)", dist.absent]].map(([name, s]) => {
+        const tr = el("tr");
+        tr.appendChild(el("td", null, name));
+        for (const k of ["n", "min", "p25", "p50", "p75", "max"]) {
+          tr.appendChild(el("td", "num", k === "n" ? String(s.n) : fmt3(s[k])));
+        }
+        return tr;
+      });
+      p.appendChild(el("div", "subhead", "证据置信度分布"));
+      p.appendChild(table(["题型", "题数", "最低", "p25", "中位", "p75", "最高"], drows));
+
+      const sub = el("div", "subhead", "阈值扫描");
+      sub.appendChild(el("span", "unit", "0.05 → 0.95,步进 0.01"));
+      p.appendChild(sub);
+      const lg = el("div", "legend");
+      for (const [label, color] of [["可答通过率", "var(--online)"], ["应拒放行率", "var(--error)"],
+                                    ["选定阈值", "var(--ink)"], ["在用阈值", "var(--violet)"]]) {
+        const s = el("span", "lg");
+        const i = el("i");
+        i.style.background = color;
+        s.appendChild(i);
+        s.appendChild(document.createTextNode(label));
+        lg.appendChild(s);
+      }
+      p.appendChild(lg);
+      const scroll = el("div", "chart-scroll");
+      const svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("class", "chart");
+      svg.setAttribute("viewBox", "0 0 720 300");
+      scroll.appendChild(svg);
+      p.appendChild(scroll);
+      scanChart(svg, d.scan, rec.threshold, d.in_use);
+
+      const read = el("div", "read");
+      let fallback;
+      if (d.in_sync === "match") {
+        fallback = "阈值卡在 <b>" + rec.threshold.toFixed(2)
+          + "</b>,应拒放行率 <b>" + pct(rec.leak_rate) + "</b>,可答通过率 <b>"
+          + pct(rec.pass_rate) + "</b>。误拦的那些走兜底进问题池,"
+          + "恰好是飞轮的燃料,所以这笔账划得来。";
+      } else if (d.in_sync === "conservative" && ius) {
+        fallback = "数学最优点在 <b>" + rec.threshold.toFixed(2)
+          + "</b>(应拒放行率 " + pct(rec.leak_rate) + ",可答通过率 " + pct(rec.pass_rate)
+          + "),但那条线还有应拒漏进来。在用阈值拉到 <b>" + Number(d.in_use).toFixed(2)
+          + "</b>,应拒放行率压到 <b>" + pct(ius.leak_rate) + "</b>,可答通过率 <b>"
+          + pct(ius.pass_rate) + "</b>,代价是 <b>" + pct(1 - ius.pass_rate)
+          + "</b> 的可答被误拦。误拦的走兜底进问题池,恰好是飞轮的燃料。";
+      } else {
+        fallback = "在用阈值 <b>" + Number(d.in_use).toFixed(2)
+          + "</b> 低于推荐值 <b>" + rec.threshold.toFixed(2)
+          + "</b>,应拒可能漏进来,建议回填推荐值。";
+      }
+      // LLM 读图描述的是推荐阈值;在用阈值不一致时加前缀说明
+      let prefix = "";
+      if (d.in_sync === "conservative" && ius) {
+        prefix = "在用阈值 <b>" + Number(d.in_use).toFixed(2)
+          + "</b> 下应拒放行率 <b>" + pct(ius.leak_rate) + "</b>、可答通过率 <b>"
+          + pct(ius.pass_rate) + "</b>。以下是数学最优点(推荐阈值 "
+          + rec.threshold.toFixed(2) + ")的分析:<br>";
+      }
+      // prefix 是已经安全的 HTML,不过 readNoteHtml;LLM note 走 readNoteHtml 转义+加粗
+      read.innerHTML = prefix + readNoteHtml(d.read_note, fallback);
+      p.appendChild(read);
+
+      const split = el("div", "split");
+      split.style.marginTop = "14px";
+      split.appendChild(wnote);
+      const n2 = el("div", "note");
+      n2.appendChild(el("h3", null, "什么是「可答被误拦」"));
+      n2.appendChild(el("p", null,
+        "库里其实有答案,但那一次召回的证据太散(库里写「猫窝清洗保养说明」,用户问"
+        + "「能扔洗衣机里洗吗」),精排分上不去,置信度算出来低于线。闸只看证据分,"
+        + "不知道「库里有」,于是当成答不上处理。这条问题落池、归并、审核补进知识库,"
+        + "下次同样问法就召回得动了。"));
+      split.appendChild(n2);
+      p.appendChild(split);
+      jobFoot(p, d);
+      return p;
+    }
+
+    async function load() {
+      const body = $("body");
+      try {
+        const d = await api("/api/observability/overview");
+        body.innerHTML = "";
+        body.appendChild(costPanel(d.cost));
+        body.appendChild(trendPanel(d.trend));
+        body.appendChild(calibrationPanel(d.calibration));
+      } catch (e) {
+        body.innerHTML = "";
+        body.appendChild(missingBox("取数失败：" + e.message));
+        toast("取数失败：" + e.message, true);
+      }
+    }
+
+    $("refreshBtn").onclick = load;
+    mountAdminNav("/observability");
+    load();
+  </script>
+</body>
+</html>

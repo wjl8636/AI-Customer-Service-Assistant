@@ -1,0 +1,28 @@
+"""ch08 验收 1 演示:新内置工具 = 往 builtin/ 丢本文件,核心代码零改动。
+演示步骤:
+  cp scripts/demo_ch08_promotions.py.txt app/tools/builtin/promotions.py
+  重启 uvicorn(内置工具服务启动时登记)→ 聊天问「最近有什么优惠活动」即可用。
+演示后可删除 app/tools/builtin/promotions.py 恢复原状。"""
+import random
+
+from langchain_core.tools import tool
+from pydantic import BaseModel, Field
+
+from app.tools import registry
+
+
+class PromotionInput(BaseModel):
+    keyword: str = Field(description="想查的活动关键词或商品品类,例如 猫粮")
+
+
+@tool(args_schema=PromotionInput)
+async def query_promotions(keyword: str) -> dict:
+    """查询当前进行中的优惠活动/促销信息。用于用户问「有什么活动/优惠/折扣」时。"""
+    rng = random.Random(f"promo:{keyword}")
+    return {"keyword": keyword,
+            "promotions": [f"{keyword}品类满{rng.randint(99, 299)}减{rng.randint(10, 50)}",
+                           f"新客专享 {rng.choice(['9折', '8.5折', '95折'])}"],
+            "valid_until": "2026-07-31"}
+
+
+registry.register(registry.spec_from_langchain_tool(query_promotions, source="builtin"))

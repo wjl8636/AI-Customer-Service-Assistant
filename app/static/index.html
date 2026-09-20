@@ -1,0 +1,1302 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 智能客服</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <style>
+    :root {
+      --ink: #2b2632;
+      --fur: #ff9f57;
+      --coral: #ff7a59;
+      --cream: #fff6e6;
+      --paper: #fffaf0;
+      --muted: #9b8f86;
+      --error: #d6455a;
+      --online: #5fcf6a;
+      --shadow: 4px 4px 0 var(--ink);
+      --shadow-sm: 3px 3px 0 var(--ink);
+      --shadow-lg: 8px 8px 0 var(--ink);
+    }
+    * { box-sizing: border-box; }
+    img, svg { image-rendering: pixelated; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas,
+        "PingFang SC", "Microsoft YaHei", monospace;
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f7d9a8;
+      background-image:
+        linear-gradient(rgba(43,38,50,0.05) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(43,38,50,0.05) 2px, transparent 2px);
+      background-size: 24px 24px;
+    }
+    .app {
+      width: 100%;
+      max-width: 980px;
+      height: 100dvh;
+      display: flex;
+      flex-direction: row;
+      background: var(--cream);
+      overflow: hidden;
+    }
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    @media (min-width: 780px) {
+      .app {
+        height: min(90dvh, 860px);
+        border: 4px solid var(--ink);
+        box-shadow: var(--shadow-lg);
+      }
+    }
+
+    /* ---------- ch07:会话侧栏(多会话切换,验收长对话记忆用) ---------- */
+    #sidebar {
+      flex: none;
+      width: 224px;
+      display: flex;
+      flex-direction: column;
+      border-right: 4px solid var(--ink);
+      background: var(--paper);
+    }
+    @media (max-width: 779px) { #sidebar { display: none; } }
+    .sb-head {
+      padding: 14px 12px;
+      border-bottom: 4px solid var(--ink);
+      background: var(--fur);
+      font-weight: 700; font-size: 13px; letter-spacing: 1px;
+    }
+    #conv-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+    #conv-list::-webkit-scrollbar { width: 10px; }
+    #conv-list::-webkit-scrollbar-thumb { background: var(--fur); border: 2px solid var(--paper); }
+    .conv-item {
+      text-align: left;
+      border: 3px solid var(--ink);
+      background: var(--cream);
+      padding: 8px 9px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--ink);
+      box-shadow: 2px 2px 0 var(--ink);
+      transition: transform .06s steps(1), box-shadow .06s steps(1), background .06s;
+    }
+    .conv-item:hover { background: #ffedd6; }
+    .conv-item:active { transform: translate(2px, 2px); box-shadow: none; }
+    .conv-item.active { background: var(--fur); transform: translate(2px, 2px); box-shadow: none; }
+    .conv-item .ci-top { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .conv-item .ci-sum {
+      font-size: 9px; font-weight: 700; color: #fff; background: var(--coral);
+      border: 1px solid var(--ink); padding: 0 4px; letter-spacing: .5px;
+    }
+    .conv-item .ci-preview {
+      font-size: 11px; color: var(--muted); margin-top: 3px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .sb-empty { font-size: 11.5px; color: var(--muted); text-align: center; padding: 18px 6px; }
+
+    /* ---------- header ---------- */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 4px solid var(--ink);
+      background: var(--fur);
+    }
+    .avatar {
+      flex: none;
+      border: 3px solid var(--ink);
+      background: var(--paper);
+      box-shadow: var(--shadow-sm);
+    }
+    .avatar.lg { width: 46px; height: 46px; padding: 4px; }
+    .avatar.sm { width: 34px; height: 34px; padding: 3px; box-shadow: 2px 2px 0 var(--ink); }
+    .avatar svg { width: 100%; height: 100%; display: block; }
+    .head-meta { display: flex; flex-direction: column; line-height: 1.35; }
+    .head-meta .name { font-weight: 700; font-size: 15px; letter-spacing: .5px; }
+    .head-meta .status { font-size: 11px; color: #6b5b48; display: flex; align-items: center; gap: 6px; }
+    .dot-online { width: 8px; height: 8px; background: var(--online); border: 2px solid var(--ink); }
+    header .spacer { flex: 1; }
+    #new-chat {
+      border: 3px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform .06s steps(1), box-shadow .06s steps(1);
+    }
+    #new-chat:hover { background: #fff; }
+    #new-chat:active { transform: translate(3px, 3px); box-shadow: none; }
+
+    /* ---------- messages ---------- */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 18px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    #messages::-webkit-scrollbar { width: 12px; }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb { background: var(--fur); border: 3px solid var(--cream); }
+
+    .row { display: flex; align-items: flex-end; gap: 10px; animation: pop .12s steps(2); }
+    .row.user { justify-content: flex-end; }
+    .row.bot { justify-content: flex-start; }
+    @keyframes pop { from { transform: translateY(6px); } to { transform: translateY(0); } }
+
+    .bubble {
+      max-width: 74%;
+      padding: 11px 14px;
+      border: 3px solid var(--ink);
+      line-height: 1.65;
+      font-size: 14.5px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: var(--shadow-sm);
+    }
+    .row.bot .bubble { background: var(--paper); color: var(--ink); }
+    .row.user .bubble { background: var(--coral); color: #fff; }
+    .bubble.error { background: #ffe3e6; color: var(--error); }
+    .tool-badges { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+    .tool-badges:empty { display: none; }
+    .tool-badge {
+      align-self: flex-start;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(0,0,0,.05);
+      border: 1px dashed var(--muted);
+      padding: 1px 7px;
+      border-radius: 999px;
+    }
+    /* markdown 渲染(仅 bot 气泡文本区) */
+    .bubble-text { white-space: normal; }
+    .bubble-text > *:first-child { margin-top: 0; }
+    .bubble-text > *:last-child { margin-bottom: 0; }
+    .bubble-text p { margin: 0 0 8px; }
+    .bubble-text h1, .bubble-text h2, .bubble-text h3,
+    .bubble-text h4, .bubble-text h5, .bubble-text h6 {
+      margin: 10px 0 6px; font-size: 15px; font-weight: 700;
+    }
+    .bubble-text ul, .bubble-text ol { margin: 6px 0; padding-left: 20px; }
+    .bubble-text li { margin: 2px 0; }
+    .bubble-text code {
+      background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 4px;
+      font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;
+    }
+    .bubble-text pre {
+      background: rgba(0,0,0,.06); padding: 8px 10px; border-radius: 6px;
+      overflow-x: auto; margin: 8px 0;
+    }
+    .bubble-text pre code { background: none; padding: 0; }
+    .bubble-text table { border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+    .bubble-text th, .bubble-text td {
+      border: 1px solid var(--muted); padding: 4px 8px; text-align: left;
+    }
+    .bubble-text th { background: rgba(0,0,0,.05); font-weight: 700; }
+    .bubble-text hr { border: none; border-top: 2px dashed var(--muted); margin: 10px 0; }
+    .bubble-text a { color: var(--coral); text-decoration: underline; }
+    .bubble-text strong { font-weight: 700; }
+    .bubble-text blockquote {
+      margin: 6px 0; padding: 2px 10px; border-left: 3px solid var(--muted); color: var(--muted);
+    }
+
+    /* ---------- ch04:可点引用角标 + 来源浮层 ---------- */
+    .cite {
+      cursor: pointer;
+      color: var(--coral);
+      font-weight: 700;
+      font-size: 11px;
+      vertical-align: super;
+      line-height: 0;
+      padding: 0 1px;
+      border-bottom: 2px solid var(--coral);
+      user-select: none;
+    }
+    .cite:hover { background: var(--coral); color: #fff; }
+    .cite-pop {
+      position: fixed;
+      z-index: 50;
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      box-shadow: var(--shadow);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.55;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    .cite-pop-path {
+      font-weight: 700; font-size: 12px; color: var(--coral);
+      border-bottom: 2px dashed var(--muted); padding-bottom: 5px; margin-bottom: 6px;
+      word-break: break-word;
+    }
+    .cite-pop-q { font-weight: 700; margin-bottom: 4px; }
+    .cite-pop-a { color: var(--ink); white-space: pre-wrap; word-break: break-word; }
+    .cite-pop-meta { margin-top: 7px; font-size: 11px; color: var(--muted); }
+
+    /* ---------- ch04:每段回答满意度反馈(👍/👎) ---------- */
+    .feedback { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .fb-btn {
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      width: 32px; height: 28px;
+      display: grid; place-items: center;
+      font-size: 14px; line-height: 1; padding: 0;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 var(--ink);
+      transition: transform .06s steps(1), box-shadow .06s steps(1), background .06s;
+    }
+    .fb-btn:hover:not(:disabled) { background: #ffedd6; }
+    .fb-btn:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: none; }
+    .fb-btn.active { background: var(--coral); color: #fff; transform: translate(2px, 2px); box-shadow: none; }
+    .fb-btn.dim { opacity: .4; }
+    .fb-btn:disabled { cursor: default; }
+    .fb-btn svg { width: 18px; height: 18px; display: block; image-rendering: auto; }
+    .fb-done { font-size: 11px; color: var(--muted); letter-spacing: .3px; }
+
+    /* typing indicator (blocky) */
+    .typing { display: inline-flex; gap: 5px; padding: 3px 1px; }
+    .typing span {
+      width: 8px; height: 8px; background: var(--coral);
+      animation: blink 1s steps(2) infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: .2s; }
+    .typing span:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: .25; } }
+
+    /* ---------- empty state ---------- */
+    .empty {
+      margin: auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 20px 12px;
+      animation: pop .16s steps(3);
+    }
+    .empty .mascot {
+      width: 96px; height: 96px; padding: 10px;
+      border: 4px solid var(--ink);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+    }
+    .empty .mascot svg { width: 100%; height: 100%; display: block; }
+    .empty h1 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 1px; }
+    .empty p { margin: 0; color: var(--muted); font-size: 13px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; max-width: 440px; }
+    .chip {
+      border: 3px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 9px 14px;
+      font-family: inherit;
+      font-size: 12.5px;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform .06s steps(1), box-shadow .06s steps(1), background .06s;
+    }
+    .chip:hover { background: #ffedd6; }
+    .chip:active { transform: translate(3px, 3px); box-shadow: none; }
+
+    /* ---------- ch05:actions 帧 - 转人工/建工单两独立按钮 ---------- */
+    .action-bar { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .action-btn {
+      border: 3px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 12.5px;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform .06s steps(1), box-shadow .06s steps(1), background .06s;
+    }
+    .action-btn:hover:not(:disabled) { background: #ffedd6; }
+    .action-btn:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: none; }
+    .action-btn:disabled { background: #e8dcc8; color: var(--muted); cursor: not-allowed; }
+
+    /* ---------- ch05:建工单表单弹窗 ---------- */
+    .modal-mask {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(43, 38, 50, .45);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-mask.open { display: flex; }
+    .ticket-modal {
+      width: 100%; max-width: 420px;
+      background: var(--paper);
+      border: 4px solid var(--ink);
+      box-shadow: var(--shadow-lg);
+      padding: 20px;
+    }
+    .ticket-modal h3 { margin: 0 0 4px; font-size: 16px; color: var(--ink); }
+    .ticket-modal .sub { margin: 0 0 16px; font-size: 12px; color: var(--muted); }
+    .ticket-field { margin-bottom: 14px; }
+    .ticket-field label { display: block; font-size: 12.5px; margin-bottom: 6px; color: var(--ink); }
+    .ticket-field label .req { color: var(--error); }
+    .ticket-field select,
+    .ticket-field textarea {
+      width: 100%; font-family: inherit; font-size: 13px; color: var(--ink);
+      border: 3px solid var(--ink); background: var(--cream);
+      padding: 9px 10px; box-shadow: var(--shadow-sm);
+    }
+    .ticket-field textarea { resize: vertical; min-height: 88px; }
+    .ticket-field select:focus,
+    .ticket-field textarea:focus { outline: none; background: #fff; }
+    .ticket-err { color: var(--error); font-size: 12px; min-height: 16px; margin: -6px 0 10px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .modal-actions button {
+      border: 3px solid var(--ink); font-family: inherit; font-size: 13px;
+      padding: 9px 16px; cursor: pointer; box-shadow: var(--shadow-sm);
+    }
+    .modal-actions .cancel { background: var(--paper); color: var(--ink); }
+    .modal-actions .cancel:hover { background: #ffedd6; }
+    .modal-actions .submit { background: var(--coral); color: #fff; }
+    .modal-actions .submit:hover:not(:disabled) { background: #ff6a45; }
+    .modal-actions button:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: none; }
+    .modal-actions .submit:disabled { background: #e8dcc8; color: var(--muted); cursor: not-allowed; }
+    /* ch06:退款表单只读订单号输入框 */
+    .ticket-field input {
+      width: 100%; font-family: inherit; font-size: 13px; color: var(--muted);
+      border: 3px solid var(--ink); background: #efe6d4;
+      padding: 9px 10px; box-shadow: var(--shadow-sm);
+    }
+    /* ch06:订单选择器卡片(interrupt 缺订单号时聊天流里点选) */
+    .order-cards { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .order-card {
+      text-align: left; border: 3px solid var(--ink); background: var(--cream);
+      padding: 9px 11px; cursor: pointer; box-shadow: var(--shadow-sm);
+      font-family: inherit; color: var(--ink);
+    }
+    .order-card:hover:not(:disabled) { background: #ffedd6; }
+    .order-card:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: none; }
+    .order-card:disabled { cursor: not-allowed; opacity: .55; }
+    .order-card.picked { background: #ffe0b3; opacity: 1; }
+    .order-card .oc-top { font-size: 13px; font-weight: 700; }
+    .order-card .oc-mid { font-size: 12.5px; margin-top: 2px; }
+    .order-card .oc-bot { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+    /* ---------- ch08:工单预览确认卡(interrupt confirm_ticket) ---------- */
+    .ticket-confirm {
+      border: 3px solid var(--ink); background: var(--cream);
+      padding: 10px 12px; margin-top: 10px; box-shadow: var(--shadow-sm);
+    }
+    .ticket-confirm .tc-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .ticket-confirm .tc-row { font-size: 12.5px; margin-top: 3px; display: flex; gap: 6px; }
+    .ticket-confirm .tc-label { color: var(--muted); flex: none; }
+    .ticket-confirm .tc-btns { display: flex; gap: 8px; margin-top: 10px; }
+    .ticket-confirm .tc-cancel { background: var(--paper); }
+    .ticket-confirm.decided { opacity: .75; }
+
+    /* ---------- composer ---------- */
+    footer { padding: 14px 16px 16px; border-top: 4px solid var(--ink); background: var(--cream); }
+    .composer {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      padding: 8px 8px 8px 14px;
+      box-shadow: var(--shadow);
+    }
+    #input {
+      flex: 1;
+      resize: none;
+      border: none;
+      background: transparent;
+      padding: 8px 0;
+      font-size: 14.5px;
+      font-family: inherit;
+      line-height: 1.5;
+      max-height: 128px;
+      color: var(--ink);
+    }
+    #input:focus { outline: none; }
+    #input::placeholder { color: var(--muted); }
+    #send {
+      flex: none;
+      width: 44px; height: 44px;
+      border: 3px solid var(--ink);
+      background: var(--coral);
+      color: #fff;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform .06s steps(1), box-shadow .06s steps(1);
+    }
+    #send:hover:not(:disabled) { background: #ff8b6d; }
+    #send:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: none; }
+    #send:disabled { background: #d8cbc0; cursor: not-allowed; box-shadow: none; }
+    #send svg { width: 22px; height: 22px; display: block; }
+    .foot-note { text-align: center; color: var(--muted); font-size: 11px; margin: 10px 0 0; letter-spacing: .3px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside id="sidebar">
+      <div class="sb-head">会话记录</div>
+      <div id="conv-list"></div>
+    </aside>
+    <div class="main">
+    <header>
+      <div class="avatar lg" data-cat></div>
+      <div class="head-meta">
+        <span class="name">小喵 · 智能客服</span>
+        <span class="status"><span class="dot-online"></span>ONLINE · 喵喵优选</span>
+      </div>
+      <div class="spacer"></div>
+      <button id="new-chat" type="button">＋ 新对话</button>
+    </header>
+
+    <div id="messages"></div>
+
+    <footer>
+      <div class="composer">
+        <textarea id="input" rows="1" placeholder="输入消息,和小喵聊聊吧~(回车发送 / Shift+回车换行)"></textarea>
+        <button id="send" type="button" aria-label="发送">
+          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor">
+            <rect x="2" y="7" width="8" height="2"/><rect x="8" y="5" width="2" height="2"/>
+            <rect x="8" y="9" width="2" height="2"/><rect x="10" y="3" width="2" height="2"/>
+            <rect x="10" y="11" width="2" height="2"/><rect x="12" y="1" width="2" height="2"/>
+            <rect x="12" y="13" width="2" height="2"/>
+          </svg>
+        </button>
+      </div>
+      <p class="foot-note">小喵是 AI 助手,涉及具体订单会为你转接人工核实</p>
+    </footer>
+    </div><!-- /.main -->
+  </div>
+
+  <!-- ch05:建工单表单弹窗(点「建工单」弹出,选类别+填描述再提交) -->
+  <div class="modal-mask" id="ticketMask">
+    <div class="ticket-modal" role="dialog" aria-modal="true" aria-labelledby="ticketTitle">
+      <h3 id="ticketTitle">创建工单</h3>
+      <p class="sub">小喵会把问题登记成工单跟进处理</p>
+      <div class="ticket-field">
+        <label for="ticketType">反馈类别 <span class="req">*</span></label>
+        <select id="ticketType">
+          <option value="" disabled selected>请选择反馈类别…</option>
+          <option value="售后">售后</option>
+          <option value="投诉">投诉</option>
+          <option value="咨询">咨询</option>
+        </select>
+      </div>
+      <div class="ticket-field">
+        <label for="ticketDesc">反馈描述 <span class="req">*</span></label>
+        <textarea id="ticketDesc" placeholder="请描述您遇到的问题…"></textarea>
+      </div>
+      <div class="ticket-err" id="ticketErr"></div>
+      <div class="modal-actions">
+        <button type="button" class="cancel" id="ticketCancel">取消</button>
+        <button type="button" class="submit" id="ticketSubmit">提交工单</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-mask" id="refundMask">
+    <div class="ticket-modal" role="dialog" aria-modal="true" aria-labelledby="refundTitle">
+      <h3 id="refundTitle">提交退款工单</h3>
+      <p class="sub">确认订单与退款原因后提交,小喵会为您登记退款申请</p>
+      <div class="ticket-field">
+        <label for="refundOrder">订单号</label>
+        <input id="refundOrder" type="text" readonly />
+      </div>
+      <div class="ticket-field">
+        <label for="refundReason">退款原因 <span class="req">*</span></label>
+        <select id="refundReason">
+          <option value="" disabled selected>请选择退款原因…</option>
+          <option value="七天无理由">七天无理由</option>
+          <option value="质量问题">质量问题</option>
+          <option value="发错货">发错货</option>
+          <option value="不想要了">不想要了</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+      <div class="ticket-err" id="refundErr"></div>
+      <div class="modal-actions">
+        <button type="button" class="cancel" id="refundCancel">取消</button>
+        <button type="button" class="submit" id="refundSubmit">提交退款</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SESSION_KEY = "mewhelp_session_id";      // 稳定用户标识,作 user_id
+    const CONV_KEY = "mewhelp_conversation_id";     // 当前会话 id,由后端 done 帧回传
+    const SUGGESTIONS = ["退换货政策是怎样的?", "怎么查我的物流进度?", "猫粮怎么选?", "会员有什么权益?"];
+    const CAT_SVG =
+      '<svg viewBox="0 0 16 16" shape-rendering="crispEdges">' +
+      '<rect x="2" y="2" width="4" height="4" fill="#2b2632"/>' +
+      '<rect x="10" y="2" width="4" height="4" fill="#2b2632"/>' +
+      '<rect x="2" y="4" width="12" height="9" fill="#2b2632"/>' +
+      '<rect x="3" y="3" width="2" height="3" fill="#ff9f57"/>' +
+      '<rect x="11" y="3" width="2" height="3" fill="#ff9f57"/>' +
+      '<rect x="3" y="5" width="10" height="7" fill="#ff9f57"/>' +
+      '<rect x="5" y="7" width="1" height="2" fill="#2b2632"/>' +
+      '<rect x="10" y="7" width="1" height="2" fill="#2b2632"/>' +
+      '<rect x="7" y="9" width="2" height="1" fill="#ff8095"/>' +
+      '<rect x="4" y="10" width="1" height="1" fill="#ffd7a8"/>' +
+      '<rect x="11" y="10" width="1" height="1" fill="#ffd7a8"/>' +
+      "</svg>";
+    // 点赞/点踩大拇指(矢量填充,fill=currentColor:平时 ink、点亮时随按钮变白)
+    const THUMB_UP_SVG =
+      '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
+    const THUMB_DOWN_SVG =
+      '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>';
+    const messagesEl = document.getElementById("messages");
+    const inputEl = document.getElementById("input");
+    const sendBtn = document.getElementById("send");
+    const newChatBtn = document.getElementById("new-chat");
+
+    for (const el of document.querySelectorAll("[data-cat]")) el.innerHTML = CAT_SVG;
+
+    function getUserId() {
+      let id = localStorage.getItem(SESSION_KEY);
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem(SESSION_KEY, id);
+      }
+      return id;
+    }
+
+    function getConversationId() {
+      const v = localStorage.getItem(CONV_KEY);
+      return v ? Number(v) : null;
+    }
+    function setConversationId(id) {
+      if (id != null) localStorage.setItem(CONV_KEY, String(id));
+    }
+    function clearConversationId() {
+      localStorage.removeItem(CONV_KEY);
+    }
+
+    function renderEmptyState() {
+      messagesEl.innerHTML = "";
+      const wrap = document.createElement("div");
+      wrap.className = "empty";
+      wrap.innerHTML =
+        '<div class="mascot">' + CAT_SVG + "</div>" +
+        "<h1>你好,我是小喵</h1>" +
+        "<p>喵喵优选的智能客服,商品、订单、售后都能问我~</p>" +
+        '<div class="chips"></div>';
+      const chips = wrap.querySelector(".chips");
+      for (const s of SUGGESTIONS) {
+        const c = document.createElement("button");
+        c.className = "chip";
+        c.type = "button";
+        c.textContent = s;
+        c.addEventListener("click", () => { if (!sendBtn.disabled) send(s); });
+        chips.appendChild(c);
+      }
+      messagesEl.appendChild(wrap);
+    }
+
+    function clearEmptyState() {
+      const e = messagesEl.querySelector(".empty");
+      if (e) e.remove();
+    }
+
+    function addRow(role) {
+      clearEmptyState();
+      const row = document.createElement("div");
+      row.className = "row " + role;
+      if (role === "bot") {
+        const av = document.createElement("div");
+        av.className = "avatar sm";
+        av.innerHTML = CAT_SVG;
+        row.appendChild(av);
+      }
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return bubble;
+    }
+
+    function showTyping(bubble) {
+      bubble.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+    }
+
+    function setBusy(busy) {
+      sendBtn.disabled = busy;
+      inputEl.disabled = busy;
+      if (!busy) inputEl.focus();
+    }
+
+    // ---------- 轻量 markdown 渲染(零依赖,先转义再解析,防注入) ----------
+    function escapeHtml(s) {
+      return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    }
+    function renderInline(s) {
+      s = s.replace(/`([^`]+)`/g, (m, c) => "<code>" + c + "</code>");
+      s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+      s = s.replace(/~~([^~]+)~~/g, "<del>$1</del>");
+      // 仅允许 http(s) 链接,挡 javascript: 等
+      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      return s;
+    }
+    function renderMarkdown(md) {
+      const lines = escapeHtml(md).split("\n");
+      const out = [];
+      const isTableSep = (l) => l && l.includes("-") && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(l);
+      const splitRow = (l) => l.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map((c) => c.trim());
+      const isSpecial = (l, next) =>
+        /^```/.test(l) || /^(#{1,6})\s/.test(l) || /^\s*[-*+]\s+/.test(l) ||
+        /^\s*\d+\.\s+/.test(l) || /^\s*(---|\*\*\*|___)\s*$/.test(l) || /^\s*>\s?/.test(l) ||
+        (l.includes("|") && isTableSep(next));
+      let i = 0;
+      while (i < lines.length) {
+        const line = lines[i];
+        let m;
+        if (/^```/.test(line)) {                                   // 代码块
+          const buf = []; i++;
+          while (i < lines.length && !/^```\s*$/.test(lines[i])) { buf.push(lines[i]); i++; }
+          i++;
+          out.push("<pre><code>" + buf.join("\n") + "</code></pre>"); continue;
+        }
+        if ((m = line.match(/^(#{1,6})\s+(.*)$/))) {               // 标题
+          const n = m[1].length; out.push(`<h${n}>` + renderInline(m[2]) + `</h${n}>`); i++; continue;
+        }
+        if (/^\s*(---|\*\*\*|___)\s*$/.test(line)) { out.push("<hr>"); i++; continue; }  // 分隔线
+        if (line.includes("|") && isTableSep(lines[i + 1])) {      // 表格
+          const headers = splitRow(line); i += 2; const rows = [];
+          while (i < lines.length && lines[i].includes("|") && lines[i].trim() !== "") {
+            rows.push(splitRow(lines[i])); i++;
+          }
+          let t = "<table><thead><tr>" + headers.map((c) => "<th>" + renderInline(c) + "</th>").join("") + "</tr></thead><tbody>";
+          for (const r of rows) t += "<tr>" + r.map((c) => "<td>" + renderInline(c) + "</td>").join("") + "</tr>";
+          out.push(t + "</tbody></table>"); continue;
+        }
+        if (/^\s*[-*+]\s+/.test(line)) {                           // 无序列表
+          const items = [];
+          while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) {
+            items.push("<li>" + renderInline(lines[i].replace(/^\s*[-*+]\s+/, "")) + "</li>"); i++;
+          }
+          out.push("<ul>" + items.join("") + "</ul>"); continue;
+        }
+        if (/^\s*\d+\.\s+/.test(line)) {                           // 有序列表
+          const items = [];
+          while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+            items.push("<li>" + renderInline(lines[i].replace(/^\s*\d+\.\s+/, "")) + "</li>"); i++;
+          }
+          out.push("<ol>" + items.join("") + "</ol>"); continue;
+        }
+        if (/^\s*>\s?/.test(line)) {                               // 引用
+          const buf = [];
+          while (i < lines.length && /^\s*>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^\s*>\s?/, "")); i++; }
+          out.push("<blockquote>" + buf.map(renderInline).join("<br>") + "</blockquote>"); continue;
+        }
+        if (line.trim() === "") { i++; continue; }                 // 空行
+        const para = [];                                           // 段落
+        while (i < lines.length && lines[i].trim() !== "" && !isSpecial(lines[i], lines[i + 1])) {
+          para.push(lines[i]); i++;
+        }
+        out.push("<p>" + para.map(renderInline).join("<br>") + "</p>");
+      }
+      return out.join("");
+    }
+
+    // ---------- ch04:引用角标 [n] → 可点,弹来源浮层(section_path + 原文) ----------
+    let citePop = null;
+    function ensureCitePop() {
+      if (citePop) return citePop;
+      citePop = document.createElement("div");
+      citePop.className = "cite-pop";
+      citePop.hidden = true;
+      document.body.appendChild(citePop);
+      document.addEventListener("click", (e) => {
+        if (citePop.hidden) return;
+        if (!citePop.contains(e.target) && !e.target.classList.contains("cite")) hideCitePop();
+      });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideCitePop(); });
+      window.addEventListener("resize", hideCitePop);
+      return citePop;
+    }
+    function hideCitePop() { if (citePop) citePop.hidden = true; }
+    function showCitePop(sup, c) {
+      const pop = ensureCitePop();
+      pop.innerHTML =
+        '<div class="cite-pop-path">' + escapeHtml(c.section_path || "来源") + "</div>" +
+        (c.question ? '<div class="cite-pop-q">' + escapeHtml(c.question) + "</div>" : "") +
+        '<div class="cite-pop-a">' + escapeHtml(c.answer || "") + "</div>" +
+        '<div class="cite-pop-meta">来源编号 [' + c.n + "]" +
+        (c.content_type ? " · " + escapeHtml(c.content_type) : "") + "</div>";
+      pop.hidden = false;
+      // 定位:角标下方,超出视口右/下边则回收
+      const r = sup.getBoundingClientRect();
+      const pw = Math.min(320, window.innerWidth - 24);
+      pop.style.width = pw + "px";
+      let left = Math.min(r.left, window.innerWidth - pw - 12);
+      let top = r.bottom + 6;
+      if (top + pop.offsetHeight > window.innerHeight - 12) top = Math.max(12, r.top - pop.offsetHeight - 6);
+      pop.style.left = Math.max(12, left) + "px";
+      pop.style.top = top + "px";
+    }
+    function decorateCitations(container, citations) {
+      const byN = new Map(citations.map((c) => [String(c.n), c]));
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      const targets = [];
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.parentElement.classList.contains("cite")) continue;
+        if (/\[\d+\]/.test(node.nodeValue)) targets.push(node);
+      }
+      for (const textNode of targets) {
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        const re = /\[(\d+)\]/g;
+        let m;
+        while ((m = re.exec(textNode.nodeValue))) {
+          const c = byN.get(m[1]);
+          if (!c) continue;  // 非有效编号,保留原文
+          if (m.index > last) frag.appendChild(document.createTextNode(textNode.nodeValue.slice(last, m.index)));
+          const sup = document.createElement("sup");
+          sup.className = "cite";
+          sup.textContent = "[" + m[1] + "]";
+          sup.title = c.section_path || "查看来源";
+          sup.addEventListener("click", (e) => { e.stopPropagation(); showCitePop(sup, c); });
+          frag.appendChild(sup);
+          last = m.index + m[0].length;
+        }
+        if (last > 0) {
+          if (last < textNode.nodeValue.length) frag.appendChild(document.createTextNode(textNode.nodeValue.slice(last)));
+          textNode.parentNode.replaceChild(frag, textNode);
+        }
+      }
+    }
+
+    // ---------- ch04:每段回答满意度反馈(👍/👎,点一次点亮 + 已反馈,一次性)----------
+    function addFeedbackBar(bubble) {
+      if (bubble.querySelector(".feedback")) return;   // 防重复挂
+      const bar = document.createElement("div");
+      bar.className = "feedback";
+      const up = document.createElement("button");
+      up.type = "button"; up.className = "fb-btn"; up.innerHTML = THUMB_UP_SVG;
+      up.setAttribute("aria-label", "这条回答有帮助");
+      const down = document.createElement("button");
+      down.type = "button"; down.className = "fb-btn"; down.innerHTML = THUMB_DOWN_SVG;
+      down.setAttribute("aria-label", "这条回答没帮助");
+      const done = document.createElement("span");
+      done.className = "fb-done"; done.hidden = true; done.textContent = "已反馈,谢谢~";
+      bar.append(up, down, done);
+      // ch09:向上找这条回答之前最近的用户气泡,把该轮用户原话带给后端(👎 落池要用)
+      function userQuestionBefore() {
+        let row = bubble.closest(".row");
+        while (row && (row = row.previousElementSibling)) {
+          if (row.classList && row.classList.contains("user")) {
+            const b = row.querySelector(".bubble");
+            return (b ? b.textContent : row.textContent).trim();
+          }
+        }
+        return "";
+      }
+      function give(chosen, other) {
+        if (bar.dataset.given) return;   // 一次性,点过不再变
+        bar.dataset.given = "1";
+        chosen.classList.add("active");  // 点亮选中的
+        other.classList.add("dim");      // 另一个淡出
+        up.disabled = true; down.disabled = true;
+        done.hidden = false;             // 显示"已反馈"
+        // ch09:反馈接后端——👎 落低置信度问题池进飞轮,👍 后端只记日志;失败静默,UI 行为不变
+        fetch("/api/feedback", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversation_id: getConversationId(),
+                                 rating: chosen === down ? "down" : "up",
+                                 question: userQuestionBefore() }),
+        }).catch(() => {});
+      }
+      up.addEventListener("click", () => give(up, down));
+      down.addEventListener("click", () => give(down, up));
+      bubble.appendChild(bar);
+    }
+
+    // ---------- ch05:actions 帧 - 转人工/建工单两按钮交互 ----------
+    function renderActions(bubble, items) {
+      const bar = document.createElement("div");
+      bar.className = "action-bar";
+      for (const a of items) {
+        if (a.type === "select_order") {
+          // ch08:报了不属于自己的订单号被拒,把他名下的单列出来点选。拒绝之后得给条出路,
+          // 否则用户既查不到,也不知道自己的单号是多少
+          renderOrderCards(bubble, a.orders || [], pickThenAsk);
+          continue;
+        }
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "action-btn";
+        if (a.type === "transfer_human") {
+          btn.textContent = "转人工";
+          btn.addEventListener("click", () => {
+            btn.disabled = true;
+            // 纯前端模拟:显示已转接 + 客服小猫问候(本章不接真人系统)
+            const sys = addRow("bot"); sys.textContent = "已转接人工客服";
+            const greet = addRow("bot");
+            greet.textContent = "您好,我是客服小猫,请问有什么可以帮您的";
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          });
+        } else if (a.type === "create_ticket") {
+          btn.textContent = "建工单";
+          // 点「建工单」不再直接建单,而是弹出工单表单让用户选类别+填描述再提交
+          btn.addEventListener("click", () => openTicketModal(btn));
+        } else if (a.type === "refund_form") {
+          btn.textContent = "提交退款工单";
+          // ch06:能退时 Agent 调 submit_refund 被拦成此动作,点开退款表单(订单号只读+原因下拉)
+          btn.addEventListener("click", () => openRefundModal(btn, a.draft || {}));
+        }
+        bar.appendChild(btn);
+      }
+      if (bar.children.length) bubble.appendChild(bar);   // 只有订单卡时不留一条空按钮栏
+    }
+
+    // ---------- ch05:建工单表单弹窗控制 ----------
+    const ticketMask = document.getElementById("ticketMask");
+    const ticketType = document.getElementById("ticketType");
+    const ticketDesc = document.getElementById("ticketDesc");
+    const ticketErr = document.getElementById("ticketErr");
+    const ticketSubmit = document.getElementById("ticketSubmit");
+    const ticketCancel = document.getElementById("ticketCancel");
+    let ticketTriggerBtn = null;  // 记住是哪个「建工单」按钮触发的,成功后置灰它
+
+    function openTicketModal(triggerBtn) {
+      ticketTriggerBtn = triggerBtn;
+      ticketType.value = "";          // 不预选,强制用户选
+      ticketDesc.value = "";          // 留空,用户自己写
+      ticketErr.textContent = "";
+      ticketSubmit.disabled = false;
+      ticketSubmit.textContent = "提交工单";
+      ticketMask.classList.add("open");
+      ticketDesc.focus();
+    }
+    function closeTicketModal() {
+      ticketMask.classList.remove("open");
+      ticketTriggerBtn = null;
+    }
+
+    ticketCancel.addEventListener("click", closeTicketModal);
+    // 点遮罩空白处 / Esc 关闭(取消不建单,建工单按钮保持可用可重开)
+    ticketMask.addEventListener("click", (e) => { if (e.target === ticketMask) closeTicketModal(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && ticketMask.classList.contains("open")) closeTicketModal();
+    });
+
+    ticketSubmit.addEventListener("click", async () => {
+      const type = ticketType.value;
+      const desc = ticketDesc.value.trim();
+      if (!type) { ticketErr.textContent = "请选择反馈类别"; return; }
+      if (!desc) { ticketErr.textContent = "请填写反馈描述"; ticketDesc.focus(); return; }
+      ticketErr.textContent = "";
+      ticketSubmit.disabled = true;
+      ticketSubmit.textContent = "提交中…";
+      try {
+        const resp = await fetch("/api/actions/create-ticket", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversation_id: getConversationId(),
+            description: desc,
+            ticket_type: type,
+          }),
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          if (ticketTriggerBtn) ticketTriggerBtn.disabled = true;  // 建成后该气泡的按钮置灰
+          closeTicketModal();
+          addRow("bot").textContent = "工单已创建:" + data.ticket_no;
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        } else {
+          ticketErr.textContent = "工单创建失败,请稍后重试";
+          ticketSubmit.disabled = false;
+          ticketSubmit.textContent = "提交工单";
+        }
+      } catch (e) {
+        ticketErr.textContent = "工单创建失败,请稍后重试";
+        ticketSubmit.disabled = false;
+        ticketSubmit.textContent = "提交工单";
+      }
+    });
+
+    // ---------- ch06:退款表单弹窗控制(订单号只读 + 固定类目原因下拉)----------
+    const refundMask = document.getElementById("refundMask");
+    const refundOrder = document.getElementById("refundOrder");
+    const refundReason = document.getElementById("refundReason");
+    const refundErr = document.getElementById("refundErr");
+    const refundSubmit = document.getElementById("refundSubmit");
+    const refundCancel = document.getElementById("refundCancel");
+    let refundTriggerBtn = null;
+
+    function openRefundModal(triggerBtn, draft) {
+      refundTriggerBtn = triggerBtn;
+      refundOrder.value = (draft && draft.order_id) || "";
+      refundReason.value = "";
+      refundErr.textContent = "";
+      refundSubmit.disabled = false;
+      refundSubmit.textContent = "提交退款";
+      refundMask.classList.add("open");
+    }
+    function closeRefundModal() { refundMask.classList.remove("open"); refundTriggerBtn = null; }
+    refundCancel.addEventListener("click", closeRefundModal);
+    refundMask.addEventListener("click", (e) => { if (e.target === refundMask) closeRefundModal(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && refundMask.classList.contains("open")) closeRefundModal();
+    });
+    refundSubmit.addEventListener("click", async () => {
+      const reason = refundReason.value;
+      if (!reason) { refundErr.textContent = "请选择退款原因"; return; }
+      refundErr.textContent = "";
+      refundSubmit.disabled = true;
+      refundSubmit.textContent = "提交中…";
+      try {
+        const resp = await fetch("/api/actions/create-refund", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversation_id: getConversationId(),
+            order_id: refundOrder.value, reason }),
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          if (refundTriggerBtn) refundTriggerBtn.disabled = true;
+          closeRefundModal();
+          addRow("bot").textContent = "退款申请已提交:" + data.ticket_no;
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        } else {
+          refundErr.textContent = "退款提交失败,请稍后重试";
+          refundSubmit.disabled = false;
+          refundSubmit.textContent = "提交退款";
+        }
+      } catch (e) {
+        refundErr.textContent = "退款提交失败,请稍后重试";
+        refundSubmit.disabled = false;
+        refundSubmit.textContent = "提交退款";
+      }
+    });
+
+    // ---------- ch06:订单选择器卡片(interrupt 缺订单号 → 聊天流点选 → resume 续跑)----------
+    // onPick 决定点完卡片干什么:ch06 是 resume 把图续跑下去;ch08 归属校验拒绝之后
+    // 没有待续跑的图,点了就当用户重新问一句(见 pickThenAsk)。卡片长相只此一份。
+    function renderOrderCards(bubble, orders, onPick) {
+      const intro = document.createElement("div");
+      intro.className = "bubble-text";
+      intro.textContent = orders.length ? "请选择您要处理的订单:" : "没有查到可选订单,请直接提供订单号。";
+      bubble.appendChild(intro);
+      const wrap = document.createElement("div");
+      wrap.className = "order-cards";
+      for (const o of orders) {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "order-card";
+        card.innerHTML =
+          '<div class="oc-top">订单 ' + o.order_id + '</div>' +
+          '<div class="oc-mid">' + (o.product || "") + '</div>' +
+          '<div class="oc-bot">' + (o.status || "") + ' · ¥' + (o.amount ?? "") + '</div>';
+        card.addEventListener("click", async () => {
+          wrap.querySelectorAll(".order-card").forEach((c) => (c.disabled = true));
+          card.classList.add("picked");
+          await (onPick || pickThenResume)(o);
+        });
+        wrap.appendChild(card);
+      }
+      bubble.appendChild(wrap);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // ch06:点完续跑图(有 interrupt 挂着)
+    async function pickThenResume(o) {
+      addRow("user").textContent = "选择订单 " + o.order_id;
+      const nb = addRow("bot");
+      setBusy(true);
+      try {
+        await streamInto(nb, () => fetch("/api/actions/resume", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversation_id: getConversationId(), order_id: o.order_id }),
+        }));
+      } catch (e) {
+        nb.className = "bubble error";
+        nb.textContent = "续跑失败,请稍后重试";
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    // ch08:归属校验拒绝之后给的出路。这轮已经答完了,没有图等着续跑,所以走正常发消息那条路
+    async function pickThenAsk(o) {
+      await send("查一下订单 " + o.order_id);
+    }
+
+    // ---------- ch08:工单预览确认卡(interrupt confirm_ticket → 确认提交/取消 → resume 续跑)----------
+    function renderTicketConfirm(bubble, preview) {
+      const intro = document.createElement("div");
+      intro.className = "bubble-text";
+      intro.textContent = "请确认工单信息:";
+      bubble.appendChild(intro);
+      const card = document.createElement("div");
+      card.className = "ticket-confirm";
+      card.innerHTML =
+        '<div class="tc-title">📋 工单预览</div>' +
+        '<div class="tc-row"><span class="tc-label">工单类型</span><span>' + escapeHtml(preview.ticket_type || "咨询") + "</span></div>" +
+        '<div class="tc-row"><span class="tc-label">问题描述</span><span>' + escapeHtml(preview.description || "") + "</span></div>";
+      const btns = document.createElement("div");
+      btns.className = "tc-btns";
+      const mk = (text, confirmed, extraClass) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "action-btn" + (extraClass ? " " + extraClass : "");
+        btn.textContent = text;
+        btn.addEventListener("click", async () => {
+          btns.querySelectorAll("button").forEach((b) => (b.disabled = true));
+          card.classList.add("decided");
+          addRow("user").textContent = confirmed ? "确认提交工单" : "取消建单";
+          const nb = addRow("bot");
+          setBusy(true);
+          try {
+            await streamInto(nb, () => fetch("/api/actions/resume", {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ conversation_id: getConversationId(), confirmed }),
+            }));
+          } catch (e) {
+            nb.className = "bubble error";
+            nb.textContent = "续跑失败,请稍后重试";
+          } finally {
+            setBusy(false);
+          }
+        });
+        return btn;
+      };
+      btns.appendChild(mk("确认提交", true));
+      btns.appendChild(mk("取消", false, "tc-cancel"));
+      card.appendChild(btns);
+      bubble.appendChild(card);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // 读一条 SSE 流,按帧分发到 on.{delta,tool,citations,actions,interrupt};done 存 conversation_id;event: error 抛错
+    async function readSSEStream(resp, on) {
+      if (!resp.ok || !resp.body) throw new Error("bad response");
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const frames = buffer.split("\n\n");
+        buffer = frames.pop() ?? "";
+        for (const frame of frames) {
+          if (frame.startsWith("event: error")) throw new Error("stream error");
+          const line = frame.split("\n").find((l) => l.startsWith("data: "));
+          if (!line) continue;
+          const payload = line.slice(6);
+          if (payload === "[DONE]") return;
+          const data = JSON.parse(payload);
+          if (data.event === "tool") on.tool && on.tool(data.name);
+          else if (data.event === "citations") on.citations && on.citations(data.items || []);
+          else if (data.event === "interrupt") {
+            if (data.conversation_id) setConversationId(data.conversation_id);  // 中断无 done 帧,靠这里记会话号供续跑
+            on.interrupt && on.interrupt(data);
+          }
+          else if (data.event === "actions") on.actions && on.actions(data.items || []);
+          else if (data.event === "done") setConversationId(data.conversation_id);
+          else if (data.delta !== undefined) on.delta && on.delta(data.delta);
+        }
+      }
+    }
+
+    // 把一次 SSE 流(/api/chat 首轮 或 /api/actions/resume 续跑)渲染进 bubble;
+    // 遇 interrupt 按 kind 分发:select_order 渲染订单卡点选,confirm_ticket 渲染工单预览卡
+    // (确认提交/取消),两者都在用户操作后开新气泡续跑。
+    async function streamInto(bubble, doFetch) {
+      showTyping(bubble);
+      let structured = false, textStarted = false, interrupted = false, raw = "";
+      let badgesEl = null, textEl = null, citations = [], actions = [];
+      function ensureStructure() {
+        if (structured) return;
+        bubble.innerHTML = "";
+        badgesEl = document.createElement("div");
+        badgesEl.className = "tool-badges";
+        textEl = document.createElement("div");
+        textEl.className = "bubble-text";
+        bubble.appendChild(badgesEl);
+        bubble.appendChild(textEl);
+        showTyping(textEl);
+        structured = true;
+      }
+      const resp = await doFetch();
+      await readSSEStream(resp, {
+        delta: (delta) => {
+          ensureStructure();
+          if (!textStarted) { textEl.innerHTML = ""; textStarted = true; }
+          raw += delta;
+          textEl.innerHTML = renderMarkdown(raw);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        },
+        tool: (toolName) => {
+          ensureStructure();
+          const b = document.createElement("div");
+          b.className = "tool-badge";
+          b.textContent = "🔧 调用了 " + toolName;
+          badgesEl.appendChild(b);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        },
+        citations: (items) => { citations = items; },
+        actions: (items) => { actions = items; },
+        interrupt: (data) => {
+          interrupted = true;
+          if (!structured) { bubble.innerHTML = ""; structured = true; }
+          // ch08:中断按 kind 分发——select_order 弹订单卡,confirm_ticket 弹工单预览卡
+          if (data.kind === "confirm_ticket") renderTicketConfirm(bubble, data.preview || {});
+          else renderOrderCards(bubble, data.orders || []);
+        },
+      });
+      if (interrupted) return;
+      if (!textStarted) { ensureStructure(); textEl.innerHTML = ""; textEl.textContent = "(无回复)"; }
+      if (textStarted && citations.length) decorateCitations(textEl, citations);
+      if (actions.length) renderActions(bubble, actions);
+      if (textStarted) addFeedbackBar(bubble);
+    }
+
+    async function send(preset) {
+      const message = (preset ?? inputEl.value).trim();
+      if (!message) return;
+      inputEl.value = "";
+      autoGrow();
+      addRow("user").textContent = message;
+      setBusy(true);
+      const bubble = addRow("bot");
+      try {
+        await streamInto(bubble, () => fetch("/api/chat", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: getUserId(), message, conversation_id: getConversationId() }),
+        }));
+      } catch (err) {
+        bubble.className = "bubble error";
+        bubble.textContent = "回复失败,请稍后重试";
+      } finally {
+        setBusy(false);
+        loadConversations();   // ch07:每轮后刷新侧栏(新会话入列/摘要标记更新)
+      }
+    }
+
+    // ---------- ch07:会话侧栏(列表 / 切换 / 历史回载) ----------
+    const convListEl = document.getElementById("conv-list");
+
+    async function loadConversations() {
+      try {
+        const r = await fetch("/api/conversations?user_id=" + encodeURIComponent(getUserId()));
+        if (!r.ok) return;
+        renderConvList((await r.json()).items || []);
+      } catch (e) { /* 侧栏失败不影响聊天 */ }
+    }
+
+    function renderConvList(items) {
+      convListEl.innerHTML = "";
+      if (!items.length) {
+        const d = document.createElement("div");
+        d.className = "sb-empty";
+        d.textContent = "还没有会话,发条消息开始吧~";
+        convListEl.appendChild(d);
+        return;
+      }
+      const current = getConversationId();
+      for (const it of items) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "conv-item" + (it.id === current ? " active" : "");
+        b.innerHTML =
+          '<div class="ci-top">#' + it.id +
+          (it.has_summary ? ' <span class="ci-sum">已摘要</span>' : "") + "</div>" +
+          '<div class="ci-preview"></div>';
+        b.querySelector(".ci-preview").textContent = it.preview || "";
+        b.addEventListener("click", () => { if (!sendBtn.disabled) switchConversation(it.id); });
+        convListEl.appendChild(b);
+      }
+    }
+
+    // 历史回载时补挂按钮:suggested_actions 不落库,但这两句话术是固定文案,
+    // 且转人工/建工单按钮不依赖当轮上下文(转人工纯前端模拟,建工单表单用户现填),
+    // 按文案精确匹配重建即可。话术改了这里要跟着改(单一来源在后端 prompts.py)。
+    const REPLAY_ACTIONS = [
+      { text: "抱歉,这个问题我暂时没有查到确切信息,不敢乱答。建议您联系人工客服进一步确认,以免给您错误的指引。",
+        actions: [{ type: "transfer_human" }] },
+      { text: "非常抱歉给您带来了不好的体验,我理解您的心情。您可以选择转接人工客服,或让我为您登记一张工单跟进处理。",
+        actions: [{ type: "transfer_human" }, { type: "create_ticket", draft: {} }] },
+    ];
+
+    async function switchConversation(cid) {
+      // 已是当前会话且聊天区有内容才跳过;页面刚刷新时聊天区是空的,点当前会话也要回载
+      if (cid === getConversationId() && messagesEl.querySelector(".row")) return;
+      setConversationId(cid);
+      messagesEl.innerHTML = "";
+      try {
+        const r = await fetch("/api/conversations/" + cid + "/messages");
+        if (r.ok) {
+          for (const m of ((await r.json()).items || [])) {
+            if (!m.content) continue;
+            if (m.role === "user") {
+              addRow("user").textContent = m.content;
+            } else {
+              const bubble = addRow("bot");
+              const textEl = document.createElement("div");
+              textEl.className = "bubble-text";
+              textEl.innerHTML = renderMarkdown(m.content);
+              bubble.appendChild(textEl);
+              const hit = REPLAY_ACTIONS.find((ra) => m.content.trim() === ra.text);
+              if (hit) renderActions(bubble, hit.actions);
+              addFeedbackBar(bubble);   // 反馈条(👍/👎)回载也要有,和直播轮一致
+            }
+          }
+        }
+      } catch (e) { /* 历史加载失败仍可继续聊 */ }
+      if (!messagesEl.children.length) renderEmptyState();
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      loadConversations();   // 刷新 active 高亮
+      inputEl.focus();
+    }
+
+    function autoGrow() {
+      inputEl.style.height = "auto";
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 128) + "px";
+    }
+
+    sendBtn.addEventListener("click", () => send());
+    inputEl.addEventListener("input", autoGrow);
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        send();
+      }
+    });
+    newChatBtn.addEventListener("click", () => {
+      clearConversationId();          // 开新会话:丢弃当前 conversation_id(旧会话仍在侧栏可切回)
+      renderEmptyState();
+      loadConversations();            // 清 active 高亮
+      inputEl.focus();
+    });
+
+    getUserId();
+    renderEmptyState();
+    loadConversations();              // ch07:进页面先拉会话列表
+    inputEl.focus();
+  </script>
+</body>
+</html>

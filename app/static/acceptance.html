@@ -1,0 +1,135 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 分类器验收总览</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    .cards { margin-top: 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+    .gcard {
+      background: var(--cream); border: 4px solid var(--ink); box-shadow: var(--shadow);
+      padding: 12px 14px 14px; display: flex; flex-direction: column;
+    }
+    .gcard .head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .gcard .no {
+      border: 3px solid var(--ink); background: var(--paper); width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .gcard.pass .no { background: var(--online); }
+    .gcard.fail .no { background: var(--error); color: #fff; }
+    .gcard h3 { font-size: 14px; margin: 0; }
+    .gcard .headline {
+      margin: 10px 0 0; font-size: 13px; line-height: 1.7; background: var(--paper);
+      border: 2px solid var(--ink); padding: 7px 10px;
+    }
+    .gcard .note { margin-top: 7px; font-size: 12px; color: #6d6478; line-height: 1.7; }
+    .gcard .foot { margin-top: auto; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>分类器验收总览</h1>
+      <span class="sub">九项实证全在页面上跑，不用回终端</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div class="gatebar" id="gatebar"></div>
+
+    <div class="tip">
+      口径：<b>通过</b>产物已生成且过线；<b>不达标</b>跑过但没过线，回头搞数据；
+      <b>缺产物</b>还没跑过，点卡片里的按钮现场跑。页面上的数与终端 make 跑出来的是同一份产物，
+      不在接口里重算，避免出现第二个真相。
+    </div>
+
+    <div class="cards" id="cards"><div class="miss">加载中…</div></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    const PILL = { pass: ["pass", "通过"], fail: ["fail", "不达标"], missing: ["missing", "缺产物"] };
+    let jobSpecs = {};
+
+    async function load() {
+      try {
+        const d = await api("/api/acceptance/overview");
+        jobSpecs = Object.fromEntries(d.jobs.map((j) => [j.name, j]));
+        renderGatebar(d);
+        renderCards(d);
+      } catch (e) {
+        $("cards").textContent = "";
+        $("cards").appendChild(missingBox("加载失败：" + e.message));
+      }
+    }
+
+    function renderGatebar(d) {
+      const bar = $("gatebar");
+      bar.textContent = "";
+      const gate = el("div", "stat " + (d.all_pass ? "pass" : "fail"));
+      gate.appendChild(el("span", "", "闸门"));
+      gate.appendChild(el("b", "", d.passed + " / " + d.total));
+      bar.appendChild(gate);
+
+      const svc = el("div", "stat " + (d.classifier.online ? "pass" : "fail"));
+      svc.appendChild(el("span", "", "分类器 :8110"));
+      svc.appendChild(el("b", "", d.classifier.online ? "在线" : "离线"));
+      bar.appendChild(svc);
+
+      const evalBlock = d.blocks.find((b) => b.key === "eval");
+      const st = el("div", "stat");
+      st.appendChild(el("span", "", "评测结论"));
+      const b = el("b", "", evalBlock.status === "missing" ? "—" : evalBlock.headline.split(" · ")[0]);
+      b.style.fontSize = "15px";
+      b.style.lineHeight = "1.9";
+      st.appendChild(b);
+      bar.appendChild(st);
+    }
+
+    function renderCards(d) {
+      const box = $("cards");
+      box.textContent = "";
+      for (const blk of d.blocks) {
+        const [cls, label] = PILL[blk.status];
+        const card = el("div", "gcard " + blk.status);
+        const head = el("div", "head");
+        head.appendChild(el("div", "no", String(blk.no)));
+        head.appendChild(el("h3", "", blk.title));
+        head.appendChild(el("span", "pill " + cls, label));
+        head.appendChild(el("span", "spacer"));
+        if (blk.page) {
+          const a = el("a", "btn sm", "详情 →");
+          a.href = blk.page;
+          head.appendChild(a);
+        }
+        card.appendChild(head);
+        card.appendChild(el("div", "headline", blk.headline || "—"));
+        card.appendChild(el("div", "note", blk.note || ""));
+        const specs = (blk.jobs || []).map((n) => jobSpecs[n]).filter(Boolean);
+        if (specs.length) {
+          const foot = el("div", "foot");
+          foot.appendChild(jobRow(specs, load));
+          card.appendChild(foot);
+        }
+        box.appendChild(card);
+      }
+    }
+
+    mountAdminNav("/acceptance");
+    $("refreshBtn").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>

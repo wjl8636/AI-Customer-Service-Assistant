@@ -1,0 +1,300 @@
+{"id": "A1", "bucket": "A_policy", "query": "退货政策是什么样的", "expect_section": ["退货政策"], "expect_points": ["7 天无理由", "不影响二次销售"], "should_refuse": false}
+{"id": "A2", "bucket": "A_policy", "query": "怎么申请退款", "expect_section": ["如何申请退款"], "expect_points": ["我的订单", "原路退回"], "should_refuse": false}
+{"id": "A3", "bucket": "A_policy", "query": "换货流程怎么走", "expect_section": ["换货流程"], "expect_points": ["7 天内", "补发新品"], "should_refuse": false}
+{"id": "A4", "bucket": "A_policy", "query": "现货商品下单后多久发货", "expect_section": ["发货时效"], "expect_points": ["48 小时内"], "should_refuse": false}
+{"id": "A5", "bucket": "A_policy", "query": "满多少钱包邮,不满怎么收运费", "expect_section": ["运费怎么算"], "expect_points": ["满 99 元包邮", "10 元运费"], "should_refuse": false}
+{"id": "A6", "bucket": "A_policy", "query": "发票怎么开,多久能收到", "expect_section": ["发票"], "expect_points": ["申请开票", "3 个工作日"], "should_refuse": false}
+{"id": "A7", "bucket": "A_policy", "query": "无理由退货的适用范围是什么,哪些商品不能退", "expect_section": ["适用范围"], "expect_points": ["7 天", "定制类、生鲜类"], "should_refuse": false}
+{"id": "A8", "bucket": "A_policy", "query": "退款审核通过后多久能到账,退到哪里", "expect_section": ["退款时效"], "expect_points": ["原路退回"], "should_refuse": false}
+{"id": "A9", "bucket": "A_policy", "query": "商品保修期是多久,人为损坏还能保修吗", "expect_section": ["保修说明"], "expect_points": ["12 个月", "人为损坏不在保修"], "should_refuse": false}
+{"id": "A10", "bucket": "A_policy", "query": "售后各类问题的首次响应时间和处理时限分别是多少", "expect_section": ["处理时限"], "expect_points": ["退款", "3 个工作日"], "should_refuse": false}
+{"id": "A11", "bucket": "A_policy", "query": "下单支持哪些支付方式", "expect_section": ["支付方式"], "expect_points": ["支付宝", "微信", "银行"], "should_refuse": false}
+{"id": "A12", "bucket": "A_policy", "query": "会员分几个等级,积分是怎么算的", "expect_section": ["会员等级"], "expect_points": ["银卡", "金卡", "100 积分抵 1 元"], "should_refuse": false}
+{"id": "A13", "bucket": "A_policy", "query": "优惠券怎么用,一单能用几张", "expect_section": ["优惠券"], "expect_points": ["结算页", "一张店铺券"], "should_refuse": false}
+{"id": "A14", "bucket": "A_policy", "query": "配送范围有哪些,偏远地区运费怎么算", "expect_section": ["配送范围"], "expect_points": ["偏远地区运费另计", "港澳台及海外暂不支持"], "should_refuse": false}
+{"id": "A15", "bucket": "A_policy", "query": "订单可以修改或取消吗", "expect_section": ["订单可以修改或取消"], "expect_points": ["未发货", "拒收"], "should_refuse": false}
+{"id": "A16", "bucket": "A_policy", "query": "换货的运费由谁承担", "expect_section": ["换货运费"], "expect_points": ["买家承担", "平台承担"], "should_refuse": false}
+{"id": "A17", "bucket": "A_policy", "query": "商品运输途中破损了怎么处理", "expect_section": ["运输破损"], "expect_points": ["48 小时内", "开箱视频"], "should_refuse": false}
+{"id": "A18", "bucket": "A_policy", "query": "价格保护怎么申请,多少天内有效", "expect_section": ["价格保护"], "expect_points": ["7 天内", "差价"], "should_refuse": false}
+{"id": "A19", "bucket": "A_policy", "query": "智能设备第一次用怎么安装激活", "expect_section": ["设备安装"], "expect_points": ["App", "2.4G Wi-Fi"], "should_refuse": false}
+{"id": "A20", "bucket": "A_policy", "query": "人工客服在哪里找,服务时间是几点到几点", "expect_section": ["人工客服"], "expect_points": ["联系客服", "9:00 至 22:00"], "should_refuse": false}
+{"id": "A21", "bucket": "A_policy", "query": "喵金等级要年消费多少钱,有什么生日礼", "expect_section": ["会员等级"], "expect_points": ["5000 元起", "猫罐头礼盒"], "should_refuse": false}
+{"id": "A22", "bucket": "A_policy", "query": "喵银会员能打几折,年消费门槛多少", "expect_section": ["会员等级"], "expect_points": ["1000 元起", "95 折"], "should_refuse": false}
+{"id": "A23", "bucket": "A_policy", "query": "新疆西藏内蒙的运费是多少,能参与包邮吗", "expect_section": ["运费与包邮", "配送范围"], "expect_points": ["偏远地区"], "should_refuse": false}
+{"id": "A24", "bucket": "A_policy", "query": "积分是怎么累计的,退货了积分会扣回去吗", "expect_section": ["积分怎么攒"], "expect_points": ["1 元累计 1 积分", "同步扣回"], "should_refuse": false}
+{"id": "A25", "bucket": "A_policy", "query": "活动期间拿到的双倍积分算不算等级升级", "expect_section": ["积分怎么攒"], "expect_points": ["双倍积分不计入等级升级"], "should_refuse": false}
+{"id": "A26", "bucket": "A_policy", "query": "100 积分能抵多少现金,一笔订单最多抵多少", "expect_section": ["积分怎么用"], "expect_points": ["抵 1 元", "单笔最多抵 30 元"], "should_refuse": false}
+{"id": "A27", "bucket": "A_policy", "query": "2000 积分能兑换什么,要不要自己付运费", "expect_section": ["积分怎么用"], "expect_points": ["自动饮水机滤芯 3 片", "包邮"], "should_refuse": false}
+{"id": "A28", "bucket": "A_policy", "query": "800 积分换的零食小样是包邮的吗", "expect_section": ["积分怎么用"], "expect_points": ["猫零食小样", "6 元运费"], "should_refuse": false}
+{"id": "A29", "bucket": "A_policy", "query": "能开电子专用发票吗,需要先准备什么资料", "expect_section": ["可开票类型"], "expect_points": ["电子专票", "纳税人识别号"], "should_refuse": false}
+{"id": "A30", "bucket": "A_policy", "query": "纸质专票哪种账户能申请,快递费谁付", "expect_section": ["可开票类型"], "expect_points": ["仅企业账户", "快递费到付"], "should_refuse": false}
+{"id": "A31", "bucket": "A_policy", "query": "订单完成后多少天之内可以申请开票", "expect_section": ["开票时效"], "expect_points": ["30 天内可申请开票"], "should_refuse": false}
+{"id": "A32", "bucket": "A_policy", "query": "超过开票期限的订单还能补开发票吗", "expect_section": ["开票时效"], "expect_points": ["超过 30 天需联系客服"], "should_refuse": false}
+{"id": "A33", "bucket": "A_policy", "query": "金卡会员在售后上有什么专属待遇", "expect_section": ["会员专属售后权益"], "expect_points": ["优先客服接入", "上门取件"], "should_refuse": false}
+{"id": "A34", "bucket": "A_policy", "query": "银卡会员每月有几次退换货运费权益", "expect_section": ["会员专属售后权益", "会员运费权益"], "expect_points": ["1 次/月"], "should_refuse": false}
+{"id": "A35", "bucket": "A_policy", "query": "金卡每月免运费几次,当月没用完能不能留到下个月", "expect_section": ["会员运费权益"], "expect_points": ["每月享 3 次免运费", "不结转"], "should_refuse": false}
+{"id": "A36", "bucket": "A_policy", "query": "免运费权益能不能抵掉偏远地区的附加运费", "expect_section": ["会员运费权益"], "expect_points": ["不与偏远地区附加运费冲抵"], "should_refuse": false}
+{"id": "A37", "bucket": "A_policy", "query": "设备要寄修的话流程是什么,超保会不会收费", "expect_section": ["维修寄修流程"], "expect_points": ["指定维修点", "工本费"], "should_refuse": false}
+{"id": "A38", "bucket": "A_policy", "query": "缺货的商品一般多久补货,有没有到货提醒", "expect_section": ["商品缺货"], "expect_points": ["3 至 7 天内补货", "到货通知"], "should_refuse": false}
+{"id": "A39", "bucket": "A_policy", "query": "哪些商品在非质量问题的情况下不支持退货", "expect_section": ["不支持退货的商品"], "expect_points": ["已拆封的猫砂", "不支持无理由退货"], "should_refuse": false}
+{"id": "A40", "bucket": "A_policy", "query": "换货能不能换成别的型号或者别的颜色", "expect_section": ["换货条件"], "expect_points": ["不同型号或颜色需先退货"], "should_refuse": false}
+{"id": "A41", "bucket": "A_policy", "query": "同一笔订单最多能申请几次同款换货", "expect_section": ["换货条件"], "expect_points": ["一次同款换货"], "should_refuse": false}
+{"id": "A42", "bucket": "A_policy", "query": "保修期内非人为损坏可以要求换货还是只能修", "expect_section": ["质量问题与保修"], "expect_points": ["免费维修或换货"], "should_refuse": false}
+{"id": "A43", "bucket": "A_policy", "query": "少发漏发导致的退换货,运费由谁承担", "expect_section": ["退换货运费承担"], "expect_points": ["少发漏发", "平台承担"], "should_refuse": false}
+{"id": "A44", "bucket": "A_policy", "query": "预售定金支持无理由退吗,尾款没按时付怎么办", "expect_section": ["预售与定金"], "expect_points": ["不支持无理由退定金", "按活动规则处理"], "should_refuse": false}
+{"id": "A45", "bucket": "A_policy", "query": "预售商品的发货时间怎么确定", "expect_section": ["预售与定金", "发货时效"], "expect_points": ["详情页"], "should_refuse": false}
+{"id": "A46", "bucket": "A_policy", "query": "布艺猫窝能机洗吗,要注意什么", "expect_section": ["猫窝是否可以机洗"], "expect_points": ["拆掉内部垫芯", "轻柔模式冷水洗"], "should_refuse": false}
+{"id": "A47", "bucket": "A_policy", "query": "带加热模块的猫窝可以放洗衣机吗", "expect_section": ["猫窝是否可以机洗"], "expect_points": ["不可机洗", "局部擦洗"], "should_refuse": false}
+{"id": "A48", "bucket": "A_policy", "query": "缺货补发的处理时限是几个工作日", "expect_section": ["处理时限"], "expect_points": ["缺货补发", "5 个工作日"], "should_refuse": false}
+{"id": "A49", "bucket": "A_policy", "query": "投诉类问题多久会有首次响应", "expect_section": ["处理时限"], "expect_points": ["投诉", "1 小时"], "should_refuse": false}
+{"id": "A50", "bucket": "A_policy", "query": "价格保护申请的处理时限是多久", "expect_section": ["处理时限"], "expect_points": ["价格保护", "3 个工作日"], "should_refuse": false}
+{"id": "A51", "bucket": "A_policy", "query": "喂食器卡粮怎么自查,粮食颗粒多大合适", "expect_section": ["常见故障"], "expect_points": ["12mm", "清理出粮口"], "should_refuse": false}
+{"id": "A52", "bucket": "A_policy", "query": "摄像头频繁离线该怎么排查", "expect_section": ["常见故障"], "expect_points": ["2.4G 频段", "重新配网"], "should_refuse": false}
+{"id": "A53", "bucket": "A_policy", "query": "非联网的商品比如猫爬架需要自己组装吗", "expect_section": ["设备安装", "MH-CT30"], "expect_points": ["自行组装"], "should_refuse": false}
+{"id": "A54", "bucket": "A_policy", "query": "无理由退货寄回去的运费是谁承担", "expect_section": ["退换货运费承担"], "expect_points": ["无理由退货的退回运费由买家承担"], "should_refuse": false}
+{"id": "A55", "bucket": "A_policy", "query": "因为质量问题换货,来回运费谁出", "expect_section": ["换货运费"], "expect_points": ["因质量问题或发错货的换货"], "should_refuse": false}
+{"id": "A56", "bucket": "A_policy", "query": "订单已经发货了还能改收货地址吗", "expect_section": ["订单可以修改或取消"], "expect_points": ["已发货订单无法修改收货信息"], "should_refuse": false}
+{"id": "A57", "bucket": "A_policy", "query": "想多买一件,能直接改订单里的商品数量吗", "expect_section": ["订单可以修改或取消"], "expect_points": ["取消后重新下单"], "should_refuse": false}
+{"id": "A58", "bucket": "A_policy", "query": "保修期是从下单那天算还是签收那天算", "expect_section": ["保修说明", "质量问题与保修"], "expect_points": ["自签收"], "should_refuse": false}
+{"id": "A59", "bucket": "A_policy", "query": "七天无理由的七天从哪一天开始算", "expect_section": ["适用范围"], "expect_points": ["自签收之日起 7 天内"], "should_refuse": false}
+{"id": "A60", "bucket": "A_policy", "query": "自己摔坏的还能免费保修吗", "expect_section": ["保修说明"], "expect_points": ["人为损坏不在保修范围"], "should_refuse": false}
+{"id": "B1", "bucket": "B_model", "query": "MH-LP100 的废砂盒多久倒一次", "expect_section": ["MH-LP100"], "expect_points": ["5 至 7 天", "7 天(单猫)"], "should_refuse": false}
+{"id": "B2", "bucket": "B_model", "query": "智能猫砂盆 Pro MH-LP100 有没有 App 远程监控", "expect_section": ["MH-LP100"], "expect_points": ["App 远程监控"], "should_refuse": false}
+{"id": "B3", "bucket": "B_model", "query": "MH-LP50 和 Pro 版有什么区别", "expect_section": ["MH-LP50"], "expect_points": ["无 App", "价格更低"], "should_refuse": false}
+{"id": "B4", "bucket": "B_model", "query": "MH-LP200 适合多大的猫,几天倒一次废砂盒", "expect_section": ["MH-LP200"], "expect_points": ["2kg 至 12kg", "每 3 至 5 天"], "should_refuse": false}
+{"id": "B5", "bucket": "B_model", "query": "自动饮水机 MH-W20 的滤芯多久换一次", "expect_section": ["MH-W20"], "expect_points": ["每 2 周"], "should_refuse": false}
+{"id": "B6", "bucket": "B_model", "query": "MH-W40 的滤芯多久换一次,有没有杀菌功能", "expect_section": ["MH-W40"], "expect_points": ["每 3 周", "UV"], "should_refuse": false}
+{"id": "B7", "bucket": "B_model", "query": "MH-W60 水箱有多大,多久换一次滤芯", "expect_section": ["MH-W60"], "expect_points": ["6L", "每 4 周"], "should_refuse": false}
+{"id": "B8", "bucket": "B_model", "query": "MH-W20 水箱容量是多大", "expect_section": ["MH-W20"], "expect_points": ["2L"], "should_refuse": false}
+{"id": "B9", "bucket": "B_model", "query": "猫爬架 MH-CT30 单层能承重多少", "expect_section": ["MH-CT30"], "expect_points": ["单层最大 10kg"], "should_refuse": false}
+{"id": "B10", "bucket": "B_model", "query": "恒温加热垫 MH-HP12 可以一直通电开着吗", "expect_section": ["MH-HP12"], "expect_points": ["不超过 12 小时"], "should_refuse": false}
+{"id": "B11", "bucket": "B_model", "query": "MH-HP12 加热垫的尺寸是多少", "expect_section": ["MH-HP12"], "expect_points": ["40cm × 30cm"], "should_refuse": false}
+{"id": "B12", "bucket": "B_model", "query": "MH-HP20 加热垫有几档温度,分别是多少度", "expect_section": ["MH-HP20"], "expect_points": ["三档", "30℃ / 38℃ / 45℃"], "should_refuse": false}
+{"id": "B13", "bucket": "B_model", "query": "MH-FD10 喂食器有没有摄像头", "expect_section": ["MH-FD10"], "expect_points": ["不含摄像头"], "should_refuse": false}
+{"id": "B14", "bucket": "B_model", "query": "MH-FD30 喂食器能远程投喂吗,粮桶多大", "expect_section": ["MH-FD30"], "expect_points": ["1080P 摄像头", "6L", "App 远程"], "should_refuse": false}
+{"id": "B15", "bucket": "B_model", "query": "全景看护摄像头 MH-CAM1 是多少分辨率", "expect_section": ["MH-CAM1"], "expect_points": ["2K"], "should_refuse": false}
+{"id": "B16", "bucket": "B_model", "query": "智能猫砂盆 Lite MH-LP50 能不能联网用 App", "expect_section": ["MH-LP50"], "expect_points": ["不含 App"], "should_refuse": false}
+{"id": "B17", "bucket": "B_model", "query": "MH-W40 的水箱容量是多大", "expect_section": ["MH-W40"], "expect_points": ["4L"], "should_refuse": false}
+{"id": "B18", "bucket": "B_model", "query": "自动饮水机 Pro 不锈钢 MH-W60 是什么材质,几个水泵", "expect_section": ["MH-W60"], "expect_points": ["304 不锈钢", "双泵"], "should_refuse": false}
+{"id": "B19", "bucket": "B_model", "query": "MH-FD10 粮桶容量多大,一天最多喂几餐", "expect_section": ["MH-FD10"], "expect_points": ["4L", "6 餐"], "should_refuse": false}
+{"id": "B20", "bucket": "B_model", "query": "MH-LP200 的猫砂容量是多大", "expect_section": ["MH-LP200"], "expect_points": ["12L"], "should_refuse": false}
+{"id": "B21", "bucket": "B_model", "query": "MH-LP100 适用的猫咪体重范围是多少", "expect_section": ["MH-LP100"], "expect_points": ["1.5kg 至 8kg"], "should_refuse": false}
+{"id": "B22", "bucket": "B_model", "query": "MH-LP100 的猫砂容量是多少升", "expect_section": ["MH-LP100"], "expect_points": ["9L"], "should_refuse": false}
+{"id": "B23", "bucket": "B_model", "query": "MH-LP100 断电以后设置会不会丢", "expect_section": ["MH-LP100"], "expect_points": ["断电后配置自动保存"], "should_refuse": false}
+{"id": "B24", "bucket": "B_model", "query": "MH-LP50 适用体重和猫砂容量分别是多少", "expect_section": ["MH-LP50"], "expect_points": ["1.5kg 至 6kg", "6L"], "should_refuse": false}
+{"id": "B25", "bucket": "B_model", "query": "MH-LP50 是靠什么方式除臭的", "expect_section": ["MH-LP50"], "expect_points": ["物理除臭盖板"], "should_refuse": false}
+{"id": "B26", "bucket": "B_model", "query": "MH-LP50 更适合单猫还是多猫家庭", "expect_section": ["MH-LP50"], "expect_points": ["适合单猫家庭"], "should_refuse": false}
+{"id": "B27", "bucket": "B_model", "query": "MH-LP200 有没有防夹保护", "expect_section": ["MH-LP200"], "expect_points": ["双重称重防夹"], "should_refuse": false}
+{"id": "B28", "bucket": "B_model", "query": "MH-LP200 用的是什么除臭方式,有没有 App 档案", "expect_section": ["MH-LP200"], "expect_points": ["活性炭除臭", "多猫健康档案"], "should_refuse": false}
+{"id": "B29", "bucket": "B_model", "query": "MH-LP200 是怎么供电的", "expect_section": ["MH-LP200"], "expect_points": ["220V 市电"], "should_refuse": false}
+{"id": "B30", "bucket": "B_model", "query": "MH-W20 是几重过滤", "expect_section": ["MH-W20"], "expect_points": ["三重过滤棉"], "should_refuse": false}
+{"id": "B31", "bucket": "B_model", "query": "MH-W20 的水泵能拆下来清洗吗", "expect_section": ["MH-W20"], "expect_points": ["水泵可拆卸"], "should_refuse": false}
+{"id": "B32", "bucket": "B_model", "query": "MH-W40 用的是什么滤材", "expect_section": ["MH-W40"], "expect_points": ["五重过滤棉", "椰壳活性炭"], "should_refuse": false}
+{"id": "B33", "bucket": "B_model", "query": "MH-W40 的水泵是静音的吗", "expect_section": ["MH-W40"], "expect_points": ["静音变频水泵"], "should_refuse": false}
+{"id": "B34", "bucket": "B_model", "query": "MH-W60 的滤芯是怎么排布的", "expect_section": ["MH-W60"], "expect_points": ["双滤芯并联"], "should_refuse": false}
+{"id": "B35", "bucket": "B_model", "query": "MH-W60 缺水会推送到手机上吗", "expect_section": ["MH-W60"], "expect_points": ["无线水位提醒推送 App"], "should_refuse": false}
+{"id": "B36", "bucket": "B_model", "query": "MH-W60 的不锈钢面盘能高温消毒吗", "expect_section": ["MH-W60"], "expect_points": ["可高温消毒"], "should_refuse": false}
+{"id": "B37", "bucket": "B_model", "query": "MH-HP12 是恒温多少度", "expect_section": ["MH-HP12"], "expect_points": ["恒温 38℃"], "should_refuse": false}
+{"id": "B38", "bucket": "B_model", "query": "MH-HP12 适合什么样的猫用", "expect_section": ["MH-HP12"], "expect_points": ["幼猫、老年猫"], "should_refuse": false}
+{"id": "B39", "bucket": "B_model", "query": "MH-HP20 加热垫的尺寸是多少", "expect_section": ["MH-HP20"], "expect_points": ["60cm × 45cm"], "should_refuse": false}
+{"id": "B40", "bucket": "B_model", "query": "MH-HP20 有没有定时关机功能", "expect_section": ["MH-HP20"], "expect_points": ["定时关机"], "should_refuse": false}
+{"id": "B41", "bucket": "B_model", "query": "MH-HP20 的表面能拆下来洗吗", "expect_section": ["MH-HP20"], "expect_points": ["表面绒布可拆洗"], "should_refuse": false}
+{"id": "B42", "bucket": "B_model", "query": "MH-FD10 停电了还能继续投喂吗", "expect_section": ["MH-FD10"], "expect_points": ["4 节 5 号电池"], "should_refuse": false}
+{"id": "B43", "bucket": "B_model", "query": "MH-FD10 能语音呼唤猫来吃饭吗", "expect_section": ["MH-FD10"], "expect_points": ["语音呼唤进食"], "should_refuse": false}
+{"id": "B44", "bucket": "B_model", "query": "MH-FD30 的粮桶容量是多少", "expect_section": ["MH-FD30"], "expect_points": ["6L"], "should_refuse": false}
+{"id": "B45", "bucket": "B_model", "query": "MH-FD30 能不能回看录下来的视频", "expect_section": ["MH-FD30"], "expect_points": ["支持视频回看"], "should_refuse": false}
+{"id": "B46", "bucket": "B_model", "query": "MH-FD30 断电之后靠什么撑着", "expect_section": ["MH-FD30"], "expect_points": ["内置应急电池"], "should_refuse": false}
+{"id": "B47", "bucket": "B_model", "query": "MH-CAM1 能旋转多少度", "expect_section": ["MH-CAM1"], "expect_points": ["355° 水平旋转", "90° 俯仰"], "should_refuse": false}
+{"id": "B48", "bucket": "B_model", "query": "MH-CAM1 最大支持多大的存储卡", "expect_section": ["MH-CAM1"], "expect_points": ["128G TF 卡"], "should_refuse": false}
+{"id": "B49", "bucket": "B_model", "query": "MH-CAM1 带不带逗猫功能", "expect_section": ["MH-CAM1"], "expect_points": ["逗猫激光"], "should_refuse": false}
+{"id": "B50", "bucket": "B_model", "query": "MH-CAM1 是怎么供电的", "expect_section": ["MH-CAM1"], "expect_points": ["Type-C 供电"], "should_refuse": false}
+{"id": "B51", "bucket": "B_model", "query": "MH-CT30 有多高,一共几层", "expect_section": ["MH-CT30"], "expect_points": ["1.6m", "四层带顶层吊床"], "should_refuse": false}
+{"id": "B52", "bucket": "B_model", "query": "MH-CT30 的柱身是什么材质", "expect_section": ["MH-CT30"], "expect_points": ["剑麻柱身"], "should_refuse": false}
+{"id": "B53", "bucket": "B_model", "query": "MH-CT30 组装的时候会附带工具吗", "expect_section": ["MH-CT30"], "expect_points": ["六角扳手"], "should_refuse": false}
+{"id": "B54", "bucket": "B_model", "query": "MH-W20 和 MH-W60 换滤芯的周期一样吗", "expect_section": ["MH-W20", "MH-W60"], "expect_points": ["每 2 周更换一次滤芯", "每 4 周更换一次滤芯"], "should_refuse": false}
+{"id": "B55", "bucket": "B_model", "query": "猫砂盆 Max 和 Pro 的猫砂容量差多少", "expect_section": ["MH-LP200", "MH-LP100"], "expect_points": ["12L", "9L"], "should_refuse": false}
+{"id": "B56", "bucket": "B_model", "query": "两款自动喂食器的区别在哪,哪个带摄像头", "expect_section": ["MH-FD30", "MH-FD10"], "expect_points": ["1080P 摄像头", "基础版不含摄像头"], "should_refuse": false}
+{"id": "B57", "bucket": "B_model", "query": "两款加热垫的温控方式有什么不一样", "expect_section": ["MH-HP12", "MH-HP20"], "expect_points": ["恒温 38℃", "三档可调"], "should_refuse": false}
+{"id": "B58", "bucket": "B_model", "query": "MH-CAM1 有没有夜视和双向语音", "expect_section": ["MH-CAM1"], "expect_points": ["夜视", "双向语音"], "should_refuse": false}
+{"id": "B59", "bucket": "B_model", "query": "MH-W40 整机能拆开水洗吗", "expect_section": ["MH-W40"], "expect_points": ["整机可拆分水洗"], "should_refuse": false}
+{"id": "B60", "bucket": "B_model", "query": "多猫家庭用 MH-LP200 建议几天倒一次废砂盒", "expect_section": ["MH-LP200"], "expect_points": ["每 3 至 5 天倾倒"], "should_refuse": false}
+{"id": "C1", "bucket": "C_colloquial", "query": "东西不想要了还能退不", "expect_section": ["退货政策"], "expect_points": ["7 天无理由"], "should_refuse": false}
+{"id": "C2", "bucket": "C_colloquial", "query": "钱退给我要等到什么时候啊", "expect_section": ["退款时效"], "expect_points": ["原路退回"], "should_refuse": false}
+{"id": "C3", "bucket": "C_colloquial", "query": "我想换个新的咋整", "expect_section": ["换货流程"], "expect_points": ["7 天内"], "should_refuse": false}
+{"id": "C4", "bucket": "C_colloquial", "query": "今儿下单能不能马上给我发货", "expect_section": ["发货时效"], "expect_points": ["48 小时内"], "should_refuse": false}
+{"id": "C5", "bucket": "C_colloquial", "query": "那个邮费到底要给多少钱啊", "expect_section": ["运费怎么算"], "expect_points": ["满 99 元包邮"], "should_refuse": false}
+{"id": "C6", "bucket": "C_colloquial", "query": "能不能给我开张票,得等几天", "expect_section": ["发票"], "expect_points": ["3 个工作日"], "should_refuse": false}
+{"id": "C7", "bucket": "C_colloquial", "query": "定做的东西不满意能退吗", "expect_section": ["适用范围"], "expect_points": ["定制类"], "should_refuse": false}
+{"id": "C8", "bucket": "C_colloquial", "query": "买了大半年的东西坏了还能保修不", "expect_section": ["保修说明"], "expect_points": ["12 个月"], "should_refuse": false}
+{"id": "C9", "bucket": "C_colloquial", "query": "你们处理个问题到底要磨叽几天啊", "expect_section": ["处理时限"], "expect_points": ["工作日"], "should_refuse": false}
+{"id": "C10", "bucket": "C_colloquial", "query": "那种快过期的海鲜能无理由退货吗", "expect_section": ["适用范围", "不支持退货"], "expect_points": ["生鲜"], "should_refuse": false}
+{"id": "C11", "bucket": "C_colloquial", "query": "我用啥付钱都行吗,微信支付宝能刷不", "expect_section": ["支付方式"], "expect_points": ["支付宝", "微信"], "should_refuse": false}
+{"id": "C12", "bucket": "C_colloquial", "query": "我攒的那些分能当钱花不", "expect_section": ["会员等级"], "expect_points": ["100 积分抵 1 元"], "should_refuse": false}
+{"id": "C13", "bucket": "C_colloquial", "query": "我这一单能不能塞张券", "expect_section": ["优惠券"], "expect_points": ["结算页"], "should_refuse": false}
+{"id": "C14", "bucket": "C_colloquial", "query": "我在新疆你们能给送不,要不要多掏钱", "expect_section": ["配送范围"], "expect_points": ["偏远地区运费另计"], "should_refuse": false}
+{"id": "C15", "bucket": "C_colloquial", "query": "下错单了还没发货能取消不", "expect_section": ["订单可以修改或取消"], "expect_points": ["未发货"], "should_refuse": false}
+{"id": "C16", "bucket": "C_colloquial", "query": "喝水那机器不出水了咋办", "expect_section": ["常见故障"], "expect_points": ["水泵"], "should_refuse": false}
+{"id": "C17", "bucket": "C_colloquial", "query": "猫砂盆老是报错咋弄啊", "expect_section": ["常见故障"], "expect_points": ["滚筒", "重启"], "should_refuse": false}
+{"id": "C18", "bucket": "C_colloquial", "query": "想找个真人问问,啥时候有人在", "expect_section": ["人工客服"], "expect_points": ["9:00 至 22:00"], "should_refuse": false}
+{"id": "C19", "bucket": "C_colloquial", "query": "东西在路上磕坏了我该找谁", "expect_section": ["运输破损"], "expect_points": ["48 小时内"], "should_refuse": false}
+{"id": "C20", "bucket": "C_colloquial", "query": "我买完就降价了能把差的钱退我不", "expect_section": ["价格保护"], "expect_points": ["差价"], "should_refuse": false}
+{"id": "C21", "bucket": "C_colloquial", "query": "我攒的分退货了是不是要被扣回去", "expect_section": ["积分怎么攒"], "expect_points": ["同步扣回"], "should_refuse": false}
+{"id": "C22", "bucket": "C_colloquial", "query": "听说一百分能抵一块钱是真的吗", "expect_section": ["积分怎么用", "会员等级"], "expect_points": ["抵 1 元"], "should_refuse": false}
+{"id": "C23", "bucket": "C_colloquial", "query": "我在西藏是不是得多掏邮费", "expect_section": ["运费与包邮", "配送范围"], "expect_points": ["偏远地区"], "should_refuse": false}
+{"id": "C24", "bucket": "C_colloquial", "query": "开票还得等几天啊,我这边挺急", "expect_section": ["开票时效", "发票"], "expect_points": ["3 个工作日"], "should_refuse": false}
+{"id": "C25", "bucket": "C_colloquial", "query": "能给我开公司能抵扣的那种票不", "expect_section": ["可开票类型"], "expect_points": ["电子专票"], "should_refuse": false}
+{"id": "C26", "bucket": "C_colloquial", "query": "办金卡到底有啥好处啊", "expect_section": ["会员专属售后权益", "会员等级"], "expect_points": ["优先客服接入"], "should_refuse": false}
+{"id": "C27", "bucket": "C_colloquial", "query": "这个月免邮的次数没用完下个月还能用不", "expect_section": ["会员运费权益"], "expect_points": ["不结转"], "should_refuse": false}
+{"id": "C28", "bucket": "C_colloquial", "query": "机器坏了我往哪儿寄修啊", "expect_section": ["维修寄修流程"], "expect_points": ["指定维修点"], "should_refuse": false}
+{"id": "C29", "bucket": "C_colloquial", "query": "现在没货了,到货能不能吱我一声", "expect_section": ["商品缺货"], "expect_points": ["到货通知"], "should_refuse": false}
+{"id": "C30", "bucket": "C_colloquial", "query": "拆封过的猫砂还能不能退", "expect_section": ["不支持退货的商品"], "expect_points": ["已拆封的猫砂"], "should_refuse": false}
+{"id": "C31", "bucket": "C_colloquial", "query": "我想换个别的颜色行不行啊", "expect_section": ["换货条件"], "expect_points": ["不同型号或颜色"], "should_refuse": false}
+{"id": "C32", "bucket": "C_colloquial", "query": "定金交了不想要了能给我退吗", "expect_section": ["预售与定金"], "expect_points": ["不支持无理由退定金"], "should_refuse": false}
+{"id": "C33", "bucket": "C_colloquial", "query": "猫窝脏得不行,能直接扔洗衣机吗", "expect_section": ["猫窝是否可以机洗"], "expect_points": ["洗衣袋"], "should_refuse": false}
+{"id": "C34", "bucket": "C_colloquial", "query": "你们发错货了,我寄回去的邮费谁出", "expect_section": ["退换货运费承担", "换货运费"], "expect_points": ["发错货"], "should_refuse": false}
+{"id": "C35", "bucket": "C_colloquial", "query": "喂食那玩意儿老堵着不下粮咋办", "expect_section": ["常见故障"], "expect_points": ["清理出粮口"], "should_refuse": false}
+{"id": "C36", "bucket": "C_colloquial", "query": "监控老掉线,是不是我家网的问题", "expect_section": ["常见故障"], "expect_points": ["2.4G 频段"], "should_refuse": false}
+{"id": "C37", "bucket": "C_colloquial", "query": "喝水那机器多久得洗一回", "expect_section": ["MH-W20", "MH-W40", "MH-W60"], "expect_points": ["建议每周清洗一次"], "should_refuse": false}
+{"id": "C38", "bucket": "C_colloquial", "query": "那个两升水箱的饮水机滤芯多久换", "expect_section": ["MH-W20"], "expect_points": ["每 2 周"], "should_refuse": false}
+{"id": "C39", "bucket": "C_colloquial", "query": "给大猫用的那款猫砂盆能装多少砂", "expect_section": ["MH-LP200"], "expect_points": ["12L"], "should_refuse": false}
+{"id": "C40", "bucket": "C_colloquial", "query": "带摄像头那款喂食器能在外面手动喂吗", "expect_section": ["MH-FD30"], "expect_points": ["App 远程手动投喂"], "should_refuse": false}
+{"id": "C41", "bucket": "C_colloquial", "query": "加热垫会不会烧起来,有没有保护", "expect_section": ["MH-HP12", "MH-HP20"], "expect_points": ["过热保护"], "should_refuse": false}
+{"id": "C42", "bucket": "C_colloquial", "query": "那个猫架子结实不,一层能压多少斤", "expect_section": ["MH-CT30"], "expect_points": ["单层最大 10kg"], "should_refuse": false}
+{"id": "C43", "bucket": "C_colloquial", "query": "摄像头能插卡不,多大的能认", "expect_section": ["MH-CAM1"], "expect_points": ["128G TF 卡"], "should_refuse": false}
+{"id": "C44", "bucket": "C_colloquial", "query": "最小那款猫砂盆能装多少猫砂", "expect_section": ["MH-LP50"], "expect_points": ["6L"], "should_refuse": false}
+{"id": "C45", "bucket": "C_colloquial", "query": "五重过滤那款饮水机多久换一次滤芯", "expect_section": ["MH-W40"], "expect_points": ["每 3 周"], "should_refuse": false}
+{"id": "C46", "bucket": "C_colloquial", "query": "三档温度那个加热垫多大尺寸", "expect_section": ["MH-HP20"], "expect_points": ["60cm × 45cm"], "should_refuse": false}
+{"id": "C47", "bucket": "C_colloquial", "query": "能喊猫吃饭但是没摄像头那款粮桶多大", "expect_section": ["MH-FD10"], "expect_points": ["4L"], "should_refuse": false}
+{"id": "C48", "bucket": "C_colloquial", "query": "四层带吊床那个爬架一层能承重多少", "expect_section": ["MH-CT30"], "expect_points": ["单层最大 10kg"], "should_refuse": false}
+{"id": "C49", "bucket": "C_colloquial", "query": "能转一圈的那个监控是多少画质", "expect_section": ["MH-CAM1"], "expect_points": ["2K"], "should_refuse": false}
+{"id": "C50", "bucket": "C_colloquial", "query": "退回去的邮费是我出还是你们出", "expect_section": ["退换货运费承担"], "expect_points": ["买家承担"], "should_refuse": false}
+{"id": "C51", "bucket": "C_colloquial", "query": "会员等级是看总共花了多少还是看一年花多少", "expect_section": ["会员等级"], "expect_points": ["累计消费"], "should_refuse": false}
+{"id": "C52", "bucket": "C_colloquial", "query": "买够多少才不要邮费来着", "expect_section": ["运费怎么算", "运费与包邮"], "expect_points": ["满 99 元包邮"], "should_refuse": false}
+{"id": "C53", "bucket": "C_colloquial", "query": "带紫外杀菌那款饮水机水箱多大", "expect_section": ["MH-W40"], "expect_points": ["4L"], "should_refuse": false}
+{"id": "C54", "bucket": "C_colloquial", "query": "双泵那款饮水机多久换一次滤芯", "expect_section": ["MH-W60"], "expect_points": ["每 4 周"], "should_refuse": false}
+{"id": "C55", "bucket": "C_colloquial", "query": "恒温不分档那款加热垫能一直插着吗", "expect_section": ["MH-HP12"], "expect_points": ["不超过 12 小时"], "should_refuse": false}
+{"id": "C56", "bucket": "C_colloquial", "query": "猫砂盆装满了会不会提醒我", "expect_section": ["MH-LP100"], "expect_points": ["App 推送提醒"], "should_refuse": false}
+{"id": "C57", "bucket": "C_colloquial", "query": "自动喂食一天最多能设几顿", "expect_section": ["MH-FD10"], "expect_points": ["6 餐"], "should_refuse": false}
+{"id": "C58", "bucket": "C_colloquial", "query": "不锈钢那款饮水机水箱多大", "expect_section": ["MH-W60"], "expect_points": ["6L"], "should_refuse": false}
+{"id": "C59", "bucket": "C_colloquial", "query": "能远程看猫吃饭那款喂食器桶多大", "expect_section": ["MH-FD30"], "expect_points": ["6L"], "should_refuse": false}
+{"id": "C60", "bucket": "C_colloquial", "query": "最大那款猫砂盆能用多重的猫", "expect_section": ["MH-LP200"], "expect_points": ["2kg 至 12kg"], "should_refuse": false}
+{"id": "E1", "bucket": "E_multi", "query": "我在新疆下单 80 块钱,运费怎么算,会员的免运费能不能抵", "expect_section": ["运费怎么算", "配送范围", "会员运费权益"], "expect_sections_all": [["运费怎么算"], ["配送范围"], ["会员运费权益"]], "expect_points": ["满 99 元包邮", "偏远地区运费另计", "不与偏远地区附加运费冲抵"], "should_refuse": false}
+{"id": "E2", "bucket": "E_multi", "query": "东西不想要了要退货,寄回去的运费谁承担,钱多久回来", "expect_section": ["退货政策", "适用范围", "退换货运费承担", "退款时效"], "expect_sections_all": [["退货政策", "适用范围"], ["退换货运费承担"], ["退款时效"]], "expect_points": ["7 天无理由", "无理由退货的退回运费由买家承担", "原路退回"], "should_refuse": false}
+{"id": "E3", "bucket": "E_multi", "query": "已经拆封的猫砂还能退吗,不能退的话去哪转人工、几点有人", "expect_section": ["不支持退货", "人工客服"], "expect_sections_all": [["不支持退货"], ["人工客服"]], "expect_points": ["已拆封的猫砂", "联系客服", "9:00 至 22:00"], "should_refuse": false}
+{"id": "E4", "bucket": "E_multi", "query": "换货怎么走流程,有几天时限,来回运费谁付", "expect_section": ["换货流程", "换货条件", "换货政策 / 换货运费"], "expect_sections_all": [["换货流程"], ["换货条件"], ["换货政策 / 换货运费"]], "expect_points": ["7 天内", "一次同款换货", "往返运费由买家承担"], "should_refuse": false}
+{"id": "E5", "bucket": "E_multi", "query": "MH-W40 饮水机坏了,保修多长时间,怎么寄修", "expect_section": ["MH-W40", "保修说明", "质量问题与保修", "维修寄修"], "expect_sections_all": [["MH-W40"], ["保修说明", "质量问题与保修"], ["维修寄修"]], "expect_points": ["MH-W40", "12 个月", "指定维修点"], "should_refuse": false}
+{"id": "E6", "bucket": "E_multi", "query": "猫砂盆一直报错我自己能修吗,修不好走维修要等几天", "expect_section": ["常见故障", "处理时限"], "expect_sections_all": [["常见故障"], ["处理时限"]], "expect_points": ["滚筒", "维修", "7 个工作日"], "should_refuse": false}
+{"id": "E7", "bucket": "E_multi", "query": "新买的喂食器怎么激活,老是卡粮怎么办", "expect_section": ["设备安装", "常见故障"], "expect_sections_all": [["设备安装"], ["常见故障"]], "expect_points": ["2.4G Wi-Fi", "清理出粮口"], "should_refuse": false}
+{"id": "E8", "bucket": "E_multi", "query": "开票要等几天,你们能开哪些类型的票", "expect_section": ["开票时效", "发票如何开具", "可开票类型"], "expect_sections_all": [["开票时效", "发票如何开具"], ["可开票类型"]], "expect_points": ["3 个工作日", "电子专票"], "should_refuse": false}
+{"id": "E9", "bucket": "E_multi", "query": "银卡会员有什么好处,运费和售后分别有什么权益", "expect_section": ["会员权益 / 会员等级", "会员等级与积分规则", "会员运费权益", "会员专属售后权益"], "expect_sections_all": [["会员权益 / 会员等级", "会员等级与积分规则"], ["会员运费权益"], ["会员专属售后权益"]], "expect_points": ["95 折", "银卡会员享 1 次", "退换货运费权益 1 次/月"], "should_refuse": false}
+{"id": "E10", "bucket": "E_multi", "query": "积分怎么攒,攒到了又能换点什么", "expect_section": ["积分怎么攒", "积分怎么用"], "expect_sections_all": [["积分怎么攒"], ["积分怎么用"]], "expect_points": ["1 元累计 1 积分", "抵 1 元现金"], "should_refuse": false}
+{"id": "E11", "bucket": "E_multi", "query": "下单之后想取消,已经发货了还能不能退", "expect_section": ["订单可以修改或取消", "退货政策", "适用范围"], "expect_sections_all": [["订单可以修改或取消"], ["退货政策", "适用范围"]], "expect_points": ["自助取消", "拒收", "7 天无理由"], "should_refuse": false}
+{"id": "E12", "bucket": "E_multi", "query": "东西签收发现压坏了,怎么处理,运费谁出", "expect_section": ["运输破损", "退换货运费承担"], "expect_sections_all": [["运输破损"], ["退换货运费承担"]], "expect_points": ["48 小时内", "开箱视频", "平台承担"], "should_refuse": false}
+{"id": "E13", "bucket": "E_multi", "query": "预售的东西什么时候发,定金能退吗", "expect_section": ["预售与定金", "发货时效"], "expect_sections_all": [["预售与定金"], ["发货时效"]], "expect_points": ["详情页", "48 小时内发货", "不支持无理由退定金"], "should_refuse": false}
+{"id": "E14", "bucket": "E_multi", "query": "现在缺货,补货要多久,补发的处理时限是几天", "expect_section": ["商品缺货", "处理时限"], "expect_sections_all": [["商品缺货"], ["处理时限"]], "expect_points": ["3 至 7 天内补货", "缺货补发", "5 个工作日"], "should_refuse": false}
+{"id": "E15", "bucket": "E_multi", "query": "买完就降价了能退差价吗,几天内有效,差价退到哪", "expect_section": ["价格保护", "处理时限"], "expect_sections_all": [["价格保护"], ["处理时限"]], "expect_points": ["7 天内", "原支付渠道", "价格保护"], "should_refuse": false}
+{"id": "E16", "bucket": "E_multi", "query": "金卡到底要花多少钱才能升,升了运费上有什么实惠", "expect_section": ["会员权益 / 会员等级", "会员运费权益"], "expect_sections_all": [["会员权益 / 会员等级"], ["会员运费权益"]], "expect_points": ["5000 元起", "每月享 3 次免运费"], "should_refuse": false}
+{"id": "E17", "bucket": "E_multi", "query": "我要开公司能抵扣的票,需要准备什么,多久开出来", "expect_section": ["可开票类型", "开票时效"], "expect_sections_all": [["可开票类型"], ["开票时效"]], "expect_points": ["电子专票", "纳税人识别号", "3 个工作日内开出"], "should_refuse": false}
+{"id": "E18", "bucket": "E_multi", "query": "MH-LP100 和 MH-LP200 我该选哪个,家里两只猫,倒废砂的频率差多少", "expect_section": ["MH-LP100", "MH-LP200"], "expect_sections_all": [["MH-LP100"], ["MH-LP200"]], "expect_points": ["每 5 至 7 天倾倒一次", "每 3 至 5 天倾倒", "2kg 至 12kg"], "should_refuse": false}
+{"id": "E19", "bucket": "E_multi", "query": "饮水机 MH-W20 和 MH-W60 的水箱和换滤芯周期分别是多少", "expect_section": ["MH-W20", "MH-W60"], "expect_sections_all": [["MH-W20"], ["MH-W60"]], "expect_points": ["2L", "每 2 周更换一次滤芯", "6L", "每 4 周更换一次滤芯"], "should_refuse": false}
+{"id": "E20", "bucket": "E_multi", "query": "两款加热垫哪个适合幼猫,尺寸分别多大", "expect_section": ["MH-HP12", "MH-HP20"], "expect_sections_all": [["MH-HP12"], ["MH-HP20"]], "expect_points": ["幼猫、老年猫", "40cm × 30cm", "60cm × 45cm"], "should_refuse": false}
+{"id": "E21", "bucket": "E_multi", "query": "喂食器我想能远程看着喂,两款怎么选,粮桶差多少", "expect_section": ["MH-FD30", "MH-FD10"], "expect_sections_all": [["MH-FD30"], ["MH-FD10"]], "expect_points": ["App 远程手动投喂", "6L", "4L", "基础版不含摄像头"], "should_refuse": false}
+{"id": "E22", "bucket": "E_multi", "query": "摄像头能存卡吗,断网了还能用吗,需要什么网络", "expect_section": ["MH-CAM1", "常见故障"], "expect_sections_all": [["MH-CAM1"], ["常见故障"]], "expect_points": ["128G TF 卡", "2.4G Wi-Fi", "2.4G 频段"], "should_refuse": false}
+{"id": "E23", "bucket": "E_multi", "query": "猫爬架要自己装吗,附不附工具,单层能压多重", "expect_section": ["MH-CT30", "设备安装"], "expect_sections_all": [["MH-CT30"], ["设备安装"]], "expect_points": ["六角扳手", "单层最大 10kg", "自行组装"], "should_refuse": false}
+{"id": "E24", "bucket": "E_multi", "query": "我要退款,在哪申请,多久到账", "expect_section": ["如何申请退款", "退款时效", "处理时限"], "expect_sections_all": [["如何申请退款"], ["退款时效", "处理时限"]], "expect_points": ["申请退款", "原路退回", "3 个工作日"], "should_refuse": false}
+{"id": "E25", "bucket": "E_multi", "query": "能用信用卡付吗,付款一直失败要转人工的话在哪找入口", "expect_section": ["支付方式", "人工客服"], "expect_sections_all": [["支付方式"], ["人工客服"]], "expect_points": ["信用卡", "联系客服"], "should_refuse": false}
+{"id": "E26", "bucket": "E_multi", "query": "券和满减能一起用吗,一单最多用几张,会员折扣叠不叠", "expect_section": ["优惠券", "会员权益 / 会员等级", "会员等级与积分规则"], "expect_sections_all": [["优惠券"], ["会员权益 / 会员等级", "会员等级与积分规则"]], "expect_points": ["自动叠加", "一张店铺券", "9 折"], "should_refuse": false}
+{"id": "E27", "bucket": "E_multi", "query": "布艺猫窝能机洗吗,洗坏了算不算质量问题能退吗", "expect_section": ["猫窝", "质量问题与保修", "退货政策"], "expect_sections_all": [["猫窝"], ["质量问题与保修", "退货政策"]], "expect_points": ["洗衣袋", "不可机洗", "保修 12 个月"], "should_refuse": false}
+{"id": "E28", "bucket": "E_multi", "query": "非质量问题的换货和无理由退货,运费的算法一样吗", "expect_section": ["换货政策 / 换货运费", "退换货运费承担"], "expect_sections_all": [["换货政策 / 换货运费"], ["退换货运费承担"]], "expect_points": ["非质量问题的换货", "无理由退货的退回运费由买家承担"], "should_refuse": false}
+{"id": "E29", "bucket": "E_multi", "query": "人为弄坏的能保修吗,超保修了修要收多少", "expect_section": ["保修说明", "维修寄修", "质量问题与保修"], "expect_sections_all": [["保修说明"], ["维修寄修", "质量问题与保修"]], "expect_points": ["人为损坏不在保修范围", "工本费"], "should_refuse": false}
+{"id": "E30", "bucket": "E_multi", "query": "我要投诉,多久有人响应,转人工的入口在哪", "expect_section": ["处理时限", "人工客服"], "expect_sections_all": [["处理时限"], ["人工客服"]], "expect_points": ["投诉", "1 小时", "联系客服"], "should_refuse": false}
+{"id": "E31", "bucket": "E_multi", "query": "我是金卡,退货能上门取件吗,退回运费还要我出吗", "expect_section": ["会员专属售后权益", "退换货运费承担"], "expect_sections_all": [["会员专属售后权益"], ["退换货运费承担"]], "expect_points": ["上门取件", "无理由退货的退回运费由买家承担"], "should_refuse": false}
+{"id": "E32", "bucket": "E_multi", "query": "港澳台能寄吗,偏远地区时效会不会慢", "expect_section": ["配送范围", "运费与包邮"], "expect_sections_all": [["配送范围"], ["运费与包邮"]], "expect_points": ["港澳台及海外暂不支持", "时效顺延", "不参与包邮"], "should_refuse": false}
+{"id": "E33", "bucket": "E_multi", "query": "2000 积分换的滤芯是给哪款饮水机用的,那款多久换一次", "expect_section": ["积分怎么用", "MH-W40", "MH-W20", "MH-W60"], "expect_sections_all": [["积分怎么用"], ["MH-W40", "MH-W20", "MH-W60"]], "expect_points": ["自动饮水机滤芯 3 片", "更换一次滤芯"], "should_refuse": false}
+{"id": "E34", "bucket": "E_multi", "query": "退货了积分会不会扣回去,等级会掉吗", "expect_section": ["积分怎么攒", "会员等级与积分规则", "会员权益 / 会员等级"], "expect_sections_all": [["积分怎么攒"], ["会员等级与积分规则", "会员权益 / 会员等级"]], "expect_points": ["同步扣回", "按累计消费自动升级"], "should_refuse": false}
+{"id": "E35", "bucket": "E_multi", "query": "MH-LP50 便宜在哪,少了什么功能,适合几只猫", "expect_section": ["MH-LP50", "MH-LP100"], "expect_sections_all": [["MH-LP50"], ["MH-LP100"]], "expect_points": ["不含 App 联网功能", "适合单猫家庭", "App 远程监控"], "should_refuse": false}
+{"id": "E36", "bucket": "E_multi", "query": "饮水机不出水是怎么回事,水泵能拆下来洗吗", "expect_section": ["常见故障", "MH-W20"], "expect_sections_all": [["常见故障"], ["MH-W20"]], "expect_points": ["水泵是否卡阻", "水泵可拆卸"], "should_refuse": false}
+{"id": "E37", "bucket": "E_multi", "query": "MH-W40 有杀菌吗,整机能拆洗吗,多久洗一次", "expect_section": ["MH-W40", "常见故障"], "expect_sections_all": [["MH-W40"], ["常见故障"]], "expect_points": ["UV 紫外杀菌", "整机可拆分水洗", "建议每周清洗一次"], "should_refuse": false}
+{"id": "E38", "bucket": "E_multi", "query": "定制的东西不满意能退吗,生鲜呢", "expect_section": ["适用范围", "不支持退货"], "expect_sections_all": [["适用范围"], ["不支持退货"]], "expect_points": ["定制类、生鲜类商品除外", "非质量问题不支持退货"], "should_refuse": false}
+{"id": "E39", "bucket": "E_multi", "query": "发票开错了超过 30 天还能补开吗,人工客服几点在线", "expect_section": ["开票时效", "人工客服"], "expect_sections_all": [["开票时效"], ["人工客服"]], "expect_points": ["超过 30 天需联系客服", "9:00 至 22:00"], "should_refuse": false}
+{"id": "E40", "bucket": "E_multi", "query": "我买的猫砂盆断电了配置会丢吗,断电以后要重新配网吗", "expect_section": ["MH-LP100", "设备安装"], "expect_sections_all": [["MH-LP100"], ["设备安装"]], "expect_points": ["断电后配置自动保存", "扫码添加设备"], "should_refuse": false}
+{"id": "E41", "bucket": "E_multi", "query": "一单要满多少包邮,不满的话运费多少,偏远地区又是多少", "expect_section": ["运费怎么算", "运费与包邮", "配送范围"], "expect_sections_all": [["运费怎么算", "运费与包邮"], ["配送范围"]], "expect_points": ["满 99 元包邮", "10 元运费", "偏远地区"], "should_refuse": false}
+{"id": "E42", "bucket": "E_multi", "query": "换货要寄回去核验多久,处理时限是几天", "expect_section": ["换货流程", "处理时限"], "expect_sections_all": [["换货流程"], ["处理时限"]], "expect_points": ["补发新品", "换货", "5 个工作日"], "should_refuse": false}
+{"id": "E43", "bucket": "E_multi", "query": "物流一直不动多久有人处理,想转人工的话服务时间是几点到几点", "expect_section": ["处理时限", "人工客服"], "expect_sections_all": [["处理时限"], ["人工客服"]], "expect_points": ["物流异常", "5 个工作日", "9:00 至 22:00"], "should_refuse": false}
+{"id": "E44", "bucket": "E_multi", "query": "摄像头版喂食器怎么配网,断电了会不会停喂", "expect_section": ["MH-FD30", "设备安装"], "expect_sections_all": [["MH-FD30"], ["设备安装"]], "expect_points": ["2.4G Wi-Fi", "内置应急电池"], "should_refuse": false}
+{"id": "E45", "bucket": "E_multi", "query": "加热垫能一直插着吗,过热了有保护吗,表面能洗吗", "expect_section": ["MH-HP12", "MH-HP20"], "expect_sections_all": [["MH-HP12"], ["MH-HP20"]], "expect_points": ["不超过 12 小时", "过热保护", "表面绒布可拆洗"], "should_refuse": false}
+{"id": "E46", "bucket": "E_multi", "query": "我要给企业开纸质票,快递费谁付,多久能开出来", "expect_section": ["可开票类型", "开票时效"], "expect_sections_all": [["可开票类型"], ["开票时效"]], "expect_points": ["仅企业账户可申请", "快递费到付", "3 个工作日内开出"], "should_refuse": false}
+{"id": "E47", "bucket": "E_multi", "query": "退款和退货运费的处理时限分别是几天", "expect_section": ["处理时限", "退换货运费承担"], "expect_sections_all": [["处理时限"], ["退换货运费承担"]], "expect_points": ["退款", "退换货运费", "3 个工作日"], "should_refuse": false}
+{"id": "E48", "bucket": "E_multi", "query": "猫砂盆 Max 适合多重的猫,供电要求是什么", "expect_section": ["MH-LP200", "MH-LP100"], "expect_sections_all": [["MH-LP200"], ["MH-LP100"]], "expect_points": ["2kg 至 12kg", "220V 市电"], "should_refuse": false}
+{"id": "E49", "bucket": "E_multi", "query": "下单支付方式有哪些,支付完多久发货", "expect_section": ["支付方式", "发货时效"], "expect_sections_all": [["支付方式"], ["发货时效"]], "expect_points": ["支付宝", "48 小时内发货"], "should_refuse": false}
+{"id": "E50", "bucket": "E_multi", "query": "会员积分能抵多少,一笔最多抵多少,等级怎么升", "expect_section": ["积分怎么用", "会员等级与积分规则"], "expect_sections_all": [["积分怎么用"], ["会员等级与积分规则"]], "expect_points": ["单笔最多抵 30 元", "按累计消费自动升级"], "should_refuse": false}
+{"id": "E51", "bucket": "E_multi", "query": "MH-W60 缺水会提醒吗,面盘能高温消毒吗,滤芯几周换", "expect_section": ["MH-W60", "常见故障"], "expect_sections_all": [["MH-W60"], ["常见故障"]], "expect_points": ["无线水位提醒推送 App", "可高温消毒", "每 4 周更换一次滤芯"], "should_refuse": false}
+{"id": "E52", "bucket": "E_multi", "query": "发错货了退回来的运费谁出,换新的运费又谁出", "expect_section": ["退换货运费承担", "换货政策 / 换货运费"], "expect_sections_all": [["退换货运费承担"], ["换货政策 / 换货运费"]], "expect_points": ["发错货", "运费由平台承担", "因质量问题或发错货的换货"], "should_refuse": false}
+{"id": "E53", "bucket": "E_multi", "query": "我想开票又想申请价保,两个各要多久", "expect_section": ["开票时效", "发票如何开具", "价格保护"], "expect_sections_all": [["开票时效", "发票如何开具"], ["价格保护"]], "expect_points": ["3 个工作日", "7 天内价保"], "should_refuse": false}
+{"id": "E54", "bucket": "E_multi", "query": "智能猫砂盆 Pro 的除臭和 Lite 的除臭有什么区别", "expect_section": ["MH-LP100", "MH-LP50"], "expect_sections_all": [["MH-LP100"], ["MH-LP50"]], "expect_points": ["活性炭除臭", "物理除臭盖板"], "should_refuse": false}
+{"id": "E55", "bucket": "E_multi", "query": "摄像头画质多少,能不能双向说话,存储怎么解决", "expect_section": ["MH-CAM1", "MH-FD30"], "expect_sections_all": [["MH-CAM1"], ["MH-FD30"]], "expect_points": ["2K 分辨率", "双向语音", "128G TF 卡"], "should_refuse": false}
+{"id": "E56", "bucket": "E_multi", "query": "退货运费险有吗,没有的话无理由退货运费怎么算", "expect_section": ["退换货运费承担", "会员专属售后权益"], "expect_sections_all": [["退换货运费承担"], ["会员专属售后权益"]], "expect_points": ["无理由退货的退回运费由买家承担", "退换货运费权益 1 次/月"], "should_refuse": false}
+{"id": "E57", "bucket": "E_multi", "query": "喵银和喵金分别要年消费多少,生日礼有什么不一样", "expect_section": ["会员权益 / 会员等级", "会员等级与积分规则"], "expect_sections_all": [["会员权益 / 会员等级"], ["会员等级与积分规则"]], "expect_points": ["1000 元起", "5000 元起", "猫罐头礼盒"], "should_refuse": false}
+{"id": "E58", "bucket": "E_multi", "query": "我买的加热垫想退,已经用过一次算不算影响二次销售", "expect_section": ["适用范围", "退货政策"], "expect_sections_all": [["适用范围"], ["退货政策"]], "expect_points": ["不影响二次销售", "7 天无理由退货"], "should_refuse": false}
+{"id": "E59", "bucket": "E_multi", "query": "换货只能换同款吗,想换型号怎么办,退了重买运费谁付", "expect_section": ["换货条件", "退换货运费承担"], "expect_sections_all": [["换货条件"], ["退换货运费承担"]], "expect_points": ["不同型号或颜色需先退货", "买家承担"], "should_refuse": false}
+{"id": "E60", "bucket": "E_multi", "query": "客服几点上班,联系不上的时候投诉多久响应", "expect_section": ["人工客服", "处理时限"], "expect_sections_all": [["人工客服"], ["处理时限"]], "expect_points": ["9:00 至 22:00", "投诉", "1 小时"], "should_refuse": false}
+{"id": "D1", "bucket": "D_absent", "query": "你们卖不卖活体宠物,能在这买猫吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D2", "bucket": "D_absent", "query": "有没有线下实体门店,可以去店里退货吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D3", "bucket": "D_absent", "query": "能不能把发票邮寄到我公司的另一个地址", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D4", "bucket": "D_absent", "query": "有没有以旧换新的活动", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D5", "bucket": "D_absent", "query": "大件商品能不能预约师傅上门安装", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D6", "bucket": "D_absent", "query": "退货之后能不能额外补偿我一些积分", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D7", "bucket": "D_absent", "query": "发货能不能指定用顺丰快递", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D8", "bucket": "D_absent", "query": "你们招不招加盟商,怎么加盟代理", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D9", "bucket": "D_absent", "query": "能不能货到付款", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D10", "bucket": "D_absent", "query": "支持数字人民币支付吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D11", "bucket": "D_absent", "query": "怎么注销我的账号", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D12", "bucket": "D_absent", "query": "能不能便宜点,可以砍价吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D13", "bucket": "D_absent", "query": "你们有没有退货运费险,谁来买", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D14", "bucket": "D_absent", "query": "能不能额外购买延长保修服务", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D15", "bucket": "D_absent", "query": "你们的商品价格含不含关税", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D16", "bucket": "D_absent", "query": "能帮我推荐一套幼猫的喂养方案吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D17", "bucket": "D_absent", "query": "你们卖的猫粮保质期到具体哪一天", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D18", "bucket": "D_absent", "query": "能不能团购批发,量大有没有优惠", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D19", "bucket": "D_absent", "query": "你们的价保能跟别的电商平台比价吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D20", "bucket": "D_absent", "query": "你们门店招客服吗,应聘流程是啥", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D21", "bucket": "D_absent", "query": "你们有没有小程序商城,微信里能不能下单", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D22", "bucket": "D_absent", "query": "企业采购能不能开月结账期", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D23", "bucket": "D_absent", "query": "你们仓库在哪个城市,能不能到仓库自提", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D24", "bucket": "D_absent", "query": "你们跟宠物医院有合作吗,能约疫苗吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D25", "bucket": "D_absent", "query": "能在你们这儿买宠物保险吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D26", "bucket": "D_absent", "query": "旧的饮水机能回收折价吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D27", "bucket": "D_absent", "query": "有没有上门代喂猫的服务", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D28", "bucket": "D_absent", "query": "能不能指定送货上门的具体时间段", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D29", "bucket": "D_absent", "query": "支不支持夜间配送", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D30", "bucket": "D_absent", "query": "能寄到日本吗,有没有国际快递", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D31", "bucket": "D_absent", "query": "有没有英文客服能接待外国人", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D32", "bucket": "D_absent", "query": "平板版的 App 在哪儿下载", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D33", "bucket": "D_absent", "query": "你们有直播间吗,直播下单更便宜吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D34", "bucket": "D_absent", "query": "现在有抽奖活动吗,怎么才能中奖", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D35", "bucket": "D_absent", "query": "有没有明星联名款的猫窝", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D36", "bucket": "D_absent", "query": "你们提供宠物寄养服务吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D37", "bucket": "D_absent", "query": "有没有猫咪行为训练课程可以报名", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D38", "bucket": "D_absent", "query": "能推荐一款驱虫药吗,用哪个牌子好", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D39", "bucket": "D_absent", "query": "商品的质检报告能发一份给我看吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D40", "bucket": "D_absent", "query": "你们做不做企业定制礼盒", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D41", "bucket": "D_absent", "query": "能给我一份批发价目表吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D42", "bucket": "D_absent", "query": "有没有校园代理这种项目", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D43", "bucket": "D_absent", "query": "能不能对接你们的 API 拿订单数据", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D44", "bucket": "D_absent", "query": "能导出我全年的消费明细表格吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D45", "bucket": "D_absent", "query": "你们的客服机器人是自己研发的吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D46", "bucket": "D_absent", "query": "能帮我预约猫的绝育手术吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D47", "bucket": "D_absent", "query": "有没有二手商品专区", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D48", "bucket": "D_absent", "query": "有没有以租代买的方案,设备能租吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D49", "bucket": "D_absent", "query": "我发的商品评价能删掉吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D50", "bucket": "D_absent", "query": "能不能先寄个样品给我试用", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D51", "bucket": "D_absent", "query": "你们的猫粮是哪个工厂代工的", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D52", "bucket": "D_absent", "query": "App 能不能同步苹果健康的数据", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D53", "bucket": "D_absent", "query": "你们参加线下宠物展会吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D54", "bucket": "D_absent", "query": "能预约给猫拍写真吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D55", "bucket": "D_absent", "query": "会员身份能转让给朋友用吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D56", "bucket": "D_absent", "query": "有没有保税仓的跨境直邮", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D57", "bucket": "D_absent", "query": "公司团建礼品有方案吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D58", "bucket": "D_absent", "query": "你们做宠物殡葬这类服务吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D59", "bucket": "D_absent", "query": "能帮我看看我家猫是什么品种吗", "expect_section": [], "expect_points": [], "should_refuse": true}
+{"id": "D60", "bucket": "D_absent", "query": "我想在你们平台开店卖东西,怎么入驻", "expect_section": [], "expect_points": [], "should_refuse": true}

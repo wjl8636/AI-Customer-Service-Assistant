@@ -1,0 +1,398 @@
+{
+  "ran_at": "2026-07-28T18:23:52",
+  "test_size": 161,
+  "threshold": 0.45,
+  "red_lines": {
+    "严": 0.9,
+    "中": 0.8
+  },
+  "micro": {
+    "p": 0.9719,
+    "r": 0.9558,
+    "f1": 0.9638
+  },
+  "macro": {
+    "p": 0.9733,
+    "r": 0.9555,
+    "f1": 0.9625
+  },
+  "classes": [
+    {
+      "name": "退换货",
+      "severity": "严",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 14,
+      "red_line": 0.9,
+      "passed": true,
+      "tn": 147,
+      "fp": 0,
+      "fn": 0,
+      "tp": 14
+    },
+    {
+      "name": "物流",
+      "severity": "严",
+      "p": 1.0,
+      "r": 0.9167,
+      "f1": 0.9565,
+      "support": 12,
+      "red_line": 0.9,
+      "passed": true,
+      "tn": 149,
+      "fp": 0,
+      "fn": 1,
+      "tp": 11
+    },
+    {
+      "name": "尺码",
+      "severity": "严",
+      "p": 0.8333,
+      "r": 1.0,
+      "f1": 0.9091,
+      "support": 10,
+      "red_line": 0.9,
+      "passed": true,
+      "tn": 149,
+      "fp": 2,
+      "fn": 0,
+      "tp": 10
+    },
+    {
+      "name": "发票",
+      "severity": "严",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 11,
+      "red_line": 0.9,
+      "passed": true,
+      "tn": 150,
+      "fp": 0,
+      "fn": 0,
+      "tp": 11
+    },
+    {
+      "name": "质量问题",
+      "severity": "严",
+      "p": 0.9,
+      "r": 1.0,
+      "f1": 0.9474,
+      "support": 9,
+      "red_line": 0.9,
+      "passed": true,
+      "tn": 151,
+      "fp": 1,
+      "fn": 0,
+      "tp": 9
+    },
+    {
+      "name": "运费",
+      "severity": "中",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 11,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 150,
+      "fp": 0,
+      "fn": 0,
+      "tp": 11
+    },
+    {
+      "name": "优惠活动",
+      "severity": "中",
+      "p": 0.9231,
+      "r": 1.0,
+      "f1": 0.96,
+      "support": 12,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 148,
+      "fp": 1,
+      "fn": 0,
+      "tp": 12
+    },
+    {
+      "name": "价保",
+      "severity": "中",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 9,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 152,
+      "fp": 0,
+      "fn": 0,
+      "tp": 9
+    },
+    {
+      "name": "支付",
+      "severity": "中",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 10,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 151,
+      "fp": 0,
+      "fn": 0,
+      "tp": 10
+    },
+    {
+      "name": "订单修改",
+      "severity": "中",
+      "p": 1.0,
+      "r": 0.9091,
+      "f1": 0.9524,
+      "support": 11,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 150,
+      "fp": 0,
+      "fn": 1,
+      "tp": 10
+    },
+    {
+      "name": "库存补货",
+      "severity": "中",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 11,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 150,
+      "fp": 0,
+      "fn": 0,
+      "tp": 11
+    },
+    {
+      "name": "商品信息",
+      "severity": "中",
+      "p": 0.8889,
+      "r": 0.8,
+      "f1": 0.8421,
+      "support": 10,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 150,
+      "fp": 1,
+      "fn": 2,
+      "tp": 8
+    },
+    {
+      "name": "保修维修",
+      "severity": "中",
+      "p": 1.0,
+      "r": 0.9,
+      "f1": 0.9474,
+      "support": 10,
+      "red_line": 0.8,
+      "passed": true,
+      "tn": 151,
+      "fp": 0,
+      "fn": 1,
+      "tp": 9
+    },
+    {
+      "name": "账号",
+      "severity": "宽",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 11,
+      "red_line": null,
+      "passed": null,
+      "tn": 150,
+      "fp": 0,
+      "fn": 0,
+      "tp": 11
+    },
+    {
+      "name": "会员积分",
+      "severity": "宽",
+      "p": 1.0,
+      "r": 0.8182,
+      "f1": 0.9,
+      "support": 11,
+      "red_line": null,
+      "passed": null,
+      "tn": 150,
+      "fp": 0,
+      "fn": 2,
+      "tp": 9
+    },
+    {
+      "name": "评价",
+      "severity": "宽",
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "support": 9,
+      "red_line": null,
+      "passed": null,
+      "tn": 152,
+      "fp": 0,
+      "fn": 0,
+      "tp": 9
+    },
+    {
+      "name": "其他",
+      "severity": "宽",
+      "p": 1.0,
+      "r": 0.9,
+      "f1": 0.9474,
+      "support": 10,
+      "red_line": null,
+      "passed": null,
+      "tn": 151,
+      "fp": 0,
+      "fn": 1,
+      "tp": 9
+    }
+  ],
+  "errors": [
+    {
+      "text": "刚下单的猫抓板还没发，突然便宜了，我是改订单价格还是申请价保？",
+      "gold": [
+        "价保",
+        "订单修改"
+      ],
+      "pred": [
+        "价保"
+      ],
+      "missed": [
+        "订单修改"
+      ],
+      "extra": [],
+      "kind": "漏打",
+      "matrix_entries": 1
+    },
+    {
+      "text": "会原专享价是不是必须达到某个等级才能看到？",
+      "gold": [
+        "会员积分"
+      ],
+      "pred": [
+        "优惠活动"
+      ],
+      "missed": [
+        "会员积分"
+      ],
+      "extra": [
+        "优惠活动"
+      ],
+      "kind": "错位",
+      "matrix_entries": 2
+    },
+    {
+      "text": "猫抓板用旧了可以回收吗",
+      "gold": [
+        "其他"
+      ],
+      "pred": [
+        "商品信息"
+      ],
+      "missed": [
+        "其他"
+      ],
+      "extra": [
+        "商品信息"
+      ],
+      "kind": "错位",
+      "matrix_entries": 2
+    },
+    {
+      "text": "俺想问下这个猫粮颗粒大不大，俺家小猫牙口嫩能嚼动不？",
+      "gold": [
+        "商品信息"
+      ],
+      "pred": [
+        "尺码"
+      ],
+      "missed": [
+        "商品信息"
+      ],
+      "extra": [
+        "尺码"
+      ],
+      "kind": "错位",
+      "matrix_entries": 2
+    },
+    {
+      "text": "这款猫粮颗粒大不大，牙口不太好的成年猫嚼得动吗？",
+      "gold": [
+        "商品信息"
+      ],
+      "pred": [
+        "尺码"
+      ],
+      "missed": [
+        "商品信息"
+      ],
+      "extra": [
+        "尺码"
+      ],
+      "kind": "错位",
+      "matrix_entries": 2
+    },
+    {
+      "text": "猫砂盆显示揽收后一直没动，是不是丢件了？",
+      "gold": [
+        "物流"
+      ],
+      "pred": [
+        "质量问题"
+      ],
+      "missed": [
+        "物流"
+      ],
+      "extra": [
+        "质量问题"
+      ],
+      "kind": "错位",
+      "matrix_entries": 2
+    },
+    {
+      "text": "猫爬架配件坏了能寄新的给我吗，补发的物流大概几天到？",
+      "gold": [
+        "保修维修",
+        "物流"
+      ],
+      "pred": [
+        "物流"
+      ],
+      "missed": [
+        "保修维修"
+      ],
+      "extra": [],
+      "kind": "漏打",
+      "matrix_entries": 1
+    },
+    {
+      "text": "积分可以拿来抵运费吗，要是退货运费又是谁承担？",
+      "gold": [
+        "会员积分",
+        "运费"
+      ],
+      "pred": [
+        "运费"
+      ],
+      "missed": [
+        "会员积分"
+      ],
+      "extra": [],
+      "kind": "漏打",
+      "matrix_entries": 1
+    }
+  ],
+  "total_cells": 2737,
+  "total_fp": 5,
+  "total_fn": 8,
+  "red_line_passed": true
+}

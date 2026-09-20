@@ -1,0 +1,253 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 分类器数据产物</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="stylesheet" href="/static/acceptance.css" />
+  <style>
+    /* 语料血缘:四段落差一行摆开 */
+    .flow { display: flex; align-items: stretch; gap: 6px; flex-wrap: wrap; }
+    .step {
+      border: 3px solid var(--ink); background: var(--paper); padding: 9px 12px;
+      min-width: 150px; flex: 1;
+    }
+    .step .stage { font-size: 11.5px; color: var(--muted); }
+    .step b { display: block; font-size: 22px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+    .step .desc { font-size: 11.5px; line-height: 1.65; margin-top: 3px; }
+    .step .f { font-size: 11px; color: var(--muted); margin-top: 4px; word-break: break-all; }
+    .step.miss b { color: var(--muted); }
+    .arrow { align-self: center; font-size: 20px; color: var(--ink); font-weight: 700; }
+    .splitgrid { display: flex; gap: 6px; flex-wrap: wrap; }
+    .step.exam { background: var(--cream); }
+
+    /* 三份考卷各类分布:类目为行,三卷为列 */
+    td.b { padding: 0 !important; }
+    .distbar { display: flex; align-items: center; gap: 6px; padding: 3px 8px; }
+    .distbar .track { flex: 1; min-width: 40px; height: 9px; border: 2px solid var(--ink); background: var(--cream); }
+    .distbar .fill { height: 100%; background: var(--fur); display: block; }
+    .distbar .v { width: 2.6em; text-align: right; font-variant-numeric: tabular-nums; }
+    .leak { display: flex; gap: 12px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>分类器数据产物</h1>
+      <span class="sub">语料血缘 · 三份考卷 · 训练与 ONNX 产物盘点</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div class="gatebar" id="gatebar"></div>
+    <div id="body"><div class="panel"><div class="miss">加载中…</div></div></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/static/admin.js"></script>
+  <script src="/static/acceptance.js"></script>
+  <script>
+    let jobSpecs = {};
+    const SPLIT_KEYS = ["train", "val", "test"];
+    const SPLIT_LABEL = { train: "训练集", val: "验证集", test: "测试集" };
+
+    async function load() {
+      try {
+        const [d, j] = await Promise.all([
+          api("/api/acceptance/data"), api("/api/jobs"),
+        ]);
+        jobSpecs = Object.fromEntries(j.jobs.map((x) => [x.name, x]));
+        render(d);
+      } catch (e) {
+        $("body").textContent = "";
+        $("body").appendChild(missingBox("加载失败：" + e.message));
+      }
+    }
+
+    function panel(title, lede, pill) {
+      const p = el("div", "panel");
+      const h = el("h2", "", title);
+      if (pill) { const [c, t] = pill; h.appendChild(el("span", "pill " + c, t)); }
+      p.appendChild(h);
+      if (lede) p.appendChild(el("p", "lede", lede));
+      return p;
+    }
+
+    function fileTable(rows) {
+      const box = el("div", "scroll-x");
+      const t = el("table", "tbl");
+      const head = el("tr");
+      for (const h of ["产物", "条数", "大小", "最后写入"]) head.appendChild(el("th", "", h));
+      const thead = el("thead"); thead.appendChild(head); t.appendChild(thead);
+      const tb = el("tbody");
+      for (const r of rows) {
+        const tr = el("tr", r.present ? "" : "bad");
+        tr.appendChild(el("td", "", r.path));
+        tr.appendChild(el("td", "num", r.present ? String(r.lines ?? "—") : "缺失"));
+        tr.appendChild(el("td", "num", r.present ? fmtBytes(r.bytes) : "—"));
+        tr.appendChild(el("td", "", r.present ? fmtTime(r.mtime) : "—"));
+        tb.appendChild(tr);
+      }
+      t.appendChild(tb); box.appendChild(t);
+      return box;
+    }
+
+    function render(d) {
+      renderGatebar(d);
+      const body = $("body");
+      body.textContent = "";
+      const ds = d.dataset, sp = ds.splits;
+
+      /* ① 语料血缘 */
+      const pFlow = panel("语料血缘：一条问题从池子走到考卷",
+        "每一段都能对上一个产物文件，数不是口述的。捞池拿的是数据飞轮归并阶段产出的标准化问法，"
+        + "不是用户原话——分类器接手的必须是一句语义完整的话。");
+      const flow = el("div", "flow");
+      d.lineage.forEach((s, i) => {
+        if (i) flow.appendChild(el("div", "arrow", "→"));
+        const step = el("div", "step" + (s.present ? "" : " miss"));
+        step.appendChild(el("div", "stage", s.stage));
+        step.appendChild(el("b", "", s.present ? String(s.lines) : "缺失"));
+        step.appendChild(el("div", "desc", s.desc));
+        step.appendChild(el("div", "f", s.file));
+        flow.appendChild(step);
+      });
+      flow.appendChild(el("div", "arrow", "→"));
+      const exams = el("div", "step exam");
+      exams.appendChild(el("div", "stage", "分层切卷 80/10/10"));
+      exams.appendChild(el("b", "", SPLIT_KEYS.map((k) => sp[k].size).join(" / ")));
+      exams.appendChild(el("div", "desc", "训练 / 验证 / 测试；训练集另做增强与定向补数"));
+      exams.appendChild(el("div", "f", "data/ch10/dataset/*.jsonl"));
+      flow.appendChild(exams);
+      pFlow.appendChild(flow);
+      pFlow.appendChild(fileTable([...d.lineage, d.sample_review]));
+      pFlow.appendChild(el("div", "tip",
+        "人工抽审文件 sample_review.md 是给人读的那一份（真实池全量 + 每类模拟抽 5），"
+        + "看到错标就直接改语料，不许改考卷去凑分。"));
+      pFlow.appendChild(jobRow(
+        ["ch10-corpus", "ch10-dataset"].map((n) => jobSpecs[n]).filter(Boolean), load));
+      body.appendChild(pFlow);
+
+      /* ② 三份考卷 + 泄漏自检 */
+      const pSplit = panel("三份考卷与泄漏自检",
+        "增强只扩训练集——验证/测试是考题，不许照练习题变。重叠必须是 0：考题一旦被训练集见过，"
+        + "后面所有分数都不作数，所以这一栏是硬闸，不是提示。",
+        ds.clean ? ["pass", "零重叠"] : ["fail", "有重叠，分数不作数"]);
+      const leak = el("div", "leak");
+      for (const [k, label] of [["train_val", "训练 ∩ 验证"], ["train_test", "训练 ∩ 测试"],
+        ["val_test", "验证 ∩ 测试"]]) {
+        const s = el("div", "stat " + (ds.leaks[k] === 0 ? "pass" : "fail"));
+        s.appendChild(el("span", "", label));
+        s.appendChild(el("b", "", ds.leaks[k] + " 条"));
+        leak.appendChild(s);
+      }
+      for (const k of SPLIT_KEYS) {
+        const s = el("div", "stat");
+        s.appendChild(el("span", "", SPLIT_LABEL[k] + " 多标签"));
+        s.appendChild(el("b", "", sp[k].multi_label + " 条"));
+        leak.appendChild(s);
+      }
+      pSplit.appendChild(leak);
+
+      const box = el("div", "scroll-x");
+      box.style.marginTop = "12px";
+      const t = el("table", "tbl");
+      const hr = el("tr");
+      hr.appendChild(el("th", "", "类目"));
+      for (const k of SPLIT_KEYS) hr.appendChild(el("th", "", SPLIT_LABEL[k] + "（" + sp[k].size + "）"));
+      const thead = el("thead"); thead.appendChild(hr); t.appendChild(thead);
+      const tb = el("tbody");
+      const maxOf = {};
+      for (const k of SPLIT_KEYS) maxOf[k] = Math.max(1, ...Object.values(sp[k].counts));
+      for (const name of d.topic_names) {
+        const tr = el("tr");
+        tr.appendChild(el("td", "", name));
+        for (const k of SPLIT_KEYS) {
+          const td = el("td", "b");
+          const bar = el("div", "distbar");
+          const track = el("span", "track");
+          const fill = el("span", "fill");
+          fill.style.width = Math.round(sp[k].counts[name] / maxOf[k] * 100) + "%";
+          track.appendChild(fill);
+          bar.appendChild(track);
+          bar.appendChild(el("span", "v", String(sp[k].counts[name])));
+          td.appendChild(bar);
+          tr.appendChild(td);
+        }
+        tb.appendChild(tr);
+      }
+      t.appendChild(tb); box.appendChild(t);
+      pSplit.appendChild(box);
+      pSplit.appendChild(el("div", "tip",
+        "标签计数按「命中即计」算，多标签句给命中的每类各记一次，所以各列合计会大于条数。"));
+      body.appendChild(pSplit);
+
+      /* ③ 训练产物 */
+      const pModel = panel("训练产物三件套",
+        "权重 + tokenizer + threshold.json。阈值和验证集成绩就落在那个几十字节的小文件里，"
+        + "评测和服务启动都读它——它才是「上线的完整分类器」的另一半。",
+        d.model.trio_ok ? ["pass", "三件套齐全"] : ["fail", "三件套不全"]);
+      pModel.appendChild(fileTable(d.model.files));
+      const thr = el("div", "tip");
+      thr.appendChild(el("b", "", "threshold.json"));
+      thr.appendChild(el("span", "", " 在用判定阈值 " + d.model.threshold
+        + "；写入于 " + fmtTime(d.model.threshold_file.mtime)
+        + "，" + fmtBytes(d.model.threshold_file.bytes) + "。"));
+      pModel.appendChild(thr);
+      pModel.appendChild(jobRow([jobSpecs["ch10-train"]].filter(Boolean), load,
+        "训练是分钟级重活，会覆盖现有权重"));
+      body.appendChild(pModel);
+
+      /* ④ ONNX 产物 */
+      const ex = d.onnx.report;
+      const pOnnx = panel("ONNX 导出产物与一致性校验",
+        "导出后拿测试集全量逐条对齐 torch，过线标签必须完全一致才放行；"
+        + "服务侧只背 onnxruntime + tokenizers，不背 torch。",
+        ex.present ? (ex.passed ? ["pass", "预测完全一致"] : ["fail", "有不一致"]) : ["missing", "未导出"]);
+      pOnnx.appendChild(fileTable(d.onnx.files));
+      if (ex.present) {
+        pOnnx.appendChild(el("div", "tip",
+          "校验 " + ex.checked + " 条，不一致 " + ex.mismatch + " 条；opset " + ex.opset
+          + "，model.onnx " + fmtBytes(ex.onnx_bytes) + "，导出于 " + fmtTime(ex.ran_at) + "。"));
+      } else {
+        pOnnx.appendChild(missingBox(ex.hint));
+      }
+      pOnnx.appendChild(jobRow(
+        ["ch10-export", "classifier-up", "classifier-down"].map((n) => jobSpecs[n]).filter(Boolean),
+        load));
+      body.appendChild(pOnnx);
+    }
+
+    function renderGatebar(d) {
+      const bar = $("gatebar");
+      bar.textContent = "";
+      const ds = d.dataset;
+      const add = (label, value, cls) => {
+        const s = el("div", "stat " + (cls || ""));
+        s.appendChild(el("span", "", label));
+        const b = el("b", "", value);
+        if (String(value).length > 6) { b.style.fontSize = "14px"; b.style.lineHeight = "2"; }
+        s.appendChild(b);
+        bar.appendChild(s);
+      };
+      const lab = d.lineage.find((x) => x.file === "corpus_labeled.jsonl");
+      add("语料总量", (lab && lab.present ? lab.lines : "—") + " 条");
+      for (const k of SPLIT_KEYS) add(SPLIT_LABEL[k], ds.splits[k].size + " 条");
+      add("考卷泄漏", ds.clean ? "0 条" : "有", ds.clean ? "pass" : "fail");
+      add("在用阈值", String(d.model.threshold ?? "—"));
+    }
+
+    mountAdminNav("/acceptance/data");
+    $("refreshBtn").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>

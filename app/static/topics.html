@@ -1,0 +1,191 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 主题分布</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <style>
+    :root {
+      --ink: #2b2632;
+      --fur: #ff9f57;
+      --coral: #ff7a59;
+      --cream: #fff6e6;
+      --paper: #fffaf0;
+      --muted: #9b8f86;
+      --error: #d6455a;
+      --online: #5fcf6a;
+      --shadow: 4px 4px 0 var(--ink);
+      --shadow-sm: 3px 3px 0 var(--ink);
+      --shadow-lg: 8px 8px 0 var(--ink);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas,
+        "PingFang SC", "Microsoft YaHei", monospace;
+      color: var(--ink);
+      background-color: #f7d9a8;
+      background-image:
+        linear-gradient(rgba(43,38,50,0.05) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(43,38,50,0.05) 2px, transparent 2px);
+      background-size: 24px 24px;
+      padding: 24px 16px 64px;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+
+    .topbar {
+      background: var(--cream); border: 4px solid var(--ink); box-shadow: var(--shadow-lg);
+      padding: 14px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .topbar h1 { font-size: 18px; margin: 0; letter-spacing: 1px; }
+    .topbar .sub { color: var(--muted); font-size: 12px; }
+    .spacer { flex: 1; }
+    .btn {
+      font: inherit; cursor: pointer; border: 3px solid var(--ink); background: var(--paper);
+      padding: 6px 14px; box-shadow: var(--shadow-sm); font-weight: 700;
+    }
+    .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+    /* 统计条 */
+    .stats {
+      margin-top: 16px; display: flex; gap: 14px; flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
+      padding: 10px 16px; font-size: 13px;
+    }
+    .stat b { font-size: 20px; display: block; }
+
+    /* 分布条形图 */
+    .chart {
+      margin-top: 16px; background: var(--cream); border: 4px solid var(--ink);
+      box-shadow: var(--shadow); padding: 16px 18px;
+    }
+    .chart h2 { font-size: 14px; margin: 0 0 12px; }
+    .row { margin: 6px 0; }
+    .row summary {
+      display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none;
+    }
+    .row summary::-webkit-details-marker { display: none; }
+    .row .name { width: 6.5em; flex-shrink: 0; font-size: 13px; font-weight: 700; text-align: right; }
+    /* 类目名是链接:点它跳到这一类的问题列表,展开只看三条样例 */
+    .row .name a { color: inherit; text-decoration: none; border-bottom: 2px solid var(--fur); }
+    .row .name a:hover { background: var(--fur); }
+    .row.zero .name a { border-bottom-color: var(--muted); }
+    .samples .all {
+      display: inline-block; margin-top: 7px; font-size: 12px; text-decoration: none;
+      color: var(--ink); border: 3px solid var(--ink); background: var(--cream);
+      padding: 2px 9px; box-shadow: 2px 2px 0 var(--ink); font-weight: 700;
+    }
+    .row .track { flex: 1; background: var(--paper); border: 2px solid var(--ink); height: 22px; position: relative; }
+    .row .bar {
+      display: block; height: 100%; background: var(--fur); border-right: 2px solid var(--ink);
+      min-width: 2px; transition: width .4s;
+    }
+    .row.zero .bar { display: none; }
+    .row.zero { opacity: .45; }
+    .row .count {
+      width: 3em; flex-shrink: 0; font-weight: 700; font-size: 13px;
+    }
+    .row.top1 .bar { background: var(--coral); }
+    .samples {
+      margin: 6px 0 10px calc(6.5em + 10px); font-size: 12.5px; color: var(--ink);
+      background: var(--paper); border: 2px dashed var(--ink); padding: 8px 12px;
+    }
+    .samples div { margin: 2px 0; }
+    .samples .none { color: var(--muted); }
+    .hint { margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .err {
+      margin-top: 16px; background: var(--paper); border: 3px solid var(--error);
+      color: var(--error); padding: 10px 14px; font-size: 13px; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>主题分布</h1>
+      <span class="sub">低置信度问题 → 分类器旁路归类 → 哪类堆得多,先补哪块知识</span>
+      <span class="spacer"></span>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat">已归类问题<b id="total">-</b></div>
+      <div class="stat">最近归类<b id="latest" style="font-size:14px;line-height:28px">-</b></div>
+      <div class="stat">命中类目数<b id="hitClasses">-</b></div>
+    </div>
+
+    <div class="chart">
+      <h2>17 类权威类目 · 问题量(降序,点行展开样例,点类目名看全部)</h2>
+      <div id="rows"></div>
+      <div class="hint">数据来自 topic_classifications(make classify-pool 旁路批量归类);多标签问题计入每个命中类目。</div>
+    </div>
+
+    <div class="err" id="err"></div>
+  </div>
+
+  <script src="/static/admin.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    async function load() {
+      try {
+        const r = await fetch('/api/topics/distribution');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        render(await r.json());
+        $('err').style.display = 'none';
+      } catch (e) {
+        $('err').textContent = '拉取分布失败:' + e.message;
+        $('err').style.display = 'block';
+      }
+    }
+
+    function render(data) {
+      $('total').textContent = data.total;
+      // classified_at 存的是 UTC(MySQL 容器时区),补 Z 后按本地时区渲染
+      $('latest').textContent = data.latest
+        ? new Date(data.latest + 'Z').toLocaleString('zh-CN', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', hour12: false,
+          })
+        : '—';
+      const classes = [...data.classes].sort((a, b) => b.count - a.count);
+      $('hitClasses').textContent = classes.filter(c => c.count > 0).length + ' / 17';
+      const max = Math.max(1, ...classes.map(c => c.count));
+      const rows = $('rows');
+      rows.innerHTML = '';
+      classes.forEach((c, i) => {
+        const d = document.createElement('details');
+        d.className = 'row' + (c.count === 0 ? ' zero' : '') + (i === 0 && c.count > 0 ? ' top1' : '');
+        const pct = Math.round(c.count / max * 100);
+        const href = '/topics/questions?label=' + encodeURIComponent(c.label) + '&page=1';
+        d.innerHTML = `
+          <summary>
+            <span class="name">${c.count ? `<a href="${href}">${c.label}</a>` : c.label}</span>
+            <span class="track"><span class="bar" style="width:${pct}%"></span></span>
+            <span class="count">${c.count}</span>
+          </summary>
+          <div class="samples">${
+            c.samples.length
+              ? c.samples.map(s => `<div>· ${s}</div>`).join('')
+                + `<a class="all" href="${href}">查看全部 ${c.count} 条 →</a>`
+              : '<div class="none">暂无样例</div>'
+          }</div>`;
+        rows.appendChild(d);
+      });
+    }
+
+    $('refreshBtn').onclick = load;
+    mountAdminNav('/topics');
+    load();
+  </script>
+</body>
+</html>

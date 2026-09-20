@@ -1,0 +1,281 @@
+{
+ "meta": {
+  "n_samples": 300,
+  "kb_chunks": 51,
+  "recall_k": 5,
+  "retrieve_k": 10,
+  "concurrency": 5,
+  "chat_model": "MiniMax-M2.5",
+  "generated_at": "2026-08-07 20:38"
+ },
+ "retrieval": {
+  "vector": {
+   "A_policy": {
+    "recall": 1.0,
+    "mrr": 0.939
+   },
+   "B_model": {
+    "recall": 1.0,
+    "mrr": 0.903
+   },
+   "C_colloquial": {
+    "recall": 1.0,
+    "mrr": 0.896
+   },
+   "E_multi": {
+    "recall": 0.892,
+    "mrr": 0.622
+   },
+   "overall": {
+    "recall": 0.973,
+    "mrr": 0.84
+   }
+  },
+  "bm25": {
+   "A_policy": {
+    "recall": 1.0,
+    "mrr": 0.92
+   },
+   "B_model": {
+    "recall": 1.0,
+    "mrr": 0.983
+   },
+   "C_colloquial": {
+    "recall": 0.767,
+    "mrr": 0.628
+   },
+   "E_multi": {
+    "recall": 0.794,
+    "mrr": 0.565
+   },
+   "overall": {
+    "recall": 0.89,
+    "mrr": 0.774
+   }
+  },
+  "hybrid": {
+   "A_policy": {
+    "recall": 1.0,
+    "mrr": 0.922
+   },
+   "B_model": {
+    "recall": 1.0,
+    "mrr": 0.967
+   },
+   "C_colloquial": {
+    "recall": 0.917,
+    "mrr": 0.759
+   },
+   "E_multi": {
+    "recall": 0.85,
+    "mrr": 0.612
+   },
+   "overall": {
+    "recall": 0.942,
+    "mrr": 0.815
+   }
+  },
+  "hybrid_rerank": {
+   "A_policy": {
+    "recall": 1.0,
+    "mrr": 0.947
+   },
+   "B_model": {
+    "recall": 1.0,
+    "mrr": 1.0
+   },
+   "C_colloquial": {
+    "recall": 1.0,
+    "mrr": 0.972
+   },
+   "E_multi": {
+    "recall": 0.933,
+    "mrr": 0.657
+   },
+   "overall": {
+    "recall": 0.983,
+    "mrr": 0.894
+   }
+  }
+ },
+ "evidence_coverage": {
+  "vector": {
+   "A_policy": 1.0,
+   "B_model": 1.0,
+   "C_colloquial": 1.0,
+   "E_multi": 0.989,
+   "overall": 0.997
+  },
+  "bm25": {
+   "A_policy": 1.0,
+   "B_model": 1.0,
+   "C_colloquial": 0.867,
+   "E_multi": 0.933,
+   "overall": 0.95
+  },
+  "hybrid": {
+   "A_policy": 1.0,
+   "B_model": 1.0,
+   "C_colloquial": 0.967,
+   "E_multi": 0.981,
+   "overall": 0.987
+  },
+  "hybrid_rerank": {
+   "A_policy": 1.0,
+   "B_model": 1.0,
+   "C_colloquial": 1.0,
+   "E_multi": 0.975,
+   "overall": 0.994
+  }
+ },
+ "generation": {
+  "answer_coverage": {
+   "vector": {
+    "A_policy": 1.0,
+    "B_model": 0.994,
+    "C_colloquial": 0.983,
+    "E_multi": 0.9,
+    "overall": 0.969
+   },
+   "bm25": {
+    "A_policy": 1.0,
+    "B_model": 0.994,
+    "C_colloquial": 0.867,
+    "E_multi": 0.869,
+    "overall": 0.933
+   },
+   "hybrid": {
+    "A_policy": 1.0,
+    "B_model": 0.994,
+    "C_colloquial": 0.933,
+    "E_multi": 0.931,
+    "overall": 0.965
+   },
+   "hybrid_rerank": {
+    "A_policy": 1.0,
+    "B_model": 0.994,
+    "C_colloquial": 0.983,
+    "E_multi": 0.919,
+    "overall": 0.974
+   }
+  },
+  "faithfulness": {
+   "A_policy": {
+    "v": 0.983,
+    "answered": 60
+   },
+   "B_model": {
+    "v": 1.0,
+    "answered": 60
+   },
+   "C_colloquial": {
+    "v": 1.0,
+    "answered": 60
+   },
+   "E_multi": {
+    "v": 1.0,
+    "answered": 60
+   }
+  },
+  "faithfulness_cases": [
+   {
+    "id": "A30",
+    "bucket": "A_policy",
+    "query": "纸质专票哪种账户能申请,快递费谁付",
+    "answer": "关于您咨询的问题：\n\n**1. 纸质专票哪种账户能申请？**\n仅**企业账户**可申请纸质专票[1]。\n\n**2. 快递费谁付？**\n纸质专票的快递费为**到付**，即由申请开票的买家承担[1]。\n\n---\n\n温馨提示：\n- 如果是电子普票或电子专票，快递费由平台承担[1]\n- 纸质专票因需邮寄，快递费需到付\n\n如还有其他开票疑问，欢迎随时咨询小喵~ 🐱",
+    "reason": "客服回答的正文部分有据,但「温馨提示」里多了一句「如果是电子普票或电子专票,快递费由平台承担」——检索证据[1]的表格中根本没有电子发票快递费由谁承担的信息,仅写电子发票「发送到下单邮箱」,不涉及快递。这句新增的具体事实主张在整份证据中完全找不到依据,属于编造。",
+    "citations": [
+     {
+      "n": 1,
+      "chunk_id": 173,
+      "section_path": "发票与开票 / 可开票类型",
+      "question": "可开票类型",
+      "answer": "| 类型 | 开票内容 | 说明 |\n|---|---|---|\n| 电子普票 | 商品明细或办公用品 | 默认类型,开出后发送到下单邮箱 |\n| 电子专票 | 商品明细 | 需先在账户里补齐纳税人识别号 |\n| 纸质专票 | 商品明细 | 仅企业账户可申请,快递费到付 |"
+     },
+     {
+      "n": 2,
+      "chunk_id": 140,
+      "section_path": "退货退款政策 / 换货政策 / 换货运费",
+      "question": "换货运费",
+      "answer": "非质量问题的换货,往返运费由买家承担;因质量问题或发错货的换货,往返运费由平台承担。少发漏发导致的换货,往返运费同样由平台承担。"
+     },
+     {
+      "n": 3,
+      "chunk_id": 172,
+      "section_path": "发票与开票 / 开票时效",
+      "question": "开票时效",
+      "answer": "订单完成后 30 天内可申请开票,平台在收到申请后 3 个工作日内开出电子发票,超过 30 天需联系客服人工处理。"
+     },
+     {
+      "n": 4,
+      "chunk_id": 141,
+      "section_path": "退货退款政策 / 退换货运费承担",
+      "question": "退换货运费承担",
+      "answer": "无理由退货的退回运费由买家承担;因商品质量问题、发错货、少发漏发导致的退换货,运费由平台承担。换货的往返运费另有区分:非质量问题的换货由买家承担,详见「换货运费」。运费承担以平台售后规则最终判定为准。"
+     },
+     {
+      "n": 5,
+      "chunk_id": 130,
+      "section_path": "商品与购物 FAQ / 会员等级与积分规则",
+      "question": "会员等级与积分规则",
+      "answer": "会员分为普通、银卡、金卡三档,按累计消费自动升级。每消费 1 元得 1 积分,积分可在结算时抵扣,100 积分抵 1 元。"
+     },
+     {
+      "n": 6,
+      "chunk_id": 127,
+      "section_path": "商品与购物 FAQ / 运费怎么算",
+      "question": "运费怎么算",
+      "answer": "单笔订单满 99 元包邮,未满收取 10 元运费,偏远地区运费另计。邮费即运费,按此规则收取。"
+     },
+     {
+      "n": 7,
+      "chunk_id": 128,
+      "section_path": "商品与购物 FAQ / 发票如何开具",
+      "question": "发票如何开具",
+      "answer": "在「我的订单」-「申请开票」提交抬头与税号,电子发票将于 3 个工作日内发送至邮箱。"
+     },
+     {
+      "n": 8,
+      "chunk_id": 136,
+      "section_path": "商品与购物 FAQ / 会员运费权益",
+      "question": "会员运费权益",
+      "answer": "金卡会员每月享 3 次免运费权益,银卡会员享 1 次;权益不与偏远地区附加运费冲抵,当月未用完不结转。免运费权益直接抵掉该订单的基础运费(即未满 99 元包邮门槛时收取的那笔),按实际运费全额抵扣,不设每单抵扣上限——「未满 99 元收 10 元运费」里的 10 元是运费本身,不是权益上限。"
+     },
+     {
+      "n": 9,
+      "chunk_id": 168,
+      "section_path": "会员权益 / 运费与包邮",
+      "question": "运费与包邮",
+      "answer": "满 99 元包邮，未满收 10 元运费。偏远地区（新疆、西藏、内蒙）运费 20 元，不参与包邮。"
+     },
+     {
+      "n": 10,
+      "chunk_id": 153,
+      "section_path": "售后手册 / 会员专属售后权益",
+      "question": "会员专属售后权益",
+      "answer": "金卡会员享优先客服接入与上门取件退换货;银卡会员享退换货运费权益 1 次/月。具体权益以会员中心页面标注为准。"
+     }
+    ]
+   }
+  ],
+  "model_guard": {
+   "hits": 0,
+   "fixed": 0,
+   "cases": []
+  },
+  "refusal": {
+   "rate": 1.0,
+   "total": 60,
+   "correct": 60,
+   "cases": [],
+   "skipped_ids": []
+  },
+  "skipped": 0
+ },
+ "read_notes": {
+  "rag_mrr": "混合加重排在口语类达到 0.972,型号类满分 1.0,总体最高 0.894,跨文档类却只有 0.657 是所有策略的短板,所以该上线混合加重排,并重点看跨文档类怎么提。",
+  "rag_recall": "跨文档类在四策略里都是短板,纯 BM25 最低 0.794,混合加重排才提到 0.933,所以该看跨文档类这条线,优先优化这块。",
+  "rag_coverage": "看口语类,纯 BM25 只有 0.867,比其他差一大截,所以重点检查口语类题的召回策略是不是该调调了。",
+  "rag_answer_coverage": "口语类在纯 BM25 只有 0.867,跨文档类也只有 0.869,说明检索差真的会传导到答案缺要点,所以该看这两种题型在低端策略下有没有漏掉关键文档。"
+ }
+}

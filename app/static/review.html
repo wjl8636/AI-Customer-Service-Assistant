@@ -1,0 +1,361 @@
+<!doctype html>
+<!--
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>喵喵优选 · 飞轮待审队列</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <style>
+    :root {
+      --ink: #2b2632;
+      --fur: #ff9f57;
+      --coral: #ff7a59;
+      --cream: #fff6e6;
+      --paper: #fffaf0;
+      --muted: #9b8f86;
+      --error: #d6455a;
+      --online: #5fcf6a;
+      --shadow: 4px 4px 0 var(--ink);
+      --shadow-sm: 3px 3px 0 var(--ink);
+      --shadow-lg: 8px 8px 0 var(--ink);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas,
+        "PingFang SC", "Microsoft YaHei", monospace;
+      color: var(--ink);
+      background-color: #f7d9a8;
+      background-image:
+        linear-gradient(rgba(43,38,50,0.05) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(43,38,50,0.05) 2px, transparent 2px);
+      background-size: 24px 24px;
+      padding: 24px 16px 64px;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+
+    /* 顶栏 */
+    .topbar {
+      background: var(--cream); border: 4px solid var(--ink); box-shadow: var(--shadow-lg);
+      padding: 14px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .topbar h1 { font-size: 18px; margin: 0; letter-spacing: 1px; }
+    .topbar .sub { color: var(--muted); font-size: 12px; }
+    .spacer { flex: 1; }
+    .seg { display: flex; border: 3px solid var(--ink); background: var(--paper); }
+    .seg button {
+      border: 0; background: transparent; padding: 6px 12px; font: inherit; cursor: pointer;
+      border-right: 3px solid var(--ink);
+    }
+    .seg button:last-child { border-right: 0; }
+    .seg button.on { background: var(--fur); font-weight: 700; }
+    .btn {
+      font: inherit; cursor: pointer; border: 3px solid var(--ink); background: var(--paper);
+      padding: 6px 14px; box-shadow: var(--shadow-sm); font-weight: 700;
+    }
+    .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+    .btn.ok { background: var(--online); }
+    .btn.no { background: var(--error); color: #fff; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* 三道闸提示 */
+    .gates {
+      margin-top: 16px; background: var(--paper); border: 3px dashed var(--ink);
+      padding: 10px 14px; font-size: 12.5px; line-height: 1.8;
+    }
+    .gates b { background: var(--fur); padding: 0 6px; border: 2px solid var(--ink); margin-right: 4px; }
+
+    /* 列表 */
+    .list { margin-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .card { background: var(--cream); border: 4px solid var(--ink); box-shadow: var(--shadow); }
+    .row-main { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; }
+    .row-main:hover { background: var(--paper); }
+    .qtext { font-weight: 700; font-size: 14.5px; flex: 1; min-width: 240px; }
+    .ans-preview { color: var(--muted); font-size: 12px; max-width: 320px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .badge {
+      border: 2.5px solid var(--ink); padding: 2px 8px; font-size: 12px; font-weight: 700;
+      background: var(--paper); white-space: nowrap;
+    }
+    .badge.hot { background: var(--coral); color: #fff; }
+    .badge.st-待审 { background: var(--fur); }
+    .badge.st-通过 { background: var(--online); }
+    .badge.st-驳回 { background: var(--error); color: #fff; }
+    .ops { display: flex; gap: 8px; }
+
+    /* 详情展开 */
+    .detail { border-top: 3px solid var(--ink); background: var(--paper); padding: 14px 16px; display: none; }
+    .card.open .detail { display: block; }
+    .hint { color: var(--muted); font-size: 12px; margin: 4px 0 10px; }
+    .raw {
+      border: 3px solid var(--ink); background: var(--cream); margin-bottom: 12px; padding: 10px 12px;
+    }
+    .raw .head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+    .src { border: 2px solid var(--ink); padding: 1px 7px; font-size: 11.5px; font-weight: 700; }
+    .src-retrieval_low_conf { background: #ffd66e; }
+    .src-self_check { background: #b7a6ff; }
+    .src-user_feedback { background: #ff8095; }
+    .raw .when { color: var(--muted); font-size: 11.5px; }
+    .raw .q { font-size: 13.5px; margin: 2px 0 8px; }
+    .snaps { display: flex; flex-direction: column; gap: 8px; }
+    .snap { border: 2px dashed var(--ink); padding: 8px 10px; background: var(--paper); font-size: 12.5px; }
+    .snap .sq { font-weight: 700; }
+    .snap .sa { margin: 3px 0; color: #4c4456; }
+    .meter { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); }
+    .meter .bar { height: 8px; width: 140px; border: 2px solid var(--ink); background: var(--paper); }
+    .meter .fill { height: 100%; background: var(--coral); }
+    .nosnap { color: var(--muted); font-size: 12px; border: 2px dashed var(--muted); padding: 6px 10px; }
+
+    .empty { text-align: center; color: var(--muted); padding: 48px 0; font-size: 14px;
+      background: var(--cream); border: 4px solid var(--ink); box-shadow: var(--shadow); }
+
+    /* 通过弹框 */
+    .mask { position: fixed; inset: 0; background: rgba(43,38,50,.45); display: none;
+      justify-content: center; align-items: center; z-index: 50; }
+    .mask.open { display: flex; }
+    .modal { width: min(560px, 92vw); background: var(--cream); border: 4px solid var(--ink);
+      box-shadow: var(--shadow-lg); padding: 18px; }
+    .modal h3 { margin: 0 0 4px; font-size: 15px; }
+    .modal .mq { font-size: 13px; color: #4c4456; margin-bottom: 10px; }
+    .modal textarea {
+      width: 100%; min-height: 130px; font: inherit; font-size: 13px; padding: 10px;
+      border: 3px solid var(--ink); background: var(--paper); resize: vertical;
+    }
+    .modal .foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; }
+
+    /* toast */
+    #toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+      background: var(--ink); color: var(--cream); padding: 10px 18px; font-size: 13px;
+      border: 3px solid var(--ink); box-shadow: var(--shadow-sm); display: none; z-index: 99;
+      max-width: 84vw;
+    }
+    #toast.err { background: var(--error); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>飞轮待审队列</h1>
+      <span class="sub">答不上的问题 → 标准化查重 → 人工审核 → 写回知识库</span>
+      <span class="spacer"></span>
+      <div class="seg" id="statusSeg">
+        <button data-st="待审" class="on">待审</button>
+        <button data-st="通过">通过</button>
+        <button data-st="驳回">驳回</button>
+        <button data-st="">全部</button>
+      </div>
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+
+    <div class="gates">
+      审核前先过三道闸:<b>① 垃圾过滤</b>乱输入、测试胡打、不当言论 → 驳回;
+      <b>② 时效</b>强时效问题(活动截止类)补了就过期,不沉淀 → 驳回;
+      <b>③ 频次</b>低频冷门问题不值得占知识库、耗人工 → 驳回。剩下的才是真缺口,补上核准答案点通过。
+    </div>
+
+    <div class="list" id="list"><div class="empty">加载中…</div></div>
+  </div>
+
+  <div class="mask" id="mask">
+    <div class="modal">
+      <h3>通过并写回知识库</h3>
+      <div class="mq" id="modalQ"></div>
+      <textarea id="modalAnswer" placeholder="核准答案(预填 AI 示例答案,请人工把关后提交)"></textarea>
+      <div class="foot">
+        <button class="btn" id="modalCancel">取消</button>
+        <button class="btn ok" id="modalOk">确认通过</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/static/admin.js"></script>
+  <script>
+    const listEl = document.getElementById("list");
+    const segEl = document.getElementById("statusSeg");
+    const mask = document.getElementById("mask");
+    const modalQ = document.getElementById("modalQ");
+    const modalAnswer = document.getElementById("modalAnswer");
+    let curStatus = "待审";
+    let approving = null;   // 当前弹框对应的缺口 id
+    const SRC_LABEL = { retrieval_low_conf: "检索置信度低", self_check: "模型自评不足", user_feedback: "用户反馈没解决" };
+
+    function toast(msg, err) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = err ? "err" : "";
+      t.style.display = "block";
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.style.display = "none"; }, 3200);
+    }
+
+    async function api(path, opts) {
+      const r = await fetch(path, opts);
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(body.detail || ("HTTP " + r.status));
+      return body;
+    }
+
+    function el(tag, cls, text) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+
+    function renderSnapshots(container, chunks) {
+      // 三态:null=没走检索;[]=走了检索但零命中(真缺知识的强信号);列表=有召回
+      if (chunks === null || chunks === undefined) {
+        container.appendChild(el("div", "nosnap", "该入口未走检索,无召回快照"));
+        return;
+      }
+      if (!chunks.length) {
+        container.appendChild(el("div", "nosnap", "已检索,零命中——知识库确实没有相关内容"));
+        return;
+      }
+      const wrap = el("div", "snaps");
+      for (const c of chunks) {
+        const s = el("div", "snap");
+        s.appendChild(el("div", "sq", c.question || "(无标题)"));
+        s.appendChild(el("div", "sa", c.answer || ""));
+        const meter = el("div", "meter");
+        const score = Number(c.rerank_score || 0);
+        meter.appendChild(el("span", "", "精排分 " + score.toFixed(3)));
+        const bar = el("div", "bar");
+        const fill = el("div", "fill");
+        fill.style.width = Math.min(100, Math.round(score * 100)) + "%";
+        bar.appendChild(fill);
+        meter.appendChild(bar);
+        if (c.section_path) meter.appendChild(el("span", "", c.section_path));
+        s.appendChild(meter);
+        wrap.appendChild(s);
+      }
+      container.appendChild(wrap);
+    }
+
+    async function toggleDetail(card, id) {
+      if (card.classList.contains("open")) { card.classList.remove("open"); return; }
+      const box = card.querySelector(".detail");
+      if (!box.dataset.loaded) {
+        box.textContent = "加载详情…";
+        try {
+          const d = await api("/api/review/" + id);
+          box.textContent = "";
+          box.appendChild(el("div", "hint",
+            "对着快照判断:知识库是真缺这块,还是有但没检到。归并原话 " + d.raws.length + " 条↓"));
+          if (!d.raws.length) box.appendChild(el("div", "nosnap", "暂无归并原话(飞轮跑批后回填)"));
+          for (const r of d.raws) {
+            const raw = el("div", "raw");
+            const head = el("div", "head");
+            head.appendChild(el("span", "src src-" + r.source, SRC_LABEL[r.source] || r.source));
+            head.appendChild(el("span", "when", (r.created_at || "").replace("T", " ").slice(0, 16)));
+            raw.appendChild(head);
+            raw.appendChild(el("div", "q", "「" + r.raw_question + "」"));
+            renderSnapshots(raw, r.retrieved_chunks);
+            box.appendChild(raw);
+          }
+          box.dataset.loaded = "1";
+        } catch (e) { box.textContent = "详情加载失败:" + e.message; }
+      }
+      card.classList.add("open");
+    }
+
+    function renderItems(items) {
+      listEl.textContent = "";
+      if (!items.length) {
+        listEl.appendChild(el("div", "empty", "这个状态下暂时没有条目喵~"));
+        return;
+      }
+      for (const it of items) {
+        const card = el("div", "card");
+        const main = el("div", "row-main");
+        const occ = el("span", "badge" + (it.occurrence_count >= 3 ? " hot" : ""), "×" + it.occurrence_count);
+        occ.title = "出现次数(查重归并累加),越高越该优先补";
+        main.appendChild(occ);
+        main.appendChild(el("div", "qtext", it.normalized_question));
+        main.appendChild(el("div", "ans-preview", it.ai_suggested_answer || "(无示例答案)"));
+        main.appendChild(el("span", "badge st-" + it.review_status, it.review_status));
+        const ops = el("div", "ops");
+        if (it.review_status === "待审") {
+          const ok = el("button", "btn ok", "通过");
+          ok.addEventListener("click", (e) => {
+            e.stopPropagation();
+            approving = it.id;
+            modalQ.textContent = "标准化问题:" + it.normalized_question;
+            modalAnswer.value = it.ai_suggested_answer || "";
+            mask.classList.add("open");
+            modalAnswer.focus();
+          });
+          const no = el("button", "btn no", "驳回");
+          no.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            no.disabled = true;
+            try {
+              await api("/api/review/" + it.id + "/reject", { method: "POST" });
+              toast("已驳回");
+              load();
+            } catch (err) { toast("驳回失败:" + err.message, true); no.disabled = false; }
+          });
+          ops.appendChild(ok); ops.appendChild(no);
+        }
+        main.appendChild(ops);
+        main.addEventListener("click", () => toggleDetail(card, it.id));
+        card.appendChild(main);
+        card.appendChild(el("div", "detail"));
+        listEl.appendChild(card);
+      }
+    }
+
+    async function load() {
+      try {
+        const qs = curStatus ? ("?status=" + encodeURIComponent(curStatus)) : "";
+        const d = await api("/api/review/queue" + qs);
+        renderItems(d.items);
+      } catch (e) {
+        listEl.textContent = "";
+        listEl.appendChild(el("div", "empty", "加载失败:" + e.message));
+      }
+    }
+
+    segEl.addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      segEl.querySelectorAll("button").forEach((x) => x.classList.remove("on"));
+      b.classList.add("on");
+      curStatus = b.dataset.st;
+      load();
+    });
+    document.getElementById("refreshBtn").addEventListener("click", load);
+    document.getElementById("modalCancel").addEventListener("click", () => mask.classList.remove("open"));
+    mask.addEventListener("click", (e) => { if (e.target === mask) mask.classList.remove("open"); });
+    document.getElementById("modalOk").addEventListener("click", async () => {
+      const answer = modalAnswer.value.trim();
+      if (!answer) { toast("核准答案不能为空", true); return; }
+      const btn = document.getElementById("modalOk");
+      btn.disabled = true; btn.textContent = "写回中…";
+      try {
+        await api("/api/review/" + approving + "/approve", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ approved_answer: answer }),
+        });
+        mask.classList.remove("open");
+        toast("已写回知识库,下次同类问题可直接检索命中 ✓");
+        load();
+      } catch (err) {
+        toast("写回失败:" + err.message, true);
+      } finally { btn.disabled = false; btn.textContent = "确认通过"; }
+    });
+
+    mountAdminNav("/review");
+    load();
+  </script>
+</body>
+</html>

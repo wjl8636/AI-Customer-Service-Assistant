@@ -1,0 +1,7 @@
+[
+  {"query": "邮费是多少", "expect_answer_contains": "包邮"},
+  {"query": "快递费怎么收", "expect_answer_contains": "运费"},
+  {"query": "多久能发货", "expect_answer_contains": "48"},
+  {"query": "东西不想要了能退吗", "expect_answer_contains": "7"},
+  {"query": "怎么开发票", "expect_answer_contains": "开票"}
+]

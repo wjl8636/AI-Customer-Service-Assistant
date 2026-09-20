@@ -1,0 +1,154 @@
+/*
+  来源：公众号@小林coding
+  后端八股网站：xiaolincoding.com
+  Agent网站：xiaolinnote.com
+  简历模版：jianli.xiaolinnote.com
+*/
+/* ch10 验收页共享外壳:配色与手绘硬阴影沿用聊天页/审核页/主题分布页同一套,
+   四个页面(总览/评测/数据/错例)只在各自 HTML 里写自己独有的那几条。 */
+:root {
+  --ink: #2b2632;
+  --fur: #ff9f57;
+  --coral: #ff7a59;
+  --cream: #fff6e6;
+  --paper: #fffaf0;
+  --muted: #9b8f86;
+  --error: #d6455a;
+  --online: #5fcf6a;
+  --sky: #7fc4e8;
+  --violet: #b7a6ff;
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+  --shadow-lg: 8px 8px 0 var(--ink);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas,
+    "PingFang SC", "Microsoft YaHei", monospace;
+  color: var(--ink);
+  background-color: #f7d9a8;
+  background-image:
+    linear-gradient(rgba(43,38,50,0.05) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(43,38,50,0.05) 2px, transparent 2px);
+  background-size: 24px 24px;
+  padding: 24px 16px 64px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+
+/* 顶栏 + 页间导航 */
+.topbar {
+  background: var(--cream); border: 4px solid var(--ink); box-shadow: var(--shadow-lg);
+  padding: 14px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.topbar h1 { font-size: 18px; margin: 0; letter-spacing: 1px; }
+.topbar .sub { color: var(--muted); font-size: 12px; }
+.spacer { flex: 1; }
+.nav { display: flex; border: 3px solid var(--ink); background: var(--paper); flex-wrap: wrap; }
+.nav a {
+  padding: 6px 12px; font-size: 12.5px; text-decoration: none; color: var(--ink);
+  border-right: 3px solid var(--ink);
+}
+.nav a:last-child { border-right: 0; }
+.nav a.on { background: var(--fur); font-weight: 700; }
+.btn {
+  font: inherit; font-size: 13px; cursor: pointer; border: 3px solid var(--ink);
+  background: var(--paper); padding: 5px 12px; box-shadow: var(--shadow-sm); font-weight: 700;
+}
+.btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.sm { font-size: 12px; padding: 3px 9px; box-shadow: 2px 2px 0 var(--ink); }
+.btn.go { background: var(--fur); }
+.btn.no { background: var(--error); color: #fff; }
+a.btn { text-decoration: none; display: inline-block; }
+
+/* 总闸条 */
+.gatebar {
+  margin-top: 16px; display: flex; gap: 14px; flex-wrap: wrap; align-items: stretch;
+}
+.stat {
+  background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--shadow-sm);
+  padding: 9px 16px; font-size: 12.5px; min-width: 108px;
+}
+.stat b { font-size: 20px; display: block; line-height: 1.35; }
+.stat.pass b { color: #2f8f3c; }
+.stat.fail b { color: var(--error); }
+
+/* 区块面板 */
+.panel {
+  margin-top: 16px; background: var(--cream); border: 4px solid var(--ink);
+  box-shadow: var(--shadow); padding: 14px 18px 18px;
+}
+.panel > h2 {
+  font-size: 14px; margin: 0 0 4px; display: flex; align-items: center;
+  gap: 10px; flex-wrap: wrap;
+}
+.panel > .lede { color: #6d6478; font-size: 12.5px; margin: 0 0 12px; line-height: 1.75; }
+.panel.tight { padding-bottom: 14px; }
+
+/* 状态药丸 */
+.pill {
+  border: 2.5px solid var(--ink); padding: 1px 8px; font-size: 11.5px; font-weight: 700;
+  background: var(--paper); white-space: nowrap; display: inline-block;
+}
+.pill.pass { background: var(--online); }
+.pill.fail { background: var(--error); color: #fff; }
+.pill.missing { background: var(--paper); color: var(--muted); border-color: var(--muted); }
+.pill.running { background: var(--fur); }
+.pill.info { background: var(--sky); }
+.pill.sev-严 { background: var(--coral); }
+.pill.sev-中 { background: var(--fur); }
+.pill.sev-宽 { background: var(--paper); color: var(--muted); border-color: var(--muted); }
+
+/* 表格 */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--paper); }
+table.tbl th, table.tbl td {
+  border: 2px solid var(--ink); padding: 5px 8px; text-align: left; vertical-align: middle;
+}
+table.tbl th { background: var(--fur); font-size: 12px; white-space: nowrap; }
+table.tbl td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.tbl tr.bad td { background: #ffe9ec; }
+.scroll-x { overflow-x: auto; }
+
+/* 数值 + 内嵌小条:分数不用光秃秃的数字,配一条能扫的横条 */
+.cell-bar { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.cell-bar .track {
+  width: 54px; height: 8px; border: 2px solid var(--ink); background: var(--cream); flex-shrink: 0;
+}
+.cell-bar .fill { height: 100%; background: var(--fur); display: block; }
+.cell-bar .fill.hi { background: var(--online); }
+.cell-bar .fill.lo { background: var(--error); }
+.cell-bar span.v { font-variant-numeric: tabular-nums; }
+
+/* 日志窗口 */
+.logbox {
+  margin-top: 10px; border: 3px solid var(--ink); background: #2b2632; color: #f3ead9;
+  padding: 10px 12px; font-size: 12px; line-height: 1.65; max-height: 280px;
+  overflow: auto; white-space: pre-wrap; word-break: break-all; display: none;
+}
+.logbox.on { display: block; }
+.logbox .cmd { color: var(--fur); }
+
+/* 作业按钮组 */
+.jobrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.jobrow .needs { color: var(--muted); font-size: 11.5px; }
+
+/* 提示条 */
+.tip {
+  border: 3px dashed var(--ink); background: var(--paper); padding: 9px 13px;
+  font-size: 12.5px; line-height: 1.8; margin-top: 12px;
+}
+.tip b { background: var(--fur); padding: 0 5px; border: 2px solid var(--ink); }
+.miss {
+  border: 3px dashed var(--muted); background: var(--paper); color: var(--muted);
+  padding: 14px; font-size: 12.5px; text-align: center;
+}
+
+/* toast */
+#toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+  background: var(--ink); color: var(--cream); padding: 10px 18px; font-size: 13px;
+  border: 3px solid var(--ink); box-shadow: var(--shadow-sm); display: none; z-index: 99;
+  max-width: 84vw;
+}
+#toast.err { background: var(--error); color: #fff; }

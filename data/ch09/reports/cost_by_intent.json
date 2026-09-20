@@ -1,0 +1,43 @@
+{
+ "meta": {
+  "days": 7,
+  "source": "Langfuse",
+  "generated_at": "2026-07-17 18:17",
+  "recovered_from": "dev-notes/ch09-cost-report.txt(同一轮 make cost-report 的输出)"
+ },
+ "rows": [
+  {
+   "intent": "商品咨询",
+   "tokens": 8821,
+   "count": 3,
+   "avg_tokens": 2940,
+   "share": 0.47
+  },
+  {
+   "intent": "物流",
+   "tokens": 7942,
+   "count": 1,
+   "avg_tokens": 7942,
+   "share": 0.42
+  },
+  {
+   "intent": "闲聊",
+   "tokens": 1957,
+   "count": 1,
+   "avg_tokens": 1957,
+   "share": 0.1
+  },
+  {
+   "intent": "售后",
+   "tokens": 0,
+   "count": 1,
+   "avg_tokens": 0,
+   "share": 0.0
+  }
+ ],
+ "total_tokens": 18720,
+ "total_requests": 6,
+ "read_notes": {
+  "cost_by_intent": "你看物流单均 token 飙到 7,942,说明这单次提问背后套了很长的工具链,所以赶紧先给物流瘦 prompt 或换小模型。"
+ }
+}

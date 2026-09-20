@@ -1,0 +1,13 @@
+# shell 脚本必须是 LF 行尾。
+#
+# scripts/*.sh 曾经带着 CRLF 提交进来过，学员在 macOS / Linux / WSL 上解压压缩包后，
+# shebang 那一行末尾多一个回车符，于是报 "env: bash^M: No such file or directory"，
+# make dev 直接跑不起来 —— 而 WSL 和 macOS 正是文档推荐的主路径。
+#
+# 这里把行尾钉死，防止再被 Windows 上的编辑器改回去。
+*.sh       text eol=lf
+Makefile   text eol=lf
+*.py       text eol=lf
+*.sql      text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf

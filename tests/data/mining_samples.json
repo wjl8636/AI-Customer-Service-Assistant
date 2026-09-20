@@ -1,0 +1,10 @@
+[
+  {
+    "conversation": "user: 你们运费怎么算啊\nassistant: 单笔订单满99元包邮,未满收取10元运费,偏远地区另计。",
+    "expect_question_contains": "运费"
+  },
+  {
+    "conversation": "user: 我的订单MH123到哪了\nassistant: 您的包裹在广州分拨中心,预计明天送达。",
+    "expect_empty": true
+  }
+]

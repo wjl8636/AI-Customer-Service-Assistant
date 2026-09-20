@@ -1,0 +1,22 @@
+[
+  {
+    "text": "我上周买的猫爬架,订单号 MH20260701123,到货就散架了,我要退款",
+    "expected": {"order_id": "MH20260701123", "request_type": "退款"}
+  },
+  {
+    "text": "猫粮买错口味了想换成三文鱼味的,单号MH20260705888,能操作吗",
+    "expected": {"order_id": "MH20260705888", "request_type": "换货"}
+  },
+  {
+    "text": "自动喂食器用了三天就不出粮了,帮我修一下,订单号忘了回头补",
+    "expected": {"order_id": null, "request_type": "维修"}
+  },
+  {
+    "text": "你们家快递员态度太差了,把箱子扔门口就走,我要投诉他",
+    "expected": {"order_id": null, "request_type": "投诉"}
+  },
+  {
+    "text": "东西收到了,就是想问问后续保养要注意啥",
+    "expected": {"order_id": null, "request_type": "其他"}
+  }
+]
