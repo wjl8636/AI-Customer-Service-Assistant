@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """观测与成本 API:三块报表各读自己的权威源,缺产物是状态不是错误,一块挂了不连坐另两块。"""
 import json
 

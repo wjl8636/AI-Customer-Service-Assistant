@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """Query 扩写标注评估:核心场景出 3 条 + JSON 稳定 + 保持关键实体。需聊天上游可调通。
 用法:.venv/bin/python -m scripts.eval_expand"""
 import asyncio

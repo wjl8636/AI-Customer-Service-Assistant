@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 验收 API:把原本只能在终端看的九项实证搬上页面。只读 + 作业发起,不改任何产物。
 
 数据来源分两类:

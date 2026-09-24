@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """验收展示(dry-run):列出建库材料 + 预览结构化切块结果,不写库、不碰 Milvus、不调上游。
 展示需求1 的三个切块特性:按标题层级切 / 表格按行拆(表头复制)/ 句子边界 overlap。
 运行:PYTHONPATH=. uv run python scripts/show_kb.py"""

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """冒烟:直连 SiliconFlow 调 BGE-M3,验证连通与维度。
 需 .env 里 EMBED_BASE_URL / EMBED_API_KEY 填好。
 运行:PYTHONPATH=. uv run python scripts/smoke_embed.py"""

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -56,6 +52,13 @@ class Settings(BaseSettings):
     intent_small_model: str = ""      # 降级路小模型(种子,未接运行时)
     intent_mode: str = "accuracy"     # accuracy=只用大模型;cost=小模型判→低置信升级大模型(未实现)
     intent_conf_threshold: float = 0.6  # cost 模式升级阈值(种子)
+    # --- Jev(typesafe.ai System One 决策模型)意图识别:与上方 intent_* 并行,运行时经 intent_backend 切换 ---
+    # llm=原 Chat 模型结构化识别(默认);jev=用 Jev 的 Choice 原语做九选一(返回概率/置信度/token 用量)。
+    # 只改 intent_backend 一个开关即可换实现,原 LLM 路径代码不动。
+    intent_backend: str = "llm"        # "llm" | "jev"
+    jev_api_key: str = ""              # typesafe.ai 的 API key(Bearer 头)
+    jev_base_url: str = "https://api.typesafe.ai/v1"  # POST {base}/systemone
+    jev_model: str = "jev-latest"      # 上游真实模型别名
     # ch07 会话上下文管理(滑窗 + 异步摘要)
     context_window_max_tokens: int = 0    # 滑窗 token 上限。0=按 core/budget 的预算算,
                                           # 填非 0 则手动覆盖(回滚用)

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch07 上下文拼装(纯函数级):拼装顺序固定、滑窗从摘要边界后接原文、无摘要不插额外 system。"""
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 

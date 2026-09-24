@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 地基:review_queue / eval_runs ORM 与 repository 飞轮方法。"""
 from app.db import repository
 

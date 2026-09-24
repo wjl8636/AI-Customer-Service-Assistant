@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 import logging
 
 from langchain_core.exceptions import OutputParserException
@@ -44,19 +40,25 @@ class _CumulativeUsageChatOpenAI(ChatOpenAI):
 
     _prev_usage: dict = PrivateAttr(default_factory=dict)
 
-    def _convert_chunk_to_generation_chunk(self, chunk, default_chunk_class, base_generation_info):
+    def _convert_chunk_to_generation_chunk(
+        self, chunk, default_chunk_class, base_generation_info
+    ):
         usage = chunk.get("usage") if isinstance(chunk, dict) else None
         if usage:
             prev = self._prev_usage
             # 任何一项变小 = 上一条流已经结束,这是新一条流的第一个 chunk,基准清零。
             # 同一实例被复用时(结构化输出的链会多次 invoke)靠这条自愈。
-            if any(isinstance(v, (int, float)) and v < prev.get(k, 0)
-                   for k, v in usage.items() if not isinstance(v, dict)):
+            if any(
+                isinstance(v, (int, float)) and v < prev.get(k, 0)
+                for k, v in usage.items()
+                if not isinstance(v, dict)
+            ):
                 prev = {}
             chunk = {**chunk, "usage": _diff_usage(usage, prev)}
             self._prev_usage = usage
         return super()._convert_chunk_to_generation_chunk(
-            chunk, default_chunk_class, base_generation_info)
+            chunk, default_chunk_class, base_generation_info
+        )
 
 
 def resolve_slot(slot: str = "chat") -> tuple[str, str, str]:
@@ -71,9 +73,13 @@ def resolve_slot(slot: str = "chat") -> tuple[str, str, str]:
     )
 
 
-def get_chat_model(streaming: bool = False, model: str | None = None,
-                   temperature: float | None = None, slot: str = "chat",
-                   thinking: bool = True) -> ChatOpenAI:
+def get_chat_model(
+    streaming: bool = False,
+    model: str | None = None,
+    temperature: float | None = None,
+    slot: str = "chat",
+    thinking: bool = True,
+) -> ChatOpenAI:
     """直连聊天上游,说 OpenAI 协议。
     model 显式覆盖模型名(意图识别可配更大模型求准),None 时回落 settings.chat_model。
     ch09:usage 统一收口——流式也回传 token(等效 stream_options.include_usage),
@@ -88,14 +94,18 @@ def get_chat_model(streaming: bool = False, model: str | None = None,
     结构化输出走 function_calling 必须关。不能只是不传——DeepSeek 默认 thinking 开着,
     不传等于开,所以 False 时显式发 disabled。"""
     slot_model, base_url, api_key = resolve_slot(slot)
-    thinking_kw = _thinking_kwargs() if thinking else {"extra_body": {"thinking": {"type": "disabled"}}}
+    thinking_kw = (
+        _thinking_kwargs()
+        if thinking
+        else {"extra_body": {"thinking": {"type": "disabled"}}}
+    )
     return _CumulativeUsageChatOpenAI(
         model=model or slot_model,
         base_url=base_url,
         api_key=api_key,
         streaming=streaming,
         stream_usage=True,
-        max_tokens=settings.max_output_tokens,   # Y:保险丝,防模型失控输出
+        max_tokens=settings.max_output_tokens,  # Y:保险丝,防模型失控输出
         temperature=0.3 if temperature is None else temperature,
         **thinking_kw,
     )
@@ -114,7 +124,9 @@ def _thinking_kwargs() -> dict:
     if settings.chat_reasoning_split:
         # 只认字面量 "true" 会把填 1 / yes / on 的人坑了:那几种写法本意是开,却会被转成
         # False 显式发出去,等于亲手关掉这项兜底。填 false / 0 才是真的要关。
-        extra["reasoning_split"] = settings.chat_reasoning_split.strip().lower() in _TRUTHY
+        extra["reasoning_split"] = (
+            settings.chat_reasoning_split.strip().lower() in _TRUTHY
+        )
     if extra:
         kwargs["extra_body"] = extra
     if settings.chat_reasoning_effort:
@@ -154,8 +166,14 @@ def needs_non_streaming_tools(model: str | None = None, slot: str = "chat") -> b
     return any(f in name for f in _NO_STREAM_TOOLCALL_FAMILIES)
 
 
-def structured(schema, *, model: str | None = None, streaming: bool = True,
-               temperature: float | None = None, slot: str = "chat"):
+def structured(
+    schema,
+    *,
+    model: str | None = None,
+    streaming: bool = True,
+    temperature: float | None = None,
+    slot: str = "chat",
+):
     """要结构化结果就用这个,别直接 with_structured_output——它默认走 json_schema,
     那条路解析正文,会被模型多吐的思考正文带崩。
 
@@ -172,23 +190,34 @@ def structured(schema, *, model: str | None = None, streaming: bool = True,
     slot_model, slot_base, _ = resolve_slot(slot)
     name = (model or slot_model or "").lower()
     if needs_non_streaming_tools(model, slot=slot):
-        streaming = False        # 这类模型流式不吐 tool_calls,见 _NO_STREAM_TOOLCALL_FAMILIES
-    m = get_chat_model(streaming=streaming, model=model, temperature=temperature,
-                       slot=slot, thinking=False)
+        streaming = False  # 这类模型流式不吐 tool_calls,见 _NO_STREAM_TOOLCALL_FAMILIES
+    m = get_chat_model(
+        streaming=streaming,
+        model=model,
+        temperature=temperature,
+        slot=slot,
+        thinking=False,
+    )
     fc = m.with_structured_output(schema, method="function_calling")
 
     def _log(attempt: int, why: str) -> None:
         # 带上通道:同一个模型换个上游行为就不一样,只打模型名排障时定位不到
-        logger.warning("%s 经 %s 的 function calling 第 %s 次没成(%s),%s",
-                       name, slot_base, attempt, why,
-                       "原样重试一次" if attempt == 1 else "抛给调用点")
+        logger.warning(
+            "%s 经 %s 的 function calling 第 %s 次没成(%s),%s",
+            name,
+            slot_base,
+            attempt,
+            why,
+            "原样重试一次" if attempt == 1 else "抛给调用点",
+        )
 
     def _no_tool_calls() -> OutputParserException:
         return OutputParserException(
-            f"{name} 经 {settings.chat_base_url} 连着两次都没返回 tool_calls")
+            f"{name} 经 {settings.chat_base_url} 连着两次都没返回 tool_calls"
+        )
 
     def _run(x):
-        for attempt in (1, 2):     # 偶发不返回 tool_calls,原样重试一次
+        for attempt in (1, 2):  # 偶发不返回 tool_calls,原样重试一次
             try:
                 r = fc.invoke(x)
             except Exception as e:

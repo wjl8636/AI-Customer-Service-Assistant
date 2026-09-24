@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """RAG 评估页的只读 API:把 make eval-rag 落下的那份报告端出去,不重算。
 
 页面上的每个数都来自 data/ch04/reports/rag_eval.json——那是评估脚本跑完写下的产物。

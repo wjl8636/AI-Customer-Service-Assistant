@@ -128,6 +128,9 @@ eval:
 eval-agent:
 	uv run python scripts/eval_agent.py
 
+compare-intent:  ## 意图识别后端测评:普通LLM(结构化) vs Jev(Choice),均衡九类数据比 token/耗时/准确率(需 JEV_API_KEY;脚本内会分别测两个后端)
+	PYTHONPATH=. uv run python scripts/compare_intent_backends.py
+
 eval-ch05:
 	uv run python scripts/eval_ch05.py
 

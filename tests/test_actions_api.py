@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 def test_create_ticket_action_writes(client, monkeypatch):
     async def fake_create(cid, desc, ttype):
         assert cid == 5 and ttype == "投诉"

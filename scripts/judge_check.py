@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """裁判回归:拿人工处置过的编造个案台账,反过来考忠实度裁判。
 
 台账里每条个案都被人看过一遍并留了处置:

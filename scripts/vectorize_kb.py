@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """CLI:把 knowledge_chunks 里 pending 的块向量化写入 Milvus(幂等可重跑)。
 运行:PYTHONPATH=. uv run python scripts/vectorize_kb.py"""
 import asyncio

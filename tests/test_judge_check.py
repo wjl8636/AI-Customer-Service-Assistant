@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """裁判回归的取样与判定:台账里哪些个案能当考题、人工处置怎么翻译成标准答案。
 
 这一层必须是纯函数、必须有测试:整轮回归的结论(裁判和人工一致率)全建在它上面。

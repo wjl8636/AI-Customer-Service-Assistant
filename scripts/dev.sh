@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 # 单入口拉起 FastAPI 应用(:8000);三组上游各自直连,没有网关进程
 set -euo pipefail
 cd "$(dirname "$0")/.."

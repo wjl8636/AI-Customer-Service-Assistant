@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """对 /api/extract 跑标注样例,核对 order_id 与 request_type(expected_solution 人工目检)。"""
 import json
 import pathlib

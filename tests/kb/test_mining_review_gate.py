@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """挖知识的人工闸:kb-mine 自己不许写知识库,采纳才写。
 
 挖出来的问答对是模型从聊天记录里归纳的,质量参差:只对单笔订单成立的、夹带订单号

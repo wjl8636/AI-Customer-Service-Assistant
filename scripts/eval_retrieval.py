@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """验收1 eval:对换说法的问题跑向量检索,核对是否召回期望内容(纯测向量召回,不掺 LLM)。
 需已建库并向量化(make kb-build && make kb-vectorize)+ 嵌入上游可调通(真实嵌入)。
 运行:PYTHONPATH=. uv run python scripts/eval_retrieval.py"""

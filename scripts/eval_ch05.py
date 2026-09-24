@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch05 五验收端到端评估。需全服务起(mysql/milvus/上游/app 新代码)。
 用法:.venv/bin/python -m scripts.eval_ch05
 走 /api/agent(非流式,看得到工具轨迹与 suggested_actions);验收1 看 app 日志、验收3 前端部分见浏览器。"""

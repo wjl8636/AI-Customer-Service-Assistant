@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """读图小注:让模型看着这一轮的数说一句结论,和产物一起落盘。
 
 页面上的「读图」原来是写死的句子。数换了、结论还是那句话,数据一变就容易不对

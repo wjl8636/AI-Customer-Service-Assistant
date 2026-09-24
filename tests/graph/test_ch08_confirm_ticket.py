@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """graph 级:建工单确认流(ch08)。业务路由 → main_agent 发 create_ticket → agent_tools 顶置
 interrupt 推预览 → resume confirmed 两分支(true 落库回工单号 / false 权限拒绝审计+不落库);
 参数缺失则不弹卡,走引擎「校验拦下」回灌,模型收敛为追问。"""

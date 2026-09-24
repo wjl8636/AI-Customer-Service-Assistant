@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """祛魅:不用任何框架,手写最裸的 Agent 循环——看清它就是个带工具清单的 for 循环。
 用法:.venv/bin/python -m scripts.bare_agent_loop "订单1001的物流到哪了"
 """

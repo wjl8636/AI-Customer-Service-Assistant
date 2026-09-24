@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """Milvus Standalone 原生 BM25 全文检索 + hybrid_search 冒烟。不通即红线停。"""
 from pymilvus import (
     AnnSearchRequest, DataType, Function, FunctionType, MilvusClient, RRFRanker,

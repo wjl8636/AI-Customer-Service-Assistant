@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 数据集:分层划分 80/10/10 + 训练集增强(同义词替换/句式微调)。
 增强只扩训练集——验证/测试是考题,不许照练习题变。运行:make ch10-dataset(需聊天上游)。"""
 import asyncio

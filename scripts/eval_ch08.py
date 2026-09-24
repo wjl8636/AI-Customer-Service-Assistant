@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch08 验收样例端到端评估:建工单确认流(追问/预览/确认/取消)+ 物流走 MCP。
 需全服务起:make dev(含两台 MCP Server)+ MySQL + 聊天上游;已应用 sql/ch08-ddl.sql。
 用法:.venv/bin/python -m scripts.eval_ch08

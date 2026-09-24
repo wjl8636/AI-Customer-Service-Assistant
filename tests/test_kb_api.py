@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """知识库录入 API:切块预览是 dry-run、录入按指纹查重、参数白名单挡住乱传。
 
 重点锁两条容易回归的口径:

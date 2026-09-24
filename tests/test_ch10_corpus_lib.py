@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 语料纯函数:脱敏 / 去重 / 分层划分。"""
 from scripts.ch10.corpus_lib import dedupe, desensitize, split_dataset
 

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """「观测与成本」页的只读 API:ch09 那三张终端报表搬进后台,一页看齐、也能在页上重跑。
 
 三块各有自己的权威源,这里只负责端出去:

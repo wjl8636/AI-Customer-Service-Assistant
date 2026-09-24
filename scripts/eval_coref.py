@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """指代消解标注评估:多轮带指代补全 + 已完整透传。需聊天上游可调通。
 用法:.venv/bin/python -m scripts.eval_coref"""
 import asyncio

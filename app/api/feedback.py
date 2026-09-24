@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 飞轮入口3:用户反馈没解决。👎 落 low_confidence_questions(source=user_feedback),
 快照尽力回捞(checkpointer 里最近一轮的 retrieved_snapshot,问题对得上才用);👍 只记日志。"""
 import logging

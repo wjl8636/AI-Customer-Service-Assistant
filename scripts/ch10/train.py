@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 训练:RoBERTa-wwm-ext 全参微调,17 类多标签(BCEWithLogitsLoss)。
 运行:make ch10-train。设备自适应 cuda→mps→cpu(Trainer 自动挑);正则化 weight_decay + 早停盯验证集 micro-F1。
 HF 下载不通时:HF_ENDPOINT=https://hf-mirror.com make ch10-train。"""

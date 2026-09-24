@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """订单归属校验:工具只认「这一单是不是这个人的」,不认模型说了什么。
 
 为什么要有这组测试:query_order 早先只收 order_id,报个号就把单查出来念给用户听,

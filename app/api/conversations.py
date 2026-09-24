@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch07 验收配套:会话列表 + 历史消息回载(只读,前端多会话切换用)。"""
 from fastapi import APIRouter, HTTPException
 

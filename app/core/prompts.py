@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 CUSTOMER_SERVICE_SYSTEM = """你是「喵喵优选」电商平台的智能客服「小喵」。

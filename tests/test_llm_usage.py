@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """流式用量不许被重复累加。
 
 为什么要有这组测试:有些 OpenAI 兼容通道每个 chunk 都重报一遍累计用量,而 langchain-openai

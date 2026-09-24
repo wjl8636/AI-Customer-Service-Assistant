@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """mock 数据源(纯函数,随机种子固定 → 同键稳定)。
 ch08 起工具实现迁至 app/tools/builtin/(注册即定义),本模块只留被 graph 节点
 (fetch_order)与 builtin 工具共用的快照函数,不再定义任何 @tool。"""

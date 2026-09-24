@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 主题 API:分布(17 类全出、计数正确)与类目问题列表(分页、多标签、未知类目挡住)。"""
 import pytest
 from fastapi import FastAPI

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 飞轮批处理:扫问题池未归并条目 → 标准化+查重 → 待审队列。
 运行:make flywheel(需 mysql + 聊天上游在线)。定时跑给 cron 示例:
   */30 * * * * cd /path/to/mewhelp && make flywheel >> log/flywheel.log 2>&1

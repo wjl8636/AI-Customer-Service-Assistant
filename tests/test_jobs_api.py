@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """作业运行器的安全边界:名字不在白名单里就 404,同名作业没跑完不许重入。
 
 这两条是「页面上有重跑按钮但没有 shell」的实证。另加一条注册表自检:每个作业都得是

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 预标:大模型照权威术语表给问题打多标签。折中路线的前半——预标,后半人工抽审。"""
 import asyncio
 

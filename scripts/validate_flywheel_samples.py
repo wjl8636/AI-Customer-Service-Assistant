@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 Prompt 标注样例验证(工作要求:纯 Prompt 任务拿标注样例跑一遍代替 TDD)。
 判分:matched_question_id 与 expect_match 一致 = 查重对;normalized_question 含全部
 expect_keywords = 标准化对(仅新建样例查关键词)。两项都对才算过,通过率 ≥ 80% 视为可用。

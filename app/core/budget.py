@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """上下文预算:窗口按块分配,滑窗拿剩下的。
 
 一次请求里系统提示与工具 schema、检索证据、注入的摘要段、输出预留各占一块,

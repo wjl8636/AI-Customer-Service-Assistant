@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """llm.structured 的通路选择:只走 function calling + 流式,失败重试一次就抛给调用点。
 
 为什么要有这组测试:结构化输出是否可用取决于「模型 × 通道」,不是模型本身的能力。

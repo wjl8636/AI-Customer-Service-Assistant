@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """标注样例评估:核对 glm-5.2 是否按预期选中工具,并观察 query_faq 的关键词与漏召回。
 需服务运行中(docker compose/mewhelp-mysql + make seed + make dev)。"""
 import asyncio

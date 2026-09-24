@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 自动化评估流水线:复用 ch04 评估集与指标,定期跑、落 eval_runs、连趋势。
 指标:检索段 Recall@5 / MRR(hybrid_rerank,可答桶,跨文档题按组凑齐算),生成段 Faithfulness + D 桶拒答率。
 运行:make eval-flywheel(TRIGGER=手动|定时,默认手动)。cron 示例:

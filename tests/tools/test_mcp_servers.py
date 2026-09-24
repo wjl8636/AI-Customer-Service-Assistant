@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch08 MCP Server 集成测试:真起子进程 → adapters client 列工具 + 真调。
 连不上视为环境问题直接 fail(两台 Server 是本章交付物,不 skip)。"""
 import os

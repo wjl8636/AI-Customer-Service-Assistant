@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 预标质量闸:黄金样例上标签集合完全一致率 ≥ 80% 才放行批量预标。
 运行:make ch10-golden(需聊天上游)。不过线就改 prompt,不许改黄金样例来凑分。
 落 reports/golden_report.json 给验收页读(/acceptance),错例带标准/预标对照。"""

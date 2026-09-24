@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """挖知识 eval:对样例对话跑抽取,核对该抽的抽到、不该抽的(纯个案)不硬抽。
 需聊天上游可调通(真实 glm-5.2)。运行:PYTHONPATH=. uv run python scripts/eval_mining.py"""
 import asyncio

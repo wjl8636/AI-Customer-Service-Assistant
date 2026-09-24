@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 Cost Control:按意图统计 token 花销(README:「按意图把 token 分堆一算,
 哪类意图最烧钱立马现形」)。数据源 = Langfuse Metrics API(意图在 classify_intent 打成 intent:xxx tag)。
 运行:make cost-report(DAYS=N 窗口天数,默认 7;需 Langfuse 在跑且 .env 配好三变量)。

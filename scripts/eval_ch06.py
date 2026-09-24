@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch06 四验收端到端评估。需全服务起(mysql/milvus/上游/app)+ 已应用 sql/ch06-ticket-type.sql。
 用法:.venv/bin/python -m scripts.eval_ch06"""
 import asyncio

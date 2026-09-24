@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 入口3:👎 落池(source=user_feedback,快照尽力回捞);👍 只记日志不落库。"""
 import pytest
 from fastapi import FastAPI

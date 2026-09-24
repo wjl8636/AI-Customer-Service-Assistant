@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """售后 MCP Server(ch08 自建,mock 数据,不接真实系统、不建表)。
 独立进程:uv run python mcp_servers/aftersales_server.py
 工具:query_warranty(查在保)、query_return_status(查退货进度)。

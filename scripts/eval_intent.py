@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """意图四件套标注评估:九类判对率(ch08 增「人工」)+ confidence 可解析 + 怪问题落其他 + 多轮漂移。需聊天上游可调通。
 用法:.venv/bin/python -m scripts.eval_intent"""
 import asyncio

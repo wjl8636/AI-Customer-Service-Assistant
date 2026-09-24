@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch09 可观测:Langfuse 挂载与 trace 标注,全部可选降级。
 
 课程 README 姿势:设三个环境变量 + 图编译时挂一次回调,节点业务代码零侵入。

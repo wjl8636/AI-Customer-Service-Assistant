@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 # ch02 验收演示:三条验收标准。需 mewhelp-mysql 容器 + make seed + make dev 就绪。
 set -euo pipefail
 BASE=http://localhost:8000

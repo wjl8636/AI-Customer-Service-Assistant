@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """评估集自检(ch04):300 题手写的 ground truth 靠这个脚本兜住,不靠人眼。
 
 查五件事:

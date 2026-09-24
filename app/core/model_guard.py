@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """型号机械闸:答案里出现的型号必须逐字来自本轮证据,否则这句话是编的。
 
 ch04 评估里判出的唯一一条真幻觉是型号:库里是 MH-CAM1,答案写成了 MH-CAD1——

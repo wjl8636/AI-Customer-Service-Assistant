@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """RAG 评估 API:只读 make eval-rag 落下的那份报告,不重算;产物缺失是状态不是错误。"""
 import json
 

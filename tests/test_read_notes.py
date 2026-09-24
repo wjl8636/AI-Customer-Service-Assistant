@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """读图小注:模型可以写,但编出来的数一个都不许上页面——数字校验是这层的主闸。"""
 import pytest
 

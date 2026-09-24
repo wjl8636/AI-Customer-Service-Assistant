@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """改完 data/kb/*.md 之后,只把改动的那几块重新入库(不整库重建)。
 
 为什么需要这个脚本:补库是评估驱动优化的常规动作——评估判出一条编造,回头看是库里

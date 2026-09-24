@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """真实验证 glm-5.2 直连上游能否返回结构化 tool_calls。go/no-go 风险闸。"""
 import asyncio
 

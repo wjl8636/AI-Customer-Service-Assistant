@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 def test_create_refund_writes_ticket(client, monkeypatch):
     async def fake_create(cid, desc, ttype):
         assert cid == 7 and ttype == "退款" and "1001" in desc and "质量问题" in desc

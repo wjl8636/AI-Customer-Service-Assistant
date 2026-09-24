@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 权威归并术语表:全系统唯一一份,17 类主题类目。
 数据处理、预标、训练、推理、评测、前端全部 import 这里,不许各自抄一份。
 类目名与边界说明采用课程 README 归并术语表原文;元组顺序即 label id,训练/推理共用。

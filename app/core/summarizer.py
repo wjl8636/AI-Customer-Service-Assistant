@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch07 后台分段摘要:轮结束后按层 2 用量触发,asyncio 后台跑,不阻塞当轮回复。
 
 一次压一批,产出**新的一段**追加进 conversation_summaries,已有段落不回炉重压。

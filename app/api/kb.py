@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """知识库录入 API:把建库这条链搬上页面——材料清单、切块预览、录入入库、向量化、检索自测。
 
 两条录入路径,边界分清:

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """ch10 推理服务:ONNX + FastAPI 独立进程 :8110,轻运行时(onnxruntime + tokenizers,不背 torch)。
 起停:make classifier-up / classifier-down(仓库惯例 nohup + pid 文件)。"""
 import json

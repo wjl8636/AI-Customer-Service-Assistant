@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """前缀缓存不变量:发给模型的消息里,可变内容一律不许进 SystemMessage。
 
 各家 prompt caching 都按前缀精确匹配。system 是 messages[0],把每轮都变的证据/订单数据

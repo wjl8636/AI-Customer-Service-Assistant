@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 """重演 train.py 的阈值扫描(教学演示):验证集 161 条经 ONNX 服务打分一次,
 九个候选线(0.30~0.70 步进 0.05)套同一张分数表各算一遍 micro-F1,谁高谁当选。
 前置:make classifier-up(:8110 在线)。用法:PYTHONPATH=. uv run python scripts/ch10/scan_threshold_replay.py
